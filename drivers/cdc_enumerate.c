@@ -276,7 +276,7 @@ void AT91F_InitUSB(void)
 	/* Set the descriptor address */
 	USB->HOST.DESCADD.reg = (uint32_t)(&usb_endpoint_table[0]);
 	/* Set speed configuration to Full speed */
-	USB->DEVICE.CTRLB.bit.SPDCONF = USB_DEVICE_CTRLB_SPDCONF_0_Val;
+	USB->DEVICE.CTRLB.bit.SPDCONF = USB_DEVICE_CTRLB_SPDCONF_FS_Val;
 	/* Attach to the USB host */
 	USB->DEVICE.CTRLB.reg &= ~USB_DEVICE_CTRLB_DETACH;
 
