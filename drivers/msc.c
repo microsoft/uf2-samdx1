@@ -80,15 +80,6 @@ static void udi_msc_cbw_invalid(void);
 static void udi_msc_csw_invalid(void);
 
 /**
- * \brief Links a callback and buffer on endpoint OUT reception
- *
- * Called by:
- * - enable interface
- * - at the end of previous command after sending the CSW
- */
-static void udi_msc_cbw_wait(void);
-
-/**
  * \brief Function to check the CBW length and direction
  * Call it after SCSI command decode to check integrity of command
  *
@@ -164,24 +155,9 @@ static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense,
 static void udi_msc_sense_pass(void);
 
 /**
- * \brief Update sense data to signal that memory is not present
- */
-static void udi_msc_sense_fail_not_present(void);
-
-/**
- * \brief Update sense data to signal that memory is busy
- */
-static void udi_msc_sense_fail_busy_or_change(void);
-
-/**
  * \brief Update sense data to signal a hardware error on memory
  */
 static void udi_msc_sense_fail_hardware(void);
-
-/**
- * \brief Update sense data to signal that memory is protected
- */
-static void udi_msc_sense_fail_protected(void);
 
 /**
  * \brief Update sense data to signal that CDB fields are not valid
@@ -480,26 +456,10 @@ static void udi_msc_sense_pass(void)
 }
 
 
-static void udi_msc_sense_fail_not_present(void)
-{
-	udi_msc_sense_fail(SCSI_SK_NOT_READY, SCSI_ASC_MEDIUM_NOT_PRESENT, 0);
-}
-
-static void udi_msc_sense_fail_busy_or_change(void)
-{
-	udi_msc_sense_fail(SCSI_SK_UNIT_ATTENTION,
-			SCSI_ASC_NOT_READY_TO_READY_CHANGE, 0);
-}
-
 static void udi_msc_sense_fail_hardware(void)
 {
 	udi_msc_sense_fail(SCSI_SK_HARDWARE_ERROR,
 			SCSI_ASC_NO_ADDITIONAL_SENSE_INFO, 0);
-}
-
-static void udi_msc_sense_fail_protected(void)
-{
-	udi_msc_sense_fail(SCSI_SK_DATA_PROTECT, SCSI_ASC_WRITE_PROTECTED, 0);
 }
 
 static void udi_msc_sense_fail_cdb_invalid(void)
@@ -737,16 +697,6 @@ void read_block(uint32_t block_no, uint8_t *data) {
 void write_block(uint32_t block_no, uint8_t *data) {
 }
 
-static void transfer_block(bool b_read, uint8_t * block, uint32_t block_size)
-{
-	if (b_read)
-		USB_Write((void*)block, block_size, USB_EP_MSC_IN);
-	else
-		USB_ReadBlocking((void*)block, block_size, USB_EP_MSC_OUT);
-
-	udi_msc_csw.dCSWDataResidue -= block_size;
-}
-
 COMPILER_ALIGNED(4) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
 
 static void udi_msc_sbc_trans(bool b_read)
@@ -789,14 +739,12 @@ static void udi_msc_sbc_trans(bool b_read)
 	// Check if transfer is aborted by reset
 	if (udi_msc_b_reset_trans) {
 		udi_msc_b_reset_trans = false;
-		return true;
+		return;
 	}
 
 	udi_msc_sense_pass();
 	
 	// Send status of transfer in CSW packet
 	udi_msc_csw_process();
-	
-	return true;
 }
 

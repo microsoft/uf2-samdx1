@@ -357,7 +357,7 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc)
 //* \fn    USB_Read
 //* \brief Read available data from Endpoint OUT
 //*----------------------------------------------------------------------------
-uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
+uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep)
 {
 	Usb *pUsb = pCdc.pUsb;
 	uint32_t packetSize = 0;
@@ -406,17 +406,17 @@ uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
 	return packetSize;
 }
 
-void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep)
+void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep)
 {
 	/* Blocking read till specified number of bytes is received */
 	while (length) {
 		uint32_t curr = USB_Read(dst, length, ep);
 		length -= curr;
-		dst += curr;
+		dst = (char*)dst + curr;
 	}
 }
 
-uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num)
+uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num)
 {
 	Usb *pUsb = pCdc.pUsb;
 	uint32_t data_address;
@@ -735,7 +735,7 @@ P_USB_CDC usb_init(void)
 int cdc_putc(int value)
 {
 	/* Send single byte on USB CDC */
-	USB_Write((const char *)&value, 1, USB_EP_IN);
+	USB_Write(&value, 1, USB_EP_IN);
 	return 1;
 }
 
@@ -743,7 +743,7 @@ int cdc_getc(void)
 {
 	uint8_t rx_char;
 	/* Read singly byte on USB CDC */
-	USB_Read((char *)&rx_char, 1, USB_EP_OUT);
+	USB_Read(&rx_char, 1, USB_EP_OUT);
 	return (int)rx_char;
 }
 
