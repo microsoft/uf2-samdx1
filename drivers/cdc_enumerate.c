@@ -55,7 +55,7 @@ const char devDescriptor[] = {
 	0x01,   // bDescriptorType
 	0x10,   // bcdUSBL
 	0x01,   //
-	0x02,   // bDeviceClass:    CDC class code
+	0x00,   // bDeviceClass:    CDC class code
 	0x00,   // bDeviceSubclass: CDC class sub code
 	0x00,   // bDeviceProtocol: CDC Device protocol
 	0x40,   // bMaxPacketSize0
@@ -77,9 +77,9 @@ char cfgDescriptor[] = {
 	/* Configuration 1 descriptor */
 	0x09,   // CbLength
 	0x02,   // CbDescriptorType
-	0x43,   // CwTotalLength 2 EP + Control
+	0x5A,   // CwTotalLength 2 EP + Control
 	0x00,
-	0x02,   // CbNumInterfaces
+	0x03,   // CbNumInterfaces
 	0x01,   // CbConfigurationValue
 	0x00,   // CiConfiguration
 	0xC0,   // CbmAttributes 0xA0
@@ -160,7 +160,35 @@ char cfgDescriptor[] = {
 	0x02,   // bmAttributes      BULK
 	PKT_SIZE,   // wMaxPacketSize
 	0x00,
-	0x00    // bInterval
+	0x00,    // bInterval
+
+	// MSC
+
+        9,                  /// descriptor size in bytes
+        4,                  /// descriptor type - interface
+        2,                  /// interface number
+        0,                  /// alternate setting number
+        2,                  /// number of endpoints
+        8,                  /// class code - mass storage
+        6,                  /// subclass code - SCSI transparent command set
+        80,                 /// protocol code - bulk only transport
+        0,                  /// interface string index
+
+        7,                  /// descriptor size in bytes
+        5,                  /// descriptor type - endpoint
+        0x84,               /// endpoint direction and number - in, 2
+        2,                  /// transfer type - bulk
+        PKT_SIZE,                 /// maximum packet size
+        0,
+        0,                  /// not used
+
+        7,                  /// descriptor size in bytes
+        5,                  /// descriptor type - endpoint
+        0x05,               /// endpoint direction and number - out, 1
+        2,                  /// transfer type - bulk
+        PKT_SIZE,                 /// maximum packet size
+        0,
+        0,                  /// maximum NAK rate
 };
 
 
