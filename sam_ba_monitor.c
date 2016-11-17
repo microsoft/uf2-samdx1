@@ -36,6 +36,7 @@
 #include "cdc_enumerate.h"
 
 const char RomBOOT_Version[] = SAM_BA_VERSION;
+const char RomBOOT_ExtendedCapabilities[] = "[Arduino:XYZ]";
 
 /* Provides one common interface to handle both USART and USB-CDC */
 typedef struct
@@ -166,6 +167,71 @@ uint8_t command, *ptr_data, *ptr, data[SIZEBUFMAX];
 uint8_t j;
 uint32_t u32tmp;
 
+#define FLASH_PAGE_SIZE 64
+#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
+int flash_size;
+
+void panic(void) {
+	while(1) {}
+}
+
+void init_flash(void) {
+	int page_size = 8 << NVMCTRL->PARAM.bit.PSZ;
+	if (page_size != FLASH_PAGE_SIZE) {
+		panic();
+	}
+    flash_size = FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP;
+}
+
+static void wait_ready(void) {
+	while (NVMCTRL->INTFLAG.bit.READY == 0) {}
+}
+
+void flash_erase_row(uint32_t *dst) {
+	// Execute "ER" Erase Row
+	NVMCTRL->ADDR.reg = (uint32_t)dst / 2;
+	NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER;
+	wait_ready();
+}
+
+void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
+	// Set automatic page write
+	NVMCTRL->CTRLB.bit.MANW = 0;
+
+	while (n_words > 0) {
+		// Execute "PBC" Page Buffer Clear
+		NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
+		wait_ready();
+
+		uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
+		n_words -= len;
+
+		while (len--)
+			*dst++ = *src++;
+
+		// Execute "WP" Write Page
+		NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP;
+		wait_ready();
+	}
+}
+
+void flash_write_row(uint32_t *dst, uint32_t *src) {
+	flash_erase_row(dst);
+	flash_write_words(dst, src, FLASH_ROW_SIZE);
+}
+
+// Prints a 32-bit integer in hex.
+void put_uint32(uint32_t n) {
+	char buff[8];
+	int i;
+	for (i=0; i<8; i++) {
+		int d = n & 0XF;
+		n = (n >> 4);
+
+		buff[7-i] = d > 9 ? 'A' + d - 10 : '0' + d;
+	}
+	ptr_monitor_if->putdata(buff, 8);
+}
 
 /**
  * \brief This function starts the SAM-BA monitor.
@@ -274,19 +340,82 @@ void sam_ba_monitor_run(void)
 						ptr_monitor_if->putdata((uint8_t *) RomBOOT_Version,
 								strlen(RomBOOT_Version));
 						ptr_monitor_if->putdata(" ", 1);
-						ptr = (uint8_t*) &(__DATE__);
-						i = 0;
-						while (*ptr++ != '\0')
-							i++;
-						ptr_monitor_if->putdata((uint8_t *) &(__DATE__), i);
+						ptr_monitor_if->putdata((uint8_t *) RomBOOT_ExtendedCapabilities,
+								strlen(RomBOOT_ExtendedCapabilities));
 						ptr_monitor_if->putdata(" ", 1);
-						i = 0;
+						ptr = (uint8_t*) &(__DATE__);
+						ptr_monitor_if->putdata(ptr, strlen((char*)ptr));
+						ptr_monitor_if->putdata(" ", 1);
 						ptr = (uint8_t*) &(__TIME__);
-						while (*ptr++ != '\0')
-							i++;
-						ptr_monitor_if->putdata((uint8_t *) &(__TIME__), i);
+						ptr_monitor_if->putdata(ptr, strlen((char*)ptr));
 						ptr_monitor_if->putdata("\n\r", 2);
 					}
+					else if (command == 'X')
+                    {
+                        // Syntax: X[ADDR]#
+                        // Erase the flash memory starting from ADDR to the end of flash.
+
+                        // Note: the flash memory is erased in ROWS, that is in block of 4 pages.
+                        //       Even if the starting address is the last byte of a ROW the entire
+                        //       ROW is erased anyway.
+
+                        uint32_t dst_addr = current_number; // starting address
+
+						init_flash();
+                        while (dst_addr < flash_size) {
+                            flash_erase_row((void*)dst_addr);
+                            dst_addr += FLASH_ROW_SIZE;
+                        }
+
+                        // Notify command completed
+                        ptr_monitor_if->putdata("X\n\r", 3);
+                    }
+                    else if (command == 'Y')
+                    {
+                        // This command writes the content of a buffer in SRAM into flash memory.
+
+                        // Syntax: Y[ADDR],0#
+                        // Set the starting address of the SRAM buffer.
+
+                        // Syntax: Y[ROM_ADDR],[SIZE]#
+                        // Write the first SIZE bytes from the SRAM buffer (previously set) into
+                        // flash memory starting from address ROM_ADDR
+
+                        static uint32_t *src_buff_addr = NULL;
+
+                        if (current_number == 0) {
+                            // Set buffer address
+                            src_buff_addr = (void*)ptr_data;
+
+                        } else {
+                            flash_write_words((void*)ptr_data, src_buff_addr, current_number / 4);
+                        }
+
+                        // Notify command completed
+                        ptr_monitor_if->putdata("Y\n\r", 3);
+                    }
+                    else if (command == 'Z')
+                    {
+                        // This command calculate CRC for a given area of memory.
+                        // It's useful to quickly check if a transfer has been done
+                        // successfully.
+
+                        // Syntax: Z[START_ADDR],[SIZE]#
+                        // Returns: Z[CRC]#
+
+                        uint8_t *data = (uint8_t *)ptr_data;
+                        uint32_t size = current_number;
+                        uint16_t crc = 0;
+                        uint32_t i = 0;
+                        for (i=0; i<size; i++)
+                            crc = add_crc(*data++, crc);
+
+                        // Send response
+                        ptr_monitor_if->putdata("Z", 1);
+                        put_uint32(crc);
+                        ptr_monitor_if->putdata("#\n\r", 3);
+                    }
+
 
 					command = 'z';
 					current_number = 0;
