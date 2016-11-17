@@ -126,4 +126,19 @@ uint32_t cdc_read_buf(void* data, uint32_t length);
 uint32_t cdc_read_buf_xmd(void* data, uint32_t length);
 
 
+
+
+void reset_ep(uint8_t ep);
+void stall_ep(uint8_t ep);
+
+uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep);
+uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num);
+void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep);
+
+// move to msc.h
+// index of highest LUN
+#define MAX_LUN 0
+void process_msc(void);
+void msc_reset(void);
+
 #endif // CDC_ENUMERATE_H

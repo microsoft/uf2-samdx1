@@ -27,7 +27,10 @@ BUILD_PATH=build
 INCLUDES = -I./drivers -I./utils -I./utils/preprocessor -I./utils/interrupt  
 INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Include -I./asf/sam0/utils/cmsis/samd21/source
 INCLUDES += -I./asf/common
-SOURCES = main.c sam_ba_monitor.c asf/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.c usart_sam_ba.c drivers/cdc_enumerate.c drivers/uart_driver.c utils/interrupt/interrupt_sam_nvic.c 
+SOURCES = main.c sam_ba_monitor.c asf/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.c \
+usart_sam_ba.c drivers/cdc_enumerate.c drivers/uart_driver.c \
+utils/interrupt/interrupt_sam_nvic.c drivers/msc.c
+ 
 OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 
 NAME=samd21_sam_ba

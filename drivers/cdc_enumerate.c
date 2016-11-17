@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <compiler.h>
 #include <string.h>
+#include <assert.h>
 
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -45,10 +46,6 @@ typedef struct {
 
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
-bool mscReset;
-
-// index of highest LUN
-#define MAX_LUN 0
 
 COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
 
@@ -208,13 +205,7 @@ static USB_CDC pCdc;
 #define MSC_RESET					  0xFF21
 #define MSC_GET_MAX_LUN               0xFEA1
 
-static uint8_t USB_IsConfigured(P_USB_CDC pCdc);
-static uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep);
-static uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num);
 static void AT91F_CDC_Enumerate(P_USB_CDC pCdc);
-
-void process_msc(void) {}
-void reset_ep(uint8_t in_ep);
 
 /**
  * \fn AT91F_InitUSB
@@ -303,6 +294,9 @@ void AT91F_InitUSB(void)
 			sizeof(usb_endpoint_table));
 }
 
+static uint8_t USB_IsConfigured(P_USB_CDC pCdc);
+
+
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_CDC_Open
 //* \brief
@@ -363,7 +357,7 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc)
 //* \fn    USB_Read
 //* \brief Read available data from Endpoint OUT
 //*----------------------------------------------------------------------------
-static uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
+uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
 {
 	Usb *pUsb = pCdc.pUsb;
 	uint32_t packetSize = 0;
@@ -412,7 +406,7 @@ static uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
 	return packetSize;
 }
 
-static void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep)
+void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep)
 {
 	/* Blocking read till specified number of bytes is received */
 	while (length) {
@@ -422,7 +416,7 @@ static void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep)
 	}
 }
 
-static uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num)
+uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num)
 {
 	Usb *pUsb = pCdc.pUsb;
 	uint32_t data_address;
@@ -485,21 +479,6 @@ void AT91F_USB_SendZlp(Usb *pUsb)
 	while (!( pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1 ));
 }
 
-//*----------------------------------------------------------------------------
-//* \fn    AT91F_USB_SendStall
-//* \brief Stall the control endpoint
-//*----------------------------------------------------------------------------
-void AT91F_USB_SendStall(Usb *pUsb, bool direction_in)
-{
-	/* Check the direction */
-	if (direction_in) {
-		/* Set STALL request on IN direction */
-		pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_STALLRQ1;
-	} else {
-		/* Set STALL request on OUT direction */
-		pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_STALLRQ0;
-	}
-}
 
 static void configureInOut(Usb *pUsb, uint8_t in_ep) {
 		/* Configure BULK OUT endpoint for CDC Data interface*/
@@ -557,7 +536,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 			AT91F_USB_SendData(pCdc, cfgDescriptor, MIN(sizeof(cfgDescriptor), wLength));
 		else
 			/* Stall the request */
-			AT91F_USB_SendStall(pUsb, true);
+			stall_ep(0);
 		break;
 	case STD_SET_ADDRESS:
 		/* Send ZLP */
@@ -609,11 +588,11 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 		}
 		else
 			/* Stall the request */
-			AT91F_USB_SendStall(pUsb, true);
+			stall_ep(0);
 		break;
 	case STD_SET_FEATURE_ZERO:
 		/* Stall the request */
-		AT91F_USB_SendStall(pUsb, true);
+		stall_ep(0);
 		break;
 	case STD_SET_FEATURE_INTERFACE:
 		/* Send ZLP */
@@ -634,11 +613,11 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 		}
 		else
 			/* Stall the request */
-			AT91F_USB_SendStall(pUsb, true);
+			stall_ep(0);
 		break;
 	case STD_CLEAR_FEATURE_ZERO:
 		/* Stall the request */
-		AT91F_USB_SendStall(pUsb, true);
+		stall_ep(0);
 		break;
 	case STD_CLEAR_FEATURE_INTERFACE:
 		/* Send ZLP */
@@ -673,7 +652,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 			AT91F_USB_SendZlp(pUsb);
 		}
 		else {
-			AT91F_USB_SendStall(pUsb, true);
+			stall_ep(0);
 		}
 		break;
 
@@ -695,9 +674,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 	
 	// MSC
 	case MSC_RESET:
-		mscReset = true;
-		reset_ep(USB_EP_MSC_IN);
-		// udi_msc_cbw_wait() ?
+		msc_reset();
 		break;
 	
 	case MSC_GET_MAX_LUN:
@@ -707,7 +684,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 
 	default:
 		/* Stall the request */
-		AT91F_USB_SendStall(pUsb, true);
+		stall_ep(0);
 		break;
 	}
 }
@@ -716,20 +693,32 @@ static bool isInEP(uint8_t ep) {
 	return ep == USB_EP_IN || ep == USB_EP_MSC_IN;
 }
 
-static void abort_ep(uint8_t ep) {
+void reset_ep(uint8_t ep)
+{
+	assert(ep != 0);
 
+	// Stop transfer
+	if (isInEP(ep)) {
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+		// Eventually ack a transfer occur during abort
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT1;
+	} else {
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+		// Eventually ack a transfer occur during abort
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
+	}
 }
 
-void reset_ep(uint8_t in_ep)
+void stall_ep(uint8_t ep)
 {
-	// Stop transfer
-		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
-		// Eventually ack a transfer occur during abort
-		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT1;
-
-		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
-		// Eventually ack a transfer occur during abort
-		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
+	/* Check the direction */
+	if (ep == 0 || isInEP(ep)) {
+		/* Set STALL request on IN direction */
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_STALLRQ1;
+	} else {
+		/* Set STALL request on OUT direction */
+		pCdc.pUsb->DEVICE.DeviceEndpoint[ep].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_STALLRQ0;
+	}
 }
 
 P_USB_CDC usb_init(void)
