@@ -1031,7 +1031,6 @@ static void udi_msc_sbc_trans(bool b_read)
 	// Record transfer request to do it in a task and not under interrupt
 	udi_msc_b_read = b_read;
 	udi_msc_b_trans_req = true;
-	UDI_MSC_NOTIFY_TRANS_EXT();
 }
 
 

@@ -37,6 +37,12 @@
 #include "services/usb/class/msc/usb_protocol_msc.h"
 
 
+#define NUM_BLOCKS 4096
+//! Static block size for all memories
+#define  UDI_MSC_BLOCK_SIZE   512L
+
+bool mscReset = false;
+
 
 void msc_reset(void) {
 	mscReset = true;
@@ -55,6 +61,12 @@ static struct usb_msc_csw udi_msc_csw =
 static struct scsi_request_sense_data udi_msc_sense;
 static bool udi_msc_b_cbw_invalid = false;
 
+//! Signal end of transfer, if true
+volatile bool udi_msc_b_ack_trans = true;
+//! Status of transfer, aborted if true
+volatile bool udi_msc_b_abort_trans;
+//! Signal (re)init of transfer, if true (by reset/reconnect)
+volatile bool udi_msc_b_reset_trans = true;
 
 
 /**
@@ -75,17 +87,6 @@ static void udi_msc_csw_invalid(void);
  * - at the end of previous command after sending the CSW
  */
 static void udi_msc_cbw_wait(void);
-
-/**
- * \brief Callback called after CBW reception
- * Called by UDD when a transfer is finished or aborted
- *
- * \param status       UDD_EP_TRANSFER_OK, if transfer is finished
- * \param status       UDD_EP_TRANSFER_ABORT, if transfer is aborted
- * \param nb_received  number of data transfered
- */
-static void udi_msc_cbw_received(udd_ep_status_t status,
-		iram_size_t nb_received, udd_ep_id_t ep);
 
 /**
  * \brief Function to check the CBW length and direction
@@ -114,18 +115,6 @@ static bool udi_msc_cbw_validate(uint32_t alloc_len, uint8_t dir_flag);
  */
 static void udi_msc_data_send(uint8_t * buffer, uint8_t buf_size);
 
-/**
- * \brief Callback called after data sent
- * It start CSW packet process
- *
- * \param status     UDD_EP_TRANSFER_OK, if transfer finish
- * \param status     UDD_EP_TRANSFER_ABORT, if transfer aborted
- * \param nb_sent    number of data transfered
- */
-static void udi_msc_data_sent(udd_ep_status_t status, iram_size_t nb_sent,
-		udd_ep_id_t ep);
-//@}
-
 
 /**
  * \name Routines to process CSW packet
@@ -147,17 +136,6 @@ static void udi_msc_csw_process(void);
  */
 void udi_msc_csw_send(void);
 
-/**
- * \brief Callback called after CSW sent
- * It restart CBW reception.
- *
- * \param status     UDD_EP_TRANSFER_OK, if transfer is finished
- * \param status     UDD_EP_TRANSFER_ABORT, if transfer is aborted
- * \param nb_sent    number of data transfered
- */
-static void udi_msc_csw_sent(udd_ep_status_t status, iram_size_t nb_sent,
-		udd_ep_id_t ep);
-//@}
 
 
 /**
@@ -278,14 +256,17 @@ static void udi_msc_sbc_read_capacity(void);
  */
 static void udi_msc_sbc_trans(bool b_read);
 
+void udd_ep_set_halt(uint8_t ep) {
+	stall_ep(ep);
+	reset_ep(ep);
+}
 
 static void udi_msc_cbw_invalid(void)
 {
 	if (!udi_msc_b_cbw_invalid)
 		return;	// Don't re-stall endpoint if error reseted by setup
 
-	stall_ep(USB_EP_MSC_OUT);
-	reset_ep(USB_EP_MSC_OUT);
+	udd_ep_set_halt(USB_EP_MSC_OUT);
 
 	// TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
 }
@@ -307,7 +288,7 @@ void process_msc(void)
 	if (!USB_Read(NULL, 1, USB_EP_MSC_OUT))
 		return; // no data available
 	
-	uint32_t nb_received = USB_Read(&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
+	uint32_t nb_received = USB_Read((void*)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
 
 	// Check CBW integrity:
 	// transfer status/CBW length/CBW signature
@@ -425,31 +406,19 @@ static bool udi_msc_cbw_validate(uint32_t alloc_len, uint8_t dir_flag)
 //---------------------------------------------
 //------- Routines to process small data packet
 
+
 static void udi_msc_data_send(uint8_t * buffer, uint8_t buf_size)
 {
-	// Sends data on IN endpoint
-	if (!udd_ep_run(UDI_MSC_EP_IN, true,
-					buffer, buf_size, udi_msc_data_sent)) {
+	if (USB_Write((void*)buffer, buf_size, USB_EP_MSC_IN) != buf_size) {
 		// If endpoint not available, then exit process command
 		udi_msc_sense_fail_hardware();
 		udi_msc_csw_process();
 	}
-}
 
-
-static void udi_msc_data_sent(udd_ep_status_t status, iram_size_t nb_sent,
-		udd_ep_id_t ep)
-{
-	UNUSED(ep);
-	if (UDD_EP_TRANSFER_OK != status) {
-		// Error protocol
-		// Now wait MSC setup reset to relaunch CBW reception
-		return;
-	}
 	// Update sense data
 	udi_msc_sense_pass();
 	// Update CSW
-	udi_msc_csw.dCSWDataResidue -= nb_sent;
+	udi_msc_csw.dCSWDataResidue -= buf_size;
 	udi_msc_csw_process();
 }
 
@@ -476,27 +445,7 @@ static void udi_msc_csw_process(void)
 
 void udi_msc_csw_send(void)
 {
-	// Sends CSW on IN endpoint
-	if (!udd_ep_run(UDI_MSC_EP_IN, false,
-					(uint8_t *) & udi_msc_csw,
-					sizeof(udi_msc_csw),
-					udi_msc_csw_sent)) {
-		// Endpoint not available
-		// then restart CSW sent when endpoint IN STALL will be cleared
-		udd_ep_wait_stall_clear(UDI_MSC_EP_IN, udi_msc_csw_send);
-	}
-}
-
-
-static void udi_msc_csw_sent(udd_ep_status_t status, iram_size_t nb_sent,
-		udd_ep_id_t ep)
-{
-	UNUSED(ep);
-	UNUSED(status);
-	UNUSED(nb_sent);
-	// CSW is sent or not
-	// In all case, restart process and wait CBW
-	udi_msc_cbw_wait();
+	USB_Write((void*)& udi_msc_csw, sizeof(udi_msc_csw), USB_EP_MSC_IN);
 }
 
 
@@ -587,15 +536,15 @@ static void udi_msc_spc_requestsense(void)
 static void udi_msc_spc_inquiry(void)
 {
 	uint8_t length, i;
-	UDC_DATA(4)
+	COMPILER_ALIGNED(4)
 	// Constant inquiry data for all LUNs
 	static struct scsi_inquiry_data udi_msc_inquiry_data = {
 		.pq_pdt = SCSI_INQ_PQ_CONNECTED | SCSI_INQ_DT_DIR_ACCESS,
 		.version = SCSI_INQ_VER_SPC,
 		.flags3 = SCSI_INQ_RSP_SPC2,
 		.addl_len = SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
-		.vendor_id = {UDI_MSC_GLOBAL_VENDOR_ID},
-		.product_rev = {UDI_MSC_GLOBAL_PRODUCT_VERSION},
+		.vendor_id = {'A', 'T', 'M', 'E', 'L', ' ', ' ', ' '},
+		.product_rev = {'1', '.', '0', '0'},
 	};
 
 	length = udi_msc_cbw.CDB[4];
@@ -616,13 +565,12 @@ static void udi_msc_spc_inquiry(void)
 		return;
 	}
 
-	udi_msc_inquiry_data.flags1 = mem_removal(udi_msc_cbw.bCBWLUN) ?
-			SCSI_INQ_RMB : 0;
+	udi_msc_inquiry_data.flags1 = SCSI_INQ_RMB; // removable
 
 	//* Fill product ID field
 	// Copy name in product id field
 	memcpy(udi_msc_inquiry_data.product_id,
-			mem_name(udi_msc_cbw.bCBWLUN)+1, // To remove first '"'
+			"MSC Bootloader",
 			sizeof(udi_msc_inquiry_data.product_id));
 
 	// Search end of name '/0' or '"'
@@ -647,21 +595,7 @@ static void udi_msc_spc_inquiry(void)
 
 static bool udi_msc_spc_testunitready_global(void)
 {
-	switch (mem_test_unit_ready(udi_msc_cbw.bCBWLUN)) {
-	case CTRL_GOOD:
-		return true;	// Don't change sense data
-	case CTRL_BUSY:
-		udi_msc_sense_fail_busy_or_change();
-		break;
-	case CTRL_NO_PRESENT:
-		udi_msc_sense_fail_not_present();
-		break;
-	case CTRL_FAIL:
-	default:
-		udi_msc_sense_fail_hardware();
-		break;
-	}
-	return false;
+	return true;
 }
 
 
@@ -695,7 +629,7 @@ static void udi_msc_spc_mode_sense(bool b_sense10)
 	uint8_t request_lgt;
 	uint8_t wp;
 	struct spc_control_page_info_execpt *ptr_mode;
-	UDC_BSS(4)  static union sense_6_10 sense;
+	COMPILER_ALIGNED(4)  static union sense_6_10 sense;
 
 	// Clear all fields
 	memset(&sense, 0, sizeof(sense));
@@ -733,7 +667,7 @@ static void udi_msc_spc_mode_sense(bool b_sense10)
 		return;
 
 	// Fill mode parameter header length
-	wp = (mem_wr_protect(udi_msc_cbw.bCBWLUN)) ? SCSI_MS_SBC_WP : 0;
+	wp = 0; // not write protected SCSI_MS_SBC_WP
 
 	if (b_sense10) {
 		sense.s10.header.mode_data_length =
@@ -767,11 +701,13 @@ static void udi_msc_spc_prevent_allow_medium_removal(void)
 
 static void udi_msc_sbc_start_stop(void)
 {
+	#if 0
 	bool start = 0x1 & udi_msc_cbw.CDB[4];
 	bool loej = 0x2 & udi_msc_cbw.CDB[4];
 	if (loej) {
 		mem_unload(udi_msc_cbw.bCBWLUN, !start);
 	}
+	#endif
 	udi_msc_sense_pass();
 	udi_msc_csw_process();
 }
@@ -779,31 +715,13 @@ static void udi_msc_sbc_start_stop(void)
 
 static void udi_msc_sbc_read_capacity(void)
 {
-	UDC_BSS(4) static struct sbc_read_capacity10_data udi_msc_capacity;
+	COMPILER_ALIGNED(4) static struct sbc_read_capacity10_data udi_msc_capacity;
 
 	if (!udi_msc_cbw_validate(sizeof(udi_msc_capacity),
 					USB_CBW_DIRECTION_IN))
 		return;
-
-	// Get capacity of LUN
-	switch (mem_read_capacity(udi_msc_cbw.bCBWLUN,
-					&udi_msc_capacity.max_lba)) {
-	case CTRL_GOOD:
-		break;
-	case CTRL_BUSY:
-		udi_msc_sense_fail_busy_or_change();
-		udi_msc_csw_process();
-		return;
-	case CTRL_NO_PRESENT:
-		udi_msc_sense_fail_not_present();
-		udi_msc_csw_process();
-		return;
-	default:
-		udi_msc_sense_fail_hardware();
-		udi_msc_csw_process();
-		return;
-	}
-
+	
+	udi_msc_capacity.max_lba = NUM_BLOCKS;
 	// Format capacity data
 	udi_msc_capacity.block_len = CPU_TO_BE32(UDI_MSC_BLOCK_SIZE);
 	udi_msc_capacity.max_lba = cpu_to_be32(udi_msc_capacity.max_lba);
@@ -812,20 +730,35 @@ static void udi_msc_sbc_read_capacity(void)
 			sizeof(udi_msc_capacity));
 }
 
+void read_block(uint32_t block_no, uint8_t *data) {
+	memset(data, 0, 512);
+}
+
+void write_block(uint32_t block_no, uint8_t *data) {
+}
+
+static void transfer_block(bool b_read, uint8_t * block, uint32_t block_size)
+{
+	if (b_read)
+		USB_Write((void*)block, block_size, USB_EP_MSC_IN);
+	else
+		USB_ReadBlocking((void*)block, block_size, USB_EP_MSC_OUT);
+
+	udi_msc_csw.dCSWDataResidue -= block_size;
+}
+
+COMPILER_ALIGNED(4) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
 
 static void udi_msc_sbc_trans(bool b_read)
 {
 	uint32_t trans_size;
+	
+	//! Memory address to execute the command
+	uint32_t udi_msc_addr;
 
-	if (!b_read) {
-		// Write operation then check Write Protect
-		if (mem_wr_protect(udi_msc_cbw.bCBWLUN)) {
-			// Write not authorized
-			udi_msc_sense_fail_protected();
-			udi_msc_csw_process();
-			return;
-		}
-	}
+	//! Number of block to transfer
+	uint16_t udi_msc_nb_block;
+
 	// Read/Write command fields (address and number of block)
 	MSB0(udi_msc_addr) = udi_msc_cbw.CDB[2];
 	MSB1(udi_msc_addr) = udi_msc_cbw.CDB[3];
@@ -840,31 +773,18 @@ static void udi_msc_sbc_trans(bool b_read)
 					(b_read) ? USB_CBW_DIRECTION_IN :
 					USB_CBW_DIRECTION_OUT))
 		return;
-
-	// Record transfer request to do it in a task and not under interrupt
-	udi_msc_b_read = b_read;
-	udi_msc_b_trans_req = true;
-	UDI_MSC_NOTIFY_TRANS_EXT();
-}
-
-
-bool udi_msc_process_trans(void)
-{
-	Ctrl_status status;
-
-	if (!udi_msc_b_trans_req)
-		return false;	// No Transfer request to do
-	udi_msc_b_trans_req = false;
-	udi_msc_b_reset_trans = false;
-
-	// Start transfer
-	if (udi_msc_b_read) {
-		status = memory_2_usb(udi_msc_cbw.bCBWLUN, udi_msc_addr,
-				udi_msc_nb_block);
-	} else {
-		status = usb_2_memory(udi_msc_cbw.bCBWLUN, udi_msc_addr,
-				udi_msc_nb_block);
-	}
+	
+	for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {
+		if (b_read) {
+			read_block(udi_msc_addr + i, block_buffer);
+			USB_Write(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_IN);
+		}
+		else {
+			USB_ReadBlocking(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_OUT);
+			write_block(udi_msc_addr + i, block_buffer);	
+		}
+		udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
+	}	
 
 	// Check if transfer is aborted by reset
 	if (udi_msc_b_reset_trans) {
@@ -872,64 +792,11 @@ bool udi_msc_process_trans(void)
 		return true;
 	}
 
-	// Check status of transfer
-	switch (status) {
-	case CTRL_GOOD:
-		udi_msc_sense_pass();
-		break;
-	case CTRL_BUSY:
-		udi_msc_sense_fail_busy_or_change();
-		break;
-	case CTRL_NO_PRESENT:
-		udi_msc_sense_fail_not_present();
-		break;
-	default:
-	case CTRL_FAIL:
-		udi_msc_sense_fail_hardware();
-		break;
-	}
+	udi_msc_sense_pass();
+	
 	// Send status of transfer in CSW packet
 	udi_msc_csw_process();
+	
 	return true;
 }
 
-
-static void udi_msc_trans_ack(udd_ep_status_t status, iram_size_t n,
-		udd_ep_id_t ep)
-{
-	UNUSED(ep);
-	UNUSED(n);
-	// Update variable to signal the end of transfer
-	udi_msc_b_abort_trans = (UDD_EP_TRANSFER_OK != status) ? true : false;
-	udi_msc_b_ack_trans = true;
-}
-
-
-bool udi_msc_trans_block(bool b_read, uint8_t * block, iram_size_t block_size,
-		void (*callback) (udd_ep_status_t status, iram_size_t n, udd_ep_id_t ep))
-{
-	if (!udi_msc_b_ack_trans)
-		return false;	// No possible, transfer on going
-
-	// Start transfer Internal RAM<->USB line
-	udi_msc_b_ack_trans = false;
-	if (!udd_ep_run((b_read) ? UDI_MSC_EP_IN : UDI_MSC_EP_OUT,
-					false,
-					block,
-					block_size,
-					(NULL == callback) ? udi_msc_trans_ack :
-					callback)) {
-		udi_msc_b_ack_trans = true;
-		return false;
-	}
-	if (NULL == callback) {
-		while (!udi_msc_b_ack_trans);
-		if (udi_msc_b_abort_trans) {
-			return false;
-		}
-		udi_msc_csw.dCSWDataResidue -= block_size;
-		return (!udi_msc_b_abort_trans);
-	}
-	udi_msc_csw.dCSWDataResidue -= block_size;
-	return true;
-}
