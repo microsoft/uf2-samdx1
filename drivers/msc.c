@@ -61,13 +61,6 @@ static struct usb_msc_csw udi_msc_csw =
 static struct scsi_request_sense_data udi_msc_sense;
 static bool udi_msc_b_cbw_invalid = false;
 
-//! Signal end of transfer, if true
-volatile bool udi_msc_b_ack_trans = true;
-//! Status of transfer, aborted if true
-volatile bool udi_msc_b_abort_trans;
-//! Signal (re)init of transfer, if true (by reset/reconnect)
-volatile bool udi_msc_b_reset_trans = true;
-
 
 /**
  * \brief Stall CBW request
@@ -735,12 +728,6 @@ static void udi_msc_sbc_trans(bool b_read)
 		}
 		udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
 	}	
-
-	// Check if transfer is aborted by reset
-	if (udi_msc_b_reset_trans) {
-		udi_msc_b_reset_trans = false;
-		return;
-	}
 
 	udi_msc_sense_pass();
 	
