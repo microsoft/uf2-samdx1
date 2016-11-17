@@ -89,6 +89,8 @@ static void check_start_application(void);
 
 static volatile bool main_b_cdc_enable = false;
 
+#define DBL_TAP_PTR ((volatile uint32_t*)0x20007FFC)
+#define DBL_TAP_MAGIC 0xf01669ef
 /**
  * \brief Check the application startup condition
  *
@@ -110,20 +112,16 @@ static void check_start_application(void)
 		return;
 	}
 
-	volatile PortGroup *boot_port = (volatile PortGroup *)(&(PORT->Group[BOOT_LOAD_PIN / 32]));
-	volatile bool boot_en;
-
-	/* Enable the input mode in Boot GPIO Pin */
-	boot_port->DIRCLR.reg = BOOT_PIN_MASK;
-	boot_port->PINCFG[BOOT_LOAD_PIN & 0x1F].reg = PORT_PINCFG_INEN | PORT_PINCFG_PULLEN;
-	boot_port->OUTSET.reg = BOOT_PIN_MASK;
-	/* Read the BOOT_LOAD_PIN status */
-	boot_en = (boot_port->IN.reg) & BOOT_PIN_MASK;
-
-	/* Check the bootloader enable condition */
-	if (!boot_en) {
-		/* Stay in bootloader */
-		return;
+	if (PM->RCAUSE.bit.POR) {
+		*DBL_TAP_PTR = 0;
+	} else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
+		*DBL_TAP_PTR = 0;
+		return; // stay in bootloader
+	} else {
+		*DBL_TAP_PTR = DBL_TAP_MAGIC;
+		for (int i = 0; i < 100000; ++i)
+			asm("nop"); // wait for second reset
+		*DBL_TAP_PTR = 0;
 	}
 
 	/* Rebase the Stack Pointer */
