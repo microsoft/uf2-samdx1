@@ -80,11 +80,7 @@
 #include "main.h"
 #include "cdc_enumerate.h"
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY  ||  SAM_BA_INTERFACE == SAM_BA_UART_ONLY
-#define APP_START_ADDRESS                 0x00001000
-#elif SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 #define APP_START_ADDRESS                 0x00002000
-#endif
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL   58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
