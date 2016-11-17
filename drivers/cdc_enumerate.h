@@ -33,12 +33,17 @@
 #include "iosamd21.h"
 #include "stdbool.h"
 
-#define USB_EP_OUT              2
-#define USB_EP_OUT_SIZE         0x40
+#define PKT_SIZE 64
+
 #define USB_EP_IN               1
-#define USB_EP_IN_SIZE          0x40
+#define USB_EP_OUT              2
 #define USB_EP_COMM             3
-#define MAX_EP                    4
+
+#define USB_EP_MSC_IN           4
+#define USB_EP_MSC_OUT          5
+
+
+#define MAX_EP                    6
 
 #define NVM_USB_PAD_TRANSN_POS    45
 #define NVM_USB_PAD_TRANSN_SIZE   5
@@ -55,8 +60,6 @@ typedef struct _USB_CDC
 	uint8_t currentConnection;
 	// Public Methods:
 	uint8_t (*IsConfigured)(struct _USB_CDC *pCdc);
-	uint32_t  (*Write) (struct _USB_CDC *pCdc, const char *pData, uint32_t length, uint8_t ep_num);
-	uint32_t  (*Read)  (struct _USB_CDC *pCdc, char *pData, uint32_t length);
 } USB_CDC, *P_USB_CDC;
 
 typedef struct {

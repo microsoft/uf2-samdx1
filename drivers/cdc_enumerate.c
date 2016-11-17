@@ -35,9 +35,22 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+typedef struct {
+	uint8_t size;
+	uint8_t ptr;
+	uint8_t read_job;
+	uint8_t padding;
+	uint8_t buf[PKT_SIZE];
+} PacketBuffer  __attribute__ ((aligned (4)));
+
+PacketBuffer ctrlOutCache;
+PacketBuffer endpointCache[MAX_EP];
+bool mscReset;
+
+// index of highest LUN
+#define MAX_LUN 0
+
 COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
-COMPILER_WORD_ALIGNED uint8_t udd_ep_out_cache_buffer[2][64]; //1 for CTRL, 1 for BULK
-COMPILER_WORD_ALIGNED uint8_t udd_ep_in_cache_buffer[2][64]; //1 for CTRL, 1 for BULK
 
 COMPILER_WORD_ALIGNED
 const char devDescriptor[] = {
@@ -140,7 +153,7 @@ char cfgDescriptor[] = {
 	0x05,   // bDescriptorType
 	0x81,   // bEndpointAddress, Endpoint 01 - IN
 	0x02,   // bmAttributes      BULK
-	USB_EP_IN_SIZE,   // wMaxPacketSize
+	PKT_SIZE,   // wMaxPacketSize
 	0x00,
 	0x00,   // bInterval
 
@@ -149,7 +162,7 @@ char cfgDescriptor[] = {
 	0x05,   // bDescriptorType
 	0x02,   // bEndpointAddress, Endpoint 02 - OUT
 	0x02,   // bmAttributes      BULK
-	USB_EP_OUT_SIZE,   // wMaxPacketSize
+	PKT_SIZE,   // wMaxPacketSize
 	0x00,
 	0x00    // bInterval
 };
@@ -191,12 +204,17 @@ static USB_CDC pCdc;
 #define SET_LINE_CODING               0x2021
 #define SET_CONTROL_LINE_STATE        0x2221
 
+// MSC
+#define MSC_RESET					  0xFF21
+#define MSC_GET_MAX_LUN               0xFEA1
 
 static uint8_t USB_IsConfigured(P_USB_CDC pCdc);
-static uint32_t USB_Read(P_USB_CDC pCdc, char *pData, uint32_t length);
-static uint32_t USB_Write(P_USB_CDC pCdc, const char *pData, uint32_t length, uint8_t ep_num);
+static uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep);
+static uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num);
 static void AT91F_CDC_Enumerate(P_USB_CDC pCdc);
 
+void process_msc(void) {}
+void reset_ep(uint8_t in_ep);
 
 /**
  * \fn AT91F_InitUSB
@@ -295,8 +313,6 @@ P_USB_CDC AT91F_CDC_Open(P_USB_CDC pCdc,Usb *pUsb)
 	pCdc->currentConfiguration = 0;
 	pCdc->currentConnection    = 0;
 	pCdc->IsConfigured = USB_IsConfigured;
-	pCdc->Write        = USB_Write;
-	pCdc->Read         = USB_Read;
 	pCdc->pUsb->HOST.CTRLA.bit.ENABLE = true;
 	return pCdc;
 }
@@ -325,9 +341,9 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc)
 		/* Configure control IN Packet size to 64 bytes */
 		usb_endpoint_table[0].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
 		/* Configure the data buffer address for control OUT */
-		usb_endpoint_table[0].DeviceDescBank[0].ADDR.reg = (uint32_t)&udd_ep_out_cache_buffer[0];
+		usb_endpoint_table[0].DeviceDescBank[0].ADDR.reg = (uint32_t)&ctrlOutCache.buf;
 		/* Configure the data buffer address for control IN */
-		usb_endpoint_table[0].DeviceDescBank[1].ADDR.reg = (uint32_t)&udd_ep_in_cache_buffer[0];
+		usb_endpoint_table[0].DeviceDescBank[1].ADDR.reg = (uint32_t)&endpointCache[0].buf;
 		/* Set Multipacket size to 8 for control OUT and byte count to 0*/
 		usb_endpoint_table[0].DeviceDescBank[0].PCKSIZE.bit.MULTI_PACKET_SIZE = 8;
 		usb_endpoint_table[0].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT = 0;
@@ -343,81 +359,73 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc)
 }
 
 
-static volatile bool read_job = false;
 //*----------------------------------------------------------------------------
 //* \fn    USB_Read
 //* \brief Read available data from Endpoint OUT
 //*----------------------------------------------------------------------------
-static uint32_t USB_Read(P_USB_CDC pCdc, char *pData, uint32_t length)
+static uint32_t USB_Read(char *pData, uint32_t length, uint32_t ep)
 {
-	Usb *pUsb = pCdc->pUsb;
+	Usb *pUsb = pCdc.pUsb;
 	uint32_t packetSize = 0;
+	PacketBuffer *cache = &endpointCache[ep];
 
-	if (!read_job) {
+	if (cache->ptr < cache->size) {
+		packetSize = MIN(cache->size - cache->ptr, length);
+		if (pData) {
+			memcpy(pData, cache->buf + cache->ptr, packetSize);
+			cache->ptr += packetSize;
+		}
+		return packetSize;
+	}
+
+	if (!cache->read_job) {
 		/* Set the buffer address for ep data */
-		usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].ADDR.reg = (uint32_t)&udd_ep_out_cache_buffer[USB_EP_OUT-1];
+		usb_endpoint_table[ep].DeviceDescBank[0].ADDR.reg = (uint32_t)&cache->buf;
 		/* Set the byte count as zero */
-		usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT = 0;
+		usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT = 0;
 		/* Set the byte count as zero */
-		usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.MULTI_PACKET_SIZE = 0;
+		usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.MULTI_PACKET_SIZE = 0;
 		/* Start the reception by clearing the bank 0 ready bit */
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPSTATUSCLR.bit.BK0RDY = true;
+		pUsb->DEVICE.DeviceEndpoint[ep].EPSTATUSCLR.bit.BK0RDY = true;
 		/* set the user flag */
-		read_job = true;
+		cache->read_job = true;
 	}
 
 	/* Check for Transfer Complete 0 flag */
-	if ( pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0 ) {
+	if ( pUsb->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0 ) {
 		/* Set packet size */
-		packetSize = MIN(usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT, length);
-		/* Copy read data to user buffer */
-		memcpy(pData, udd_ep_out_cache_buffer[USB_EP_OUT-1], packetSize);
+		cache->size = usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT;
+		packetSize = MIN(usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT, length);
+		if (pData) {
+			cache->ptr = packetSize;
+			/* Copy read data to user buffer */
+			memcpy(pData, cache->buf, packetSize);
+		} else {
+			cache->ptr = 0;
+		}
 		/* Clear the Transfer Complete 0 flag */
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
+		pUsb->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
 		/* Clear the user flag */
-		read_job = false;
+		cache->read_job = false;
 	}
 
 	return packetSize;
 }
 
-static uint32_t USB_Read_blocking(P_USB_CDC pCdc, char *pData, uint32_t length)
+static void USB_ReadBlocking(char *dst, uint32_t length, uint32_t ep)
 {
-	Usb *pUsb = pCdc->pUsb;
-
-	if (read_job) {
-		/* Stop the reception by setting the bank 0 ready bit */
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPSTATUSSET.bit.BK0RDY = true;
-		/* Clear the user flag */
-		read_job = false;
+	/* Blocking read till specified number of bytes is received */
+	while (length) {
+		uint32_t curr = USB_Read(dst, length, ep);
+		length -= curr;
+		dst += curr;
 	}
-
-	/* Set the buffer address for ep data */
-	usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].ADDR.reg = ((uint32_t)pData);
-	/* Set the byte count as zero */
-	usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT = 0;
-	/* Set the multi packet size as zero for multi-packet transfers where length > ep size */
-	usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.MULTI_PACKET_SIZE = length;
-	/* Clear the bank 0 ready flag */
-	pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPSTATUSCLR.bit.BK0RDY = true;
-	/* Wait for transfer to complete */
-	while (!( pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0 ));
-	/* Clear Transfer complete 0 flag */
-	pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
-
-	return length;
-
 }
 
-
-static uint32_t USB_Write(P_USB_CDC pCdc, const char *pData, uint32_t length, uint8_t ep_num)
+static uint32_t USB_Write(const char *pData, uint32_t length, uint8_t ep_num)
 {
-	Usb *pUsb = pCdc->pUsb;
+	Usb *pUsb = pCdc.pUsb;
 	uint32_t data_address;
-	uint8_t buf_index;
-
-	/* Set buffer index */
-	buf_index = (ep_num == 0) ? 0 : 1;
 
 	/* Check for requirement for multi-packet or auto zlp */
 	if (length >= (1 << (usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
@@ -427,9 +435,9 @@ static uint32_t USB_Write(P_USB_CDC pCdc, const char *pData, uint32_t length, ui
 		usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
 	} else {
 		/* Copy to local buffer */
-		memcpy(udd_ep_in_cache_buffer[buf_index], pData, length);
+		memcpy(endpointCache[ep_num].buf, pData, length);
 		/* Update the EP data address */
-		data_address = (uint32_t) &udd_ep_in_cache_buffer[buf_index];
+		data_address = (uint32_t) &endpointCache[ep_num].buf;
 	}
 
 	/* Set the buffer address for ep data */
@@ -449,6 +457,8 @@ static uint32_t USB_Write(P_USB_CDC pCdc, const char *pData, uint32_t length, ui
 	return length;
 }
 
+
+
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_USB_SendData
 //* \brief Send Data through the control endpoint
@@ -456,7 +466,7 @@ static uint32_t USB_Write(P_USB_CDC pCdc, const char *pData, uint32_t length, ui
 
 static void AT91F_USB_SendData(P_USB_CDC pCdc, const char *pData, uint32_t length)
 {
-	USB_Write(pCdc, pData, length, 0);
+	USB_Write(pData, length, 0);
 }
 
 //*----------------------------------------------------------------------------
@@ -491,6 +501,25 @@ void AT91F_USB_SendStall(Usb *pUsb, bool direction_in)
 	}
 }
 
+static void configureInOut(Usb *pUsb, uint8_t in_ep) {
+		/* Configure BULK OUT endpoint for CDC Data interface*/
+		pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE0(3);
+		/* Set maximum packet size as 64 bytes */
+		usb_endpoint_table[in_ep + 1].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
+		pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+		/* Configure the data buffer */
+		usb_endpoint_table[in_ep + 1].DeviceDescBank[0].ADDR.reg = (uint32_t)&endpointCache[in_ep + 1].buf;
+		
+		/* Configure BULK IN endpoint for CDC Data interface */
+		pUsb->DEVICE.DeviceEndpoint[in_ep].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE1(3);
+		/* Set maximum packet size as 64 bytes */
+		usb_endpoint_table[in_ep].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
+		pUsb->DEVICE.DeviceEndpoint[in_ep].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+		/* Configure the data buffer */
+		usb_endpoint_table[in_ep].DeviceDescBank[1].ADDR.reg = (uint32_t)&endpointCache[in_ep].buf;
+
+}
+
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_CDC_Enumerate
 //* \brief This function is a callback invoked when a SETUP packet is received
@@ -505,14 +534,14 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 	pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_RXSTP;
 
 	/* Read the USB request parameters */
-	bmRequestType = udd_ep_out_cache_buffer[0][0];
-	bRequest      = udd_ep_out_cache_buffer[0][1];
-	wValue        = (udd_ep_out_cache_buffer[0][2] & 0xFF);
-	wValue       |= (udd_ep_out_cache_buffer[0][3] << 8);
-	wIndex        = (udd_ep_out_cache_buffer[0][4] & 0xFF);
-	wIndex       |= (udd_ep_out_cache_buffer[0][5] << 8);
-	wLength       = (udd_ep_out_cache_buffer[0][6] & 0xFF);
-	wLength      |= (udd_ep_out_cache_buffer[0][7] << 8);
+	bmRequestType = ctrlOutCache.buf[0];
+	bRequest      = ctrlOutCache.buf[1];
+	wValue        = (ctrlOutCache.buf[2] & 0xFF);
+	wValue       |= (ctrlOutCache.buf[3] << 8);
+	wIndex        = (ctrlOutCache.buf[4] & 0xFF);
+	wIndex       |= (ctrlOutCache.buf[5] << 8);
+	wLength       = (ctrlOutCache.buf[6] & 0xFF);
+	wLength      |= (ctrlOutCache.buf[7] << 8);
 
 	/* Clear the Bank 0 ready flag on Control OUT */
 	pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
@@ -541,25 +570,17 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 		pCdc->currentConfiguration = (uint8_t)wValue;
 		/* Send ZLP */
 		AT91F_USB_SendZlp(pUsb);
-		/* Configure BULK OUT endpoint for CDC Data interface*/
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE0(3);
-		/* Set maximum packet size as 64 bytes */
-		usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_OUT].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
-		/* Configure the data buffer */
-		usb_endpoint_table[USB_EP_OUT].DeviceDescBank[0].ADDR.reg = (uint32_t)&udd_ep_out_cache_buffer[1];
-		/* Configure BULK IN endpoint for CDC Data interface */
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_IN].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE1(3);
-		/* Set maximum packet size as 64 bytes */
-		usb_endpoint_table[USB_EP_IN].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
-		pUsb->DEVICE.DeviceEndpoint[USB_EP_IN].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
-		/* Configure the data buffer */
-		usb_endpoint_table[USB_EP_IN].DeviceDescBank[1].ADDR.reg = (uint32_t)&udd_ep_in_cache_buffer[1];
+
+		configureInOut(pUsb, USB_EP_IN);
+		
 		/* Configure INTERRUPT IN endpoint for CDC COMM interface*/
 		pUsb->DEVICE.DeviceEndpoint[USB_EP_COMM].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE1(4);
 		/* Set maximum packet size as 64 bytes */
 		usb_endpoint_table[USB_EP_COMM].DeviceDescBank[1].PCKSIZE.bit.SIZE = 0;
 		pUsb->DEVICE.DeviceEndpoint[USB_EP_COMM].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+		
+		configureInOut(pUsb, USB_EP_MSC_IN);
+
 		break;
 	case STD_GET_CONFIGURATION:
 		/* Return current configuration value */
@@ -577,7 +598,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 		wStatus = 0;
 		dir = wIndex & 80;
 		wIndex &= 0x0F;
-		if (wIndex <= 3) {
+		if (wIndex < MAX_EP) {
 			if (dir) {
 				wStatus = (pUsb->DEVICE.DeviceEndpoint[wIndex].EPSTATUS.reg & USB_DEVICE_EPSTATUSSET_STALLRQ1) ? 1 : 0;
 			} else {
@@ -601,7 +622,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 	case STD_SET_FEATURE_ENDPOINT:
 		dir = wIndex & 0x80;
 		wIndex &= 0x0F;
-		if ((wValue == 0) && wIndex && (wIndex <= 3)) {
+		if ((wValue == 0) && wIndex && (wIndex < MAX_EP)) {
 			/* Set STALL request for the endpoint */
 			if (dir) {
 				pUsb->DEVICE.DeviceEndpoint[wIndex].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_STALLRQ1;
@@ -626,7 +647,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 	case STD_CLEAR_FEATURE_ENDPOINT:
 		dir = wIndex & 0x80;
 		wIndex &= 0x0F;
-		if ((wValue == 0) && wIndex && (wIndex <= 3)) {
+		if ((wValue == 0) && wIndex && (wIndex < MAX_EP)) {
 			if (dir) {
 				if (pUsb->DEVICE.DeviceEndpoint[wIndex].EPSTATUS.reg & USB_DEVICE_EPSTATUSSET_STALLRQ1) {
 					// Remove stall request
@@ -671,11 +692,44 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc)
 		/* Send ZLP */
 		AT91F_USB_SendZlp(pUsb);
 		break;
+	
+	// MSC
+	case MSC_RESET:
+		mscReset = true;
+		reset_ep(USB_EP_MSC_IN);
+		// udi_msc_cbw_wait() ?
+		break;
+	
+	case MSC_GET_MAX_LUN:
+		wStatus = MAX_LUN;
+		AT91F_USB_SendData(pCdc, (char *) &wStatus, 1);
+		break;
+
 	default:
 		/* Stall the request */
 		AT91F_USB_SendStall(pUsb, true);
 		break;
 	}
+}
+
+static bool isInEP(uint8_t ep) {
+	return ep == USB_EP_IN || ep == USB_EP_MSC_IN;
+}
+
+static void abort_ep(uint8_t ep) {
+
+}
+
+void reset_ep(uint8_t in_ep)
+{
+	// Stop transfer
+		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+		// Eventually ack a transfer occur during abort
+		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT1;
+
+		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+		// Eventually ack a transfer occur during abort
+		pCdc.pUsb->DEVICE.DeviceEndpoint[in_ep + 1].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
 }
 
 P_USB_CDC usb_init(void)
@@ -692,7 +746,7 @@ P_USB_CDC usb_init(void)
 int cdc_putc(int value)
 {
 	/* Send single byte on USB CDC */
-	USB_Write(&pCdc, (const char *)&value, 1, USB_EP_IN);
+	USB_Write((const char *)&value, 1, USB_EP_IN);
 	return 1;
 }
 
@@ -700,7 +754,7 @@ int cdc_getc(void)
 {
 	uint8_t rx_char;
 	/* Read singly byte on USB CDC */
-	USB_Read(&pCdc, (char *)&rx_char, 1);
+	USB_Read((char *)&rx_char, 1, USB_EP_OUT);
 	return (int)rx_char;
 }
 
@@ -717,7 +771,7 @@ bool cdc_is_rx_ready(void)
 uint32_t cdc_write_buf(void const* data, uint32_t length)
 {
 	/* Send the specified number of bytes on USB CDC */
-	USB_Write(&pCdc, (const char *)data, length, USB_EP_IN);
+	USB_Write((const char *)data, length, USB_EP_IN);
 	return length;
 }
 
@@ -728,7 +782,7 @@ uint32_t cdc_read_buf(void* data, uint32_t length)
 		return 0;
 
 	/* Read from USB CDC */
-	return USB_Read(&pCdc, (char *)data, length);
+	return USB_Read((char *)data, length, USB_EP_OUT);
 }
 
 uint32_t cdc_read_buf_xmd(void* data, uint32_t length)
@@ -738,5 +792,7 @@ uint32_t cdc_read_buf_xmd(void* data, uint32_t length)
 		return 0;
 
 	/* Blocking read till specified number of bytes is received */
-	return USB_Read_blocking(&pCdc, (char *)data, length);
+	USB_ReadBlocking((char *)data, length, USB_EP_OUT);
+
+	return length;
 }
