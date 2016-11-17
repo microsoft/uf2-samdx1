@@ -2,15 +2,16 @@ CC=arm-none-eabi-gcc
 COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os
 CDEFINES = -D__SAMD21G18A__
 WFLAGS = \
--Wall -Wstrict-prototypes -Wmissing-prototypes \
+-Wall -Wstrict-prototypes \
 -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 \
 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 \
 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch \
 -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef \
--Wshadow -Wbad-function-cast -Wwrite-strings -Wsign-compare -Waggregate-return \
--Wmissing-declarations -Wformat -Wmissing-format-attribute \
+-Wbad-function-cast -Wwrite-strings -Waggregate-return \
+-Wformat -Wmissing-format-attribute \
 -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs \
--Wlong-long -Wunreachable-code -Wcast-align
+-Wlong-long -Wunreachable-code -Wcast-align \
+-Wno-overflow -Wno-shadow
 CFLAGS = $(COMMON_FLAGS) \
 -x c -c -pipe -nostdlib \
 --param max-inline-insns-single=500 \

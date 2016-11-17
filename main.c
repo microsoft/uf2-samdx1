@@ -140,7 +140,7 @@ static void check_start_application(void)
 	asm("bx %0"::"r"(app_start_address));
 }
 
-void system_init()
+void system_init(void)
 {
 	/* Configure flash wait states */
 	NVMCTRL->CTRLB.bit.RWS = FLASH_WAIT_STATES;
@@ -213,7 +213,7 @@ void system_init()
 }
 
 
-#if DEBUG_ENABLE
+#ifdef DEBUG_ENABLE
 #	define DEBUG_PIN_HIGH 	port_pin_set_output_level(BOOT_LED, 1)
 #	define DEBUG_PIN_LOW 	port_pin_set_output_level(BOOT_LED, 0)
 #else
