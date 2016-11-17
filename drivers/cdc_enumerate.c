@@ -31,7 +31,6 @@
 #include <stdint.h>
 #include <compiler.h>
 #include <string.h>
-#include <assert.h>
 
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -695,7 +694,7 @@ static bool isInEP(uint8_t ep) {
 
 void reset_ep(uint8_t ep)
 {
-	assert(ep != 0);
+	Assert(ep != 0);
 
 	// Stop transfer
 	if (isInEP(ep)) {
