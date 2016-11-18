@@ -24,12 +24,12 @@ LDFLAGS= $(COMMON_FLAGS) \
 -save-temps  -T./asf/sam0/utils/linker_scripts/samd21/gcc/samd21j18a_flash.ld \
 --specs=nano.specs --specs=nosys.specs 
 BUILD_PATH=build
-INCLUDES = -I. -I./preprocessor -I./interrupt  
+INCLUDES = -I. -I./preprocessor 
 INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Include -I./asf/sam0/utils/cmsis/samd21/source
 INCLUDES += -I./asf/common
-SOURCES = main.c sam_ba_monitor.c asf/sam0/utils/cmsis/samd21/source/gcc/startup_samd21.c \
+SOURCES = main.c sam_ba_monitor.c startup_samd21.c \
 usart_sam_ba.c cdc_enumerate.c uart_driver.c \
-interrupt/interrupt_sam_nvic.c msc.c
+interrupt_sam_nvic.c msc.c
  
 OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 

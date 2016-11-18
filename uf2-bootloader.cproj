@@ -28,15 +28,15 @@
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.32.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.32.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -119,6 +119,11 @@
   <armgcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcc.preprocessingassembler.debugging.DebugLevel>
 </ArmGcc>
     </ToolchainSettings>
+    <UsesExternalMakeFile>True</UsesExternalMakeFile>
+    <OutputDirectory />
+    <BuildTarget>all</BuildTarget>
+    <CleanTarget>clean</CleanTarget>
+    <ExternalMakeFilePath>Makefile</ExternalMakeFilePath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="cdc_enumerate.c">
