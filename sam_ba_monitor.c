@@ -236,6 +236,8 @@ void sam_ba_monitor_run(void) {
     // Start waiting some cmd
     while (1) {
         length = ptr_monitor_if->getdata(data, SIZEBUFMAX);
+        if (length > 0)
+        logval("datalen", length);
         ptr = data;
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {

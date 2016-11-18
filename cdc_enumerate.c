@@ -539,10 +539,13 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
     /* Clear the Bank 0 ready flag on Control OUT */
     pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
 
+    //logval("USBReq", (bRequest << 8) | bmRequestType);
+
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
     switch ((bRequest << 8) | bmRequestType) {
     case STD_GET_DESCRIPTOR:
+        logval("DESC", wValue);
         if (wValue == 0x100)
             /* Return Device Descriptor */
             AT91F_USB_SendData(pCdc, devDescriptor, MIN(sizeof(devDescriptor), wLength));

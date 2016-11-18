@@ -281,6 +281,7 @@ int main(void) {
         // Check if a USB enumeration has succeeded
         // And com port was opened
         if (main_b_cdc_enable) {
+            logmsg("entering monitor loop");
             sam_ba_monitor_init(SAM_BA_INTERFACE_USBCDC);
             // SAM-BA on USB loop
             while (1) {
@@ -318,14 +319,20 @@ void logwritenum(uint32_t n) {
         buff[7 - i] = d > 9 ? 'A' + d - 10 : '0' + d;
     }
     buff[8] = 0;
-    logwrite(buff);
+    char *p = buff;
+    while (*p && *p == '0')
+        p++;
+    if (!*p)
+        p--;
+    logwrite("0x");
+    logwrite(p);
 }
 
 void logwrite(const char *msg) {
-    const int jump = 1024;
+    const int jump = sizeof(log.buffer) / 4;
     if (log.ptr >= sizeof(log.buffer) - jump) {
-        memmove(log.buffer, log.buffer + jump, sizeof(log.buffer) - jump);
         log.ptr -= jump;
+        memmove(log.buffer, log.buffer + jump, log.ptr);
     }
     int l = strlen(msg);
     if (l + log.ptr >= sizeof(log.buffer)) {
@@ -344,7 +351,7 @@ void logmsg(const char *msg) {
 
 void logval(const char *lbl, uint32_t v) {
     logwrite(lbl);
-    logwrite(":");
+    logwrite(": ");
     logwritenum(v);
     logwrite("\n");
 }

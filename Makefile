@@ -39,14 +39,16 @@ EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 all: dirs $(EXECUTABLE)
 
 r: run
-
 b: burn
+l: logs
 
 burn: all
 	sh scripts/openocd.sh \
 	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{build/uf2-bootloader.bin}} verify reset; shutdown "
 
-run: burn
+run: burn logs
+
+logs:
 	sh scripts/getlogs.sh
 
 dirs:

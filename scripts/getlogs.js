@@ -5,7 +5,8 @@ let bufs = []
 for (let line of s.split("\n")) {
   let m = /0x[a-f0-9]+: ([a-f0-9 ]+)/.exec(line)
   if (!m) continue
-  bufs.push(new Buffer(m[1].replace(/ /g, ""), "hex"))
+  let bb = new Buffer(m[1].replace(/ /g, ""), "hex")
+  bufs.push(bb)
 }
 let total = Buffer.concat(bufs)
 let ptr = total.indexOf("LOGHEADER_42_42")
