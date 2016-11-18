@@ -36,7 +36,10 @@ OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 
-all: $(EXECUTABLE)
+all: dirs $(EXECUTABLE)
+
+dirs:
+	-@mkdir $(BUILD_PATH)
 	
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(NAME).elf $(OBJECTS)
@@ -44,7 +47,6 @@ $(EXECUTABLE): $(OBJECTS)
 	@arm-none-eabi-size $(NAME).elf
 
 $(BUILD_PATH)/%.o: %.c
-	-@mkdir -p $(@D)
 	@echo "$<"
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 	
