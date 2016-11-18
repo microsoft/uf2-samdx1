@@ -338,7 +338,7 @@ P_USB_CDC AT91F_CDC_Open(P_USB_CDC pCdc, Usb *pUsb) {
 //*----------------------------------------------------------------------------
 //* \fn    USB_IsConfigured
 //* \brief Test if the device is configured and handle
-//enumerationDEVICE.DeviceEndpoint[ep_num].EPCFG.bit.EPTYPE1
+// enumerationDEVICE.DeviceEndpoint[ep_num].EPCFG.bit.EPTYPE1
 //*----------------------------------------------------------------------------
 static uint8_t USB_IsConfigured(P_USB_CDC pCdc) {
     Usb *pUsb = pCdc->pUsb;
