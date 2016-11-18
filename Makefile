@@ -29,7 +29,7 @@ INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Inc
 INCLUDES += -I./asf/common
 SOURCES = main.c sam_ba_monitor.c startup_samd21.c \
 usart_sam_ba.c cdc_enumerate.c uart_driver.c \
-interrupt_sam_nvic.c msc.c
+interrupt_sam_nvic.c msc.c fat.c
  
 OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 
@@ -46,7 +46,10 @@ burn: all
 	sh scripts/openocd.sh \
 	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{build/uf2-bootloader.bin}} verify reset; shutdown "
 
-run: burn logs
+run: burn wait logs
+
+wait:
+	sleep 5
 
 logs:
 	sh scripts/getlogs.sh

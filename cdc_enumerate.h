@@ -153,4 +153,7 @@ void logwrite(const char *msg);
     while (1) {} }
 
 
+void read_block(uint32_t block_no, uint8_t *data);
+void write_block(uint32_t block_no, uint8_t *data);
+
 #endif // CDC_ENUMERATE_H

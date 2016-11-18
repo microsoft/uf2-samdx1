@@ -60,7 +60,7 @@ const char devDescriptor[] = {
     0x40, // bMaxPacketSize0
     0xEB, // idVendorL
     0x03, //
-    0x24, // idProductL
+    0x28, // idProductL
     0x61, //
     0x10, // bcdDeviceL
     0x01, //
@@ -216,7 +216,7 @@ static const StringDescriptor string_descriptors[STRING_DESCRIPTOR_COUNT] = {
     /*! index 3 - serial number */
     {26, // length
      3,  // descriptor type - string
-     {'1', 0,   '2', 0,   '3', 0,   '4', 0,   '5', 0,   '6', 0, '7',
+     {'2', 0,   '2', 0,   '3', 0,   '4', 0,   '5', 0,   '6', 0, '7',
       0,   '8', 0,   '9', 0,   'A', 0,   'B', 0,   'C', 0,   0, 0}}};
 
 static usb_cdc_line_coding_t line_coding = {
@@ -570,7 +570,9 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
     /* Clear the Bank 0 ready flag on Control OUT */
     pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
 
-    logval("USBReq", (bRequest << 8) | bmRequestType);
+    uint32_t reqId = (bRequest << 8) | bmRequestType;
+
+    logval("USBReq", reqId);
 
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
@@ -756,6 +758,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
 
     default:
+        logval("Invalid CTRL command", reqId);
         /* Stall the request */
         stall_ep(0);
         break;
@@ -780,6 +783,7 @@ void reset_ep(uint8_t ep) {
 }
 
 void stall_ep(uint8_t ep) {
+    logval("Stall EP", ep);
     /* Check the direction */
     if (ep == 0 || isInEP(ep)) {
         /* Set STALL request on IN direction */

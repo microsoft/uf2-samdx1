@@ -37,7 +37,7 @@ static const FAT_BootBlock BootBlock = {
     .ReservedSectors = 1,
     .FATCopies = 2,
     .RootDirectoryEntries = (512 / 32),
-    .TotalSectors16 = NUM_FAT_BLOCKS,
+    .TotalSectors16 = NUM_FAT_BLOCKS - 2,
     .MediaDescriptor = 0xF8,
     .SectorsPerFAT = SECTORS_PER_FAT,
     .SectorsPerTrack = 1,
@@ -47,3 +47,16 @@ static const FAT_BootBlock BootBlock = {
     .VolumeLabel = "SAMD UF2   ",
     .FilesystemIdentifier = "FAT16   ",
 };
+
+void read_block(uint32_t block_no, uint8_t *data) {
+    memset(data, 0, 512);
+
+    if (block_no == 0) {
+        memcpy(data, &BootBlock, sizeof(BootBlock));
+        data[510] = 0x55;
+        data[511] = 0xaa;
+        logval("data[0]", data[0]);
+    }
+}
+
+void write_block(uint32_t block_no, uint8_t *data) {}

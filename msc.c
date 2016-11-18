@@ -209,6 +209,9 @@ static void udi_msc_sbc_read_capacity(void);
  */
 static void udi_msc_sbc_trans(bool b_read);
 
+static void udi_msc_read_format_capacity(void);
+
+
 void udd_ep_set_halt(uint8_t ep) {
     stall_ep(ep);
     reset_ep(ep);
@@ -218,6 +221,7 @@ static void udi_msc_cbw_invalid(void) {
     if (!udi_msc_b_cbw_invalid)
         return; // Don't re-stall endpoint if error reseted by setup
 
+    logmsg("MSC CBW Invalid; halt");
     udd_ep_set_halt(USB_EP_MSC_OUT);
 
     // TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
@@ -227,8 +231,8 @@ static void udi_msc_csw_invalid(void) {
     if (!udi_msc_b_cbw_invalid)
         return; // Don't re-stall endpoint if error reseted by setup
 
-    stall_ep(USB_EP_MSC_IN);
-    reset_ep(USB_EP_MSC_IN);
+    logmsg("MSC CSW Invalid; halt");
+    udd_ep_set_halt(USB_EP_MSC_IN);
 
     // TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
 }
@@ -238,8 +242,6 @@ void process_msc(void) {
         return; // no data available
 
     uint32_t nb_received = USB_Read((void *)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
-
-    logval("MSC LEN", nb_received);
 
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
@@ -265,6 +267,8 @@ void process_msc(void) {
     }
     // Prepare CSW residue field with the size requested
     udi_msc_csw.dCSWDataResidue = le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
+
+    logval("MSC CMD", udi_msc_cbw.CDB[0]);
 
     // Decode opcode
     switch (udi_msc_cbw.CDB[0]) {
@@ -313,8 +317,13 @@ void process_msc(void) {
     case SBC_WRITE10:
         udi_msc_sbc_trans(false);
         break;
+    
+    case 0x23:
+        udi_msc_read_format_capacity();
+        break;
 
     default:
+        logval("Invalid MSC command", udi_msc_cbw.CDB[0]);
         udi_msc_sense_command_invalid();
         udi_msc_csw_process();
         break;
@@ -371,13 +380,27 @@ static void udi_msc_data_send(uint8_t *buffer, uint8_t buf_size) {
 
 static void udi_msc_csw_process(void) {
     if (0 != udi_msc_csw.dCSWDataResidue) {
+        logval("left-over residue", udi_msc_csw.dCSWDataResidue);
+
+        /*
+        uint8_t buf[64] = {0};
+        while (udi_msc_csw.dCSWDataResidue > 0) {
+            size_t len = min(udi_msc_csw.dCSWDataResidue, 64);
+            USB_Write((void *)buf, len, USB_EP_MSC_IN);
+            udi_msc_csw.dCSWDataResidue -= len;
+        }
+        */
+
+        /*
         // Residue not NULL
         // then STALL next request from USB host on corresponding endpoint
         if (udi_msc_cbw.bmCBWFlags & USB_CBW_DIRECTION_IN)
             udd_ep_set_halt(USB_EP_MSC_IN);
         else
             udd_ep_set_halt(USB_EP_MSC_OUT);
+            */
     }
+
     // Prepare and send CSW
     udi_msc_csw.dCSWTag = udi_msc_cbw.dCBWTag;
     udi_msc_csw.dCSWDataResidue = cpu_to_le32(udi_msc_csw.dCSWDataResidue);
@@ -396,6 +419,7 @@ static void udi_msc_clear_sense(void) {
 }
 
 static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense, uint32_t lba) {
+    logval("MSC sense fail", sense_key);
     udi_msc_clear_sense();
     udi_msc_csw.bCSWStatus = USB_CSW_STATUS_FAIL;
     udi_msc_sense.sense_flag_key = sense_key;
@@ -440,16 +464,42 @@ static void udi_msc_spc_requestsense(void) {
     udi_msc_data_send((uint8_t *)&udi_msc_sense, length);
 }
 
+static void udi_msc_read_format_capacity(void) {
+    uint8_t buf[12] = {0,
+                       0,
+                       0,
+                       8, // length
+                       (NUM_FAT_BLOCKS >> 24) & 0xFF,
+                       (NUM_FAT_BLOCKS >> 16) & 0xFF,
+                       (NUM_FAT_BLOCKS >> 8) & 0xFF,
+                       (NUM_FAT_BLOCKS >> 0) & 0xFF,
+                       2, // Descriptor Code: Formatted Media
+                       0,
+                       (512 >> 8) & 0xff,
+                       0};
+
+    size_t length = 12;
+    
+    if (udi_msc_csw.dCSWDataResidue > length)
+        udi_msc_csw.dCSWDataResidue = length;
+
+    if (!udi_msc_cbw_validate(length, USB_CBW_DIRECTION_IN))
+        return;
+    udi_msc_data_send(buf, length);
+}
+
 static void udi_msc_spc_inquiry(void) {
-    uint8_t length, i;
+    uint8_t length;
     COMPILER_ALIGNED(4)
     // Constant inquiry data for all LUNs
     static struct scsi_inquiry_data udi_msc_inquiry_data = {
         .pq_pdt = SCSI_INQ_PQ_CONNECTED | SCSI_INQ_DT_DIR_ACCESS,
-        .version = SCSI_INQ_VER_SPC,
+        .version = 2, // SCSI_INQ_VER_SPC,
+        .flags1 = SCSI_INQ_RMB,
         .flags3 = SCSI_INQ_RSP_SPC2,
-        .addl_len = SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
+        .addl_len = 36-4,//SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
         .vendor_id = {'A', 'T', 'M', 'E', 'L', ' ', ' ', ' '},
+        .product_id = "UF2 MSC Boot    ",
         .product_rev = {'1', '.', '0', '0'},
     };
 
@@ -461,8 +511,11 @@ static void udi_msc_spc_inquiry(void) {
 
     if (!udi_msc_cbw_validate(length, USB_CBW_DIRECTION_IN))
         return;
+
+        /*
     if ((0 != (udi_msc_cbw.CDB[1] & (SCSI_INQ_REQ_EVPD | SCSI_INQ_REQ_CMDT))) ||
         (0 != udi_msc_cbw.CDB[2])) {
+        logval("unsupp", udi_msc_cbw.CDB[1]);
         // CMDT and EPVD bits are not at 0
         // PAGE or OPERATION CODE fields are not empty
         //  = No standard inquiry asked
@@ -470,28 +523,9 @@ static void udi_msc_spc_inquiry(void) {
         udi_msc_csw_process();
         return;
     }
+    */
 
-    udi_msc_inquiry_data.flags1 = SCSI_INQ_RMB; // removable
-
-    //* Fill product ID field
-    // Copy name in product id field
-    memcpy(udi_msc_inquiry_data.product_id, "MSC Bootloader",
-           sizeof(udi_msc_inquiry_data.product_id));
-
-    // Search end of name '/0' or '"'
-    i = 0;
-    while (sizeof(udi_msc_inquiry_data.product_id) != i) {
-        if ((0 == udi_msc_inquiry_data.product_id[i]) ||
-            ('"' == udi_msc_inquiry_data.product_id[i])) {
-            break;
-        }
-        i++;
-    }
-    // Padding with space char
-    while (sizeof(udi_msc_inquiry_data.product_id) != i) {
-        udi_msc_inquiry_data.product_id[i] = ' ';
-        i++;
-    }
+    //logval("Sense Size", length);
 
     // Send inquiry data
     udi_msc_data_send((uint8_t *)&udi_msc_inquiry_data, length);
@@ -614,10 +648,6 @@ static void udi_msc_sbc_read_capacity(void) {
     udi_msc_data_send((uint8_t *)&udi_msc_capacity, sizeof(udi_msc_capacity));
 }
 
-void read_block(uint32_t block_no, uint8_t *data) { memset(data, 0, 512); }
-
-void write_block(uint32_t block_no, uint8_t *data) {}
-
 COMPILER_ALIGNED(4) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
 
 static void udi_msc_sbc_trans(bool b_read) {
@@ -641,6 +671,9 @@ static void udi_msc_sbc_trans(bool b_read) {
     trans_size = (uint32_t)udi_msc_nb_block * UDI_MSC_BLOCK_SIZE;
     if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
+    
+    logval("read bytes", trans_size);
+    logval("read addr", udi_msc_addr);
 
     for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {
         if (b_read) {
