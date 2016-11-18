@@ -30,25 +30,24 @@
 #ifndef _MONITOR_SAM_BA_H_
 #define _MONITOR_SAM_BA_H_
 
-#define SAM_BA_VERSION              "1.1"
+#define SAM_BA_VERSION "1.1"
 
 /* Enable the interfaces to save code size */
-#define SAM_BA_BOTH_INTERFACES      0
-#define SAM_BA_UART_ONLY            1
-#define SAM_BA_USBCDC_ONLY          2
+#define SAM_BA_BOTH_INTERFACES 0
+#define SAM_BA_UART_ONLY 1
+#define SAM_BA_USBCDC_ONLY 2
 
 #ifndef SAM_BA_INTERFACE
-#define SAM_BA_INTERFACE    SAM_BA_BOTH_INTERFACES
+#define SAM_BA_INTERFACE SAM_BA_BOTH_INTERFACES
 #endif
 
 /* Selects USART as the communication interface of the monitor */
-#define SAM_BA_INTERFACE_USART      1
+#define SAM_BA_INTERFACE_USART 1
 /* Selects USB as the communication interface of the monitor */
-#define SAM_BA_INTERFACE_USBCDC     0
-
+#define SAM_BA_INTERFACE_USBCDC 0
 
 /* Selects USB as the communication interface of the monitor */
-#define SIZEBUFMAX                  64
+#define SIZEBUFMAX 64
 
 /**
  * \brief Initialize the monitor
@@ -66,7 +65,7 @@ void sam_ba_monitor_run(void);
  * \brief
  *
  */
-void sam_ba_putdata_term(uint8_t* data, uint32_t length);
+void sam_ba_putdata_term(uint8_t *data, uint32_t length);
 
 /**
  * \brief

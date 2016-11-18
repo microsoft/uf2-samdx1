@@ -30,19 +30,17 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#define CPU_FREQUENCY 8000000
 
-#define CPU_FREQUENCY                     8000000
+#define BOOT_LOAD_PIN PIN_PA15
+#define BOOT_PIN_MASK (1U << (BOOT_LOAD_PIN & 0x1f))
+#define FLASH_WAIT_STATES 1
 
-#define BOOT_LOAD_PIN                     PIN_PA15
-#define BOOT_PIN_MASK                     (1U << (BOOT_LOAD_PIN & 0x1f))
-#define FLASH_WAIT_STATES                 1
-
-#define BOOT_USART_MODULE                 SERCOM3
-#define BOOT_USART_MUX_SETTINGS           UART_RX_PAD1_TX_PAD0
-#define BOOT_USART_PAD3                   PINMUX_UNUSED
-#define BOOT_USART_PAD2                   PINMUX_UNUSED
-#define BOOT_USART_PAD1                   PINMUX_PA23C_SERCOM3_PAD1
-#define BOOT_USART_PAD0                   PINMUX_PA22C_SERCOM3_PAD0
-
+#define BOOT_USART_MODULE SERCOM3
+#define BOOT_USART_MUX_SETTINGS UART_RX_PAD1_TX_PAD0
+#define BOOT_USART_PAD3 PINMUX_UNUSED
+#define BOOT_USART_PAD2 PINMUX_UNUSED
+#define BOOT_USART_PAD1 PINMUX_PA23C_SERCOM3_PAD1
+#define BOOT_USART_PAD0 PINMUX_PA22C_SERCOM3_PAD0
 
 #endif // _MAIN_H_

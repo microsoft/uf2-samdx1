@@ -1,7 +1,7 @@
 
 #include "cdc_enumerate.h"
-#include <stdint.h>
 #include <compiler.h>
+#include <stdint.h>
 #include <string.h>
 
 typedef struct {
@@ -20,7 +20,7 @@ typedef struct {
     uint32_t HiddenSectors;
     uint32_t TotalSectors32;
     uint8_t PhysicalDriveNum;
-	uint8_t Reserved;
+    uint8_t Reserved;
     uint8_t ExtendedBootSig;
     uint32_t VolumeSerialNumber;
     uint8_t VolumeLabel[11];
