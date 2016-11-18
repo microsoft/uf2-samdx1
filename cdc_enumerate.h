@@ -146,5 +146,9 @@ void msc_reset(void);
 //! Static block size for all memories
 #define  UDI_MSC_BLOCK_SIZE   512L
 
+void logmsg(const char *msg);
+void logval(const char *lbl, uint32_t v);
+void logwritenum(uint32_t n);
+void logwrite(const char *msg);
 
 #endif // CDC_ENUMERATE_H

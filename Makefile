@@ -1,5 +1,5 @@
 CC=arm-none-eabi-gcc
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g
 CDEFINES = -D__SAMD21G18A__
 WFLAGS = \
 -Wall -Wstrict-prototypes \
@@ -37,6 +37,17 @@ NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 
 all: dirs $(EXECUTABLE)
+
+r: run
+
+b: burn
+
+burn: all
+	sh scripts/openocd.sh \
+	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{build/uf2-bootloader.bin}} verify reset; shutdown "
+
+run: burn
+	sh scripts/getlogs.sh
 
 dirs:
 	-@mkdir $(BUILD_PATH)

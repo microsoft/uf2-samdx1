@@ -1,0 +1,49 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Attach",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/uf2-bootloader.elf",
+            "cwd": "${workspaceRoot}",
+            "logging": {
+                "moduleLoad": true,
+                "trace": true,
+                "exceptions": true,
+                "programOutput": true,
+                "engineLogging": true,
+                "traceResponse": true
+            },
+            "targetArchitecture": "arm",
+            "stopAtEntry": true,
+            "customLaunchSetupCommands": [
+                {
+                    "text": "cd ${workspaceRoot}",
+                    "description": "attach",
+                    "ignoreFailures": false
+                },
+                {
+                    "text": "file ${workspaceRoot}/uf2-bootloader.elf",
+                    "description": "attach",
+                    "ignoreFailures": false
+                },
+                {
+                    "text": "target extended-remote localhost:3333",
+                    "description": "attach",
+                    "ignoreFailures": false
+                }
+            ],
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "miDebuggerPath": "/usr/local/bin/arm-none-eabi-gdb",
+                "MIMode": "gdb"
+            },
+            "windows": {
+                "MIMode": "gdb"
+            },
+        }
+    ]
+}

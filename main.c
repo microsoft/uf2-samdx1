@@ -73,6 +73,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <iosamd21.h>
 #include "compiler.h"
 #include "sam_ba_monitor.h"
@@ -107,7 +108,7 @@ static void check_start_application(void)
 	 * Stay in SAM-BA if *(APP_START+0x4) == 0xFFFFFFFF
 	 * Application erased condition
 	 */
-	if (app_start_address == 0xFFFFFFFF) {
+	if (1 || app_start_address == 0xFFFFFFFF) {
 		/* Stay in bootloader */
 		return;
 	}
@@ -226,12 +227,14 @@ int main(void)
         P_USB_CDC pCdc;
 #endif
 	DEBUG_PIN_HIGH;
-	
+
+	logmsg("Start");
+		
 	/* Pointer to store application start address */
-	uint32_t *data_ptr = (uint32_t *)0x20000000;
+	//uint32_t *data_ptr = (uint32_t *)0x20000000;
 	
 	/* Initialize the pointer */
-	*data_ptr = 0;
+	//*data_ptr = 0;
 
 	/* Jump in application if condition is satisfied */
 	check_start_application();
@@ -246,17 +249,19 @@ int main(void)
 	 * Application start address will be 0x1000 when only one interface is enabled
 	 * Application start address will be 0x2000 when both interfaces are enabled
 	 */
-	*data_ptr = *data_ptr + 0x1000;
+	//*data_ptr = *data_ptr + 0x1000;
 	/* UART is enabled in all cases */
 	usart_open();
 #endif
+
+	logmsg("Before main loop");
 
 #if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY  ||  SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 	/* Store the application start address @0x20000000.
 	 * Application start address will be 0x1000 when only one interface is enabled
 	 * Application start address will be 0x2000 when both interfaces are enabled
 	 */
-	*data_ptr = *data_ptr + 0x1000;
+	//*data_ptr = *data_ptr + 0x1000;
 	pCdc = (P_USB_CDC)usb_init();
 #endif
 	DEBUG_PIN_LOW;
@@ -288,4 +293,56 @@ int main(void)
 		}
 #endif
 	}
+}
+
+static struct {
+	char header[16];
+	int ptr;
+	char buffer[4096];
+} log = {
+	.header = "LOGHEADER_42_42",
+};
+
+void logwritenum(uint32_t n) {
+	char buff[9];
+	int i;
+	for (i=0; i<8; i++) {
+		int d = n & 0XF;
+		n = (n >> 4);
+		buff[7-i] = d > 9 ? 'A' + d - 10 : '0' + d;
+	}
+	buff[8] = 0;
+	logwrite(buff);
+}
+
+void logwrite(const char *msg)
+{
+	const int jump = 1024;
+	if (log.ptr >= sizeof(log.buffer) - jump) {
+		memmove(log.buffer, log.buffer + jump, sizeof(log.buffer) - jump);
+		log.ptr -= jump;
+	}
+	int l = strlen(msg);
+	if (l + log.ptr >= sizeof(log.buffer)) {
+		logwrite("TOO LONG!\n");
+		return;
+	}
+	memcpy(log.buffer + log.ptr, msg, l);
+	log.ptr += l;
+	log.buffer[log.ptr] = 0;
+}
+
+
+void logmsg(const char *msg)
+{
+	logwrite(msg);
+	logwrite("\n");
+}
+
+void logval(const char *lbl, uint32_t v)
+{
+	logwrite(lbl);
+	logwrite(":");
+	logwritenum(v);
+	logwrite("\n");
 }
