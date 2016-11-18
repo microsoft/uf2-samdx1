@@ -135,10 +135,16 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep);
 uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num);
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep);
 
+
 // move to msc.h
 // index of highest LUN
 #define MAX_LUN 0
 void process_msc(void);
 void msc_reset(void);
+// needs to be more than 4084 (to force FAT16)
+#define NUM_FAT_BLOCKS 4096
+//! Static block size for all memories
+#define  UDI_MSC_BLOCK_SIZE   512L
+
 
 #endif // CDC_ENUMERATE_H

@@ -37,10 +37,6 @@
 #include "services/usb/class/msc/usb_protocol_msc.h"
 
 
-#define NUM_BLOCKS 4096
-//! Static block size for all memories
-#define  UDI_MSC_BLOCK_SIZE   512L
-
 bool mscReset = false;
 
 
@@ -674,7 +670,7 @@ static void udi_msc_sbc_read_capacity(void)
 					USB_CBW_DIRECTION_IN))
 		return;
 	
-	udi_msc_capacity.max_lba = NUM_BLOCKS;
+	udi_msc_capacity.max_lba = NUM_FAT_BLOCKS;
 	// Format capacity data
 	udi_msc_capacity.block_len = CPU_TO_BE32(UDI_MSC_BLOCK_SIZE);
 	udi_msc_capacity.max_lba = cpu_to_be32(udi_msc_capacity.max_lba);
