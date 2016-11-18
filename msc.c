@@ -239,6 +239,8 @@ void process_msc(void) {
 
     uint32_t nb_received = USB_Read((void *)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
 
+    logval("MSC LEN", nb_received);
+
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
     if ((sizeof(udi_msc_cbw) != nb_received) ||

@@ -370,6 +370,8 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc) {
         AT91F_CDC_Enumerate(pCdc);
     }
 
+    process_msc();
+
     return pCdc->currentConfiguration;
 }
 
@@ -408,7 +410,7 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep) {
     if (pUsb->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0) {
         /* Set packet size */
         cache->size = usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT;
-        packetSize = MIN(usb_endpoint_table[ep].DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT, length);
+        packetSize = MIN(cache->size, length);
         if (pData) {
             cache->ptr = packetSize;
             /* Copy read data to user buffer */
@@ -539,7 +541,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
     /* Clear the Bank 0 ready flag on Control OUT */
     pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
 
-    //logval("USBReq", (bRequest << 8) | bmRequestType);
+    logval("USBReq", (bRequest << 8) | bmRequestType);
 
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
@@ -708,10 +710,12 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
 
     // MSC
     case MSC_RESET:
+        logmsg("MSC reset");
         msc_reset();
         break;
 
     case MSC_GET_MAX_LUN:
+        logmsg("MSC maxlun");
         wStatus = MAX_LUN;
         AT91F_USB_SendData(pCdc, (char *)&wStatus, 1);
         break;
