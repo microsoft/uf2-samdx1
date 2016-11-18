@@ -33,15 +33,15 @@ interrupt/interrupt_sam_nvic.c msc.c
  
 OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 
-NAME=samd21_sam_ba
+NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 
 all: $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
-	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
-	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
+	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(NAME).elf $(OBJECTS)
+	arm-none-eabi-objcopy -O binary $(NAME).elf $@
+	@arm-none-eabi-size $(NAME).elf
 
 $(BUILD_PATH)/%.o: %.c
 	-@mkdir -p $(@D)
@@ -49,7 +49,7 @@ $(BUILD_PATH)/%.o: %.c
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 	
 clean:
-	rm -rf $(EXECUTABLE) $(BUILD_PATH)
+	rm -rf $(EXECUTABLE) $(BUILD_PATH) $(NAME).elf
 
 
 
