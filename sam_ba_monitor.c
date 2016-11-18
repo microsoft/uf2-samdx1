@@ -56,22 +56,18 @@ typedef struct {
     uint32_t (*getdata_xmd)(void *data, uint32_t length);
 } t_monitor_if;
 
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY ||                                    \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 /* Initialize structures with function pointers from supported interfaces */
-const t_monitor_if uart_if = {
-    usart_putc,    usart_getc,        usart_is_rx_ready, usart_putdata,
-    usart_getdata, usart_putdata_xmd, usart_getdata_xmd};
+const t_monitor_if uart_if = {usart_putc,    usart_getc,        usart_is_rx_ready, usart_putdata,
+                              usart_getdata, usart_putdata_xmd, usart_getdata_xmd};
 #endif
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 // Please note that USB doesn't use Xmodem protocol, since USB already includes
 // flow control and data verification
 // Data are simply forwarded without further coding.
-const t_monitor_if usbcdc_if = {cdc_putc,        cdc_getc,     cdc_is_rx_ready,
-                                cdc_write_buf,   cdc_read_buf, cdc_write_buf,
-                                cdc_read_buf_xmd};
+const t_monitor_if usbcdc_if = {cdc_putc,     cdc_getc,      cdc_is_rx_ready, cdc_write_buf,
+                                cdc_read_buf, cdc_write_buf, cdc_read_buf_xmd};
 #endif
 
 /* The pointer to the interface object use by the monitor */
@@ -82,16 +78,14 @@ volatile bool b_terminal_mode = false;
 volatile bool b_sam_ba_interface_usart = false;
 
 void sam_ba_monitor_init(uint8_t com_interface) {
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY ||                                    \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     // Selects the requested interface for future actions
     if (com_interface == SAM_BA_INTERFACE_USART) {
         ptr_monitor_if = (t_monitor_if *)&uart_if;
         b_sam_ba_interface_usart = true;
     }
 #endif
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     if (com_interface == SAM_BA_INTERFACE_USBCDC) {
         ptr_monitor_if = (t_monitor_if *)&usbcdc_if;
     }
@@ -270,8 +264,7 @@ void sam_ba_monitor_run(void) {
                         ptr--;
                         // Do we expect more data ?
                         if (j < current_number)
-                            ptr_monitor_if->getdata_xmd(ptr_data,
-                                                        current_number - j);
+                            ptr_monitor_if->getdata_xmd(ptr_data, current_number - j);
 
                         __asm("nop");
                     } else if (command == 'R') {
@@ -279,8 +272,7 @@ void sam_ba_monitor_run(void) {
                     } else if (command == 'O') {
                         *ptr_data = (char)current_number;
                     } else if (command == 'H') {
-                        *((uint16_t *)(void *)ptr_data) =
-                            (uint16_t)current_number;
+                        *((uint16_t *)(void *)ptr_data) = (uint16_t)current_number;
                     } else if (command == 'W') {
                         *((int *)(void *)ptr_data) = current_number;
                     } else if (command == 'o') {
@@ -312,9 +304,8 @@ void sam_ba_monitor_run(void) {
                         ptr_monitor_if->putdata((uint8_t *)RomBOOT_Version,
                                                 strlen(RomBOOT_Version));
                         ptr_monitor_if->putdata(" ", 1);
-                        ptr_monitor_if->putdata(
-                            (uint8_t *)RomBOOT_ExtendedCapabilities,
-                            strlen(RomBOOT_ExtendedCapabilities));
+                        ptr_monitor_if->putdata((uint8_t *)RomBOOT_ExtendedCapabilities,
+                                                strlen(RomBOOT_ExtendedCapabilities));
                         ptr_monitor_if->putdata(" ", 1);
                         ptr = (uint8_t *)&(__DATE__);
                         ptr_monitor_if->putdata(ptr, strlen((char *)ptr));
@@ -362,8 +353,7 @@ void sam_ba_monitor_run(void) {
                             src_buff_addr = (void *)ptr_data;
 
                         } else {
-                            flash_write_words((void *)ptr_data, src_buff_addr,
-                                              current_number / 4);
+                            flash_write_words((void *)ptr_data, src_buff_addr, current_number / 4);
                         }
 
                         // Notify command completed
@@ -402,12 +392,10 @@ void sam_ba_monitor_run(void) {
                         current_number = (current_number << 4) | (*ptr - '0');
 
                     } else if (('A' <= *ptr) && (*ptr <= 'F')) {
-                        current_number =
-                            (current_number << 4) | (*ptr - 'A' + 0xa);
+                        current_number = (current_number << 4) | (*ptr - 'A' + 0xa);
 
                     } else if (('a' <= *ptr) && (*ptr <= 'f')) {
-                        current_number =
-                            (current_number << 4) | (*ptr - 'a' + 0xa);
+                        current_number = (current_number << 4) | (*ptr - 'a' + 0xa);
 
                     } else if (*ptr == ',') {
                         ptr_data = (uint8_t *)current_number;

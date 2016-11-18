@@ -111,8 +111,7 @@ int usart_readc(void);
  * \param number of data to send
  * \return number of data sent
  */
-uint32_t usart_putdata(void const *data,
-                       uint32_t length); // Send given data (polling)
+uint32_t usart_putdata(void const *data, uint32_t length); // Send given data (polling)
 
 /**
  * \brief Gets data from usart line
@@ -121,8 +120,7 @@ uint32_t usart_putdata(void const *data,
  * \param number of data to get
  * \return value read on usart line
  */
-uint32_t usart_getdata(void *data,
-                       uint32_t length); // Get data from comm. device
+uint32_t usart_getdata(void *data, uint32_t length); // Get data from comm. device
 
 /**
  * \brief Send buffer on usart line using Xmodem protocol
@@ -131,9 +129,9 @@ uint32_t usart_getdata(void *data,
  * \param number of data to send
  * \return number of data sent
  */
-uint32_t usart_putdata_xmd(
-    void const *data,
-    uint32_t length); // Send given data (polling) using xmodem (if necessary)
+uint32_t
+usart_putdata_xmd(void const *data,
+                  uint32_t length); // Send given data (polling) using xmodem (if necessary)
 
 /**
  * \brief Gets data from usart line using Xmodem protocol
@@ -142,9 +140,9 @@ uint32_t usart_putdata_xmd(
  * \param number of data to get
  * \return value read on usart line
  */
-uint32_t usart_getdata_xmd(
-    void *data,
-    uint32_t length); // Get data from comm. device using xmodem (if necessary)
+uint32_t
+usart_getdata_xmd(void *data,
+                  uint32_t length); // Get data from comm. device using xmodem (if necessary)
 
 /**
  * \brief Gets data from usart line using Xmodem protocol

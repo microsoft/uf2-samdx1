@@ -157,21 +157,18 @@ void system_init(void) {
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
         ;
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     SYSCTRL_DFLLCTRL_Type dfllctrl_conf = {0};
     SYSCTRL_DFLLVAL_Type dfllval_conf = {0};
-    uint32_t coarse = (*((uint32_t *)(NVMCTRL_OTP4) +
-                         (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32)) >>
+    uint32_t coarse = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32)) >>
                        (NVM_SW_CALIB_DFLL48M_COARSE_VAL % 32)) &
                       ((1 << 6) - 1);
     if (coarse == 0x3f) {
         coarse = 0x1f;
     }
-    uint32_t fine =
-        (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_FINE_VAL / 32)) >>
-         (NVM_SW_CALIB_DFLL48M_FINE_VAL % 32)) &
-        ((1 << 10) - 1);
+    uint32_t fine = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_FINE_VAL / 32)) >>
+                     (NVM_SW_CALIB_DFLL48M_FINE_VAL % 32)) &
+                    ((1 << 10) - 1);
     if (fine == 0x3ff) {
         fine = 0x1ff;
     }
@@ -217,11 +214,11 @@ void system_init(void) {
 #define DEBUG_PIN_HIGH port_pin_set_output_level(BOOT_LED, 1)
 #define DEBUG_PIN_LOW port_pin_set_output_level(BOOT_LED, 0)
 #else
-#define DEBUG_PIN_HIGH                                                         \
-    do {                                                                       \
+#define DEBUG_PIN_HIGH                                                                             \
+    do {                                                                                           \
     } while (0)
-#define DEBUG_PIN_LOW                                                          \
-    do {                                                                       \
+#define DEBUG_PIN_LOW                                                                              \
+    do {                                                                                           \
     } while (0)
 #endif
 
@@ -230,8 +227,7 @@ void system_init(void) {
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     P_USB_CDC pCdc;
 #endif
     DEBUG_PIN_HIGH;
@@ -252,8 +248,7 @@ int main(void) {
     system_init();
     cpu_irq_enable();
 
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY ||                                    \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     /* Store the application start address @0x20000000.
      * Application start address will be 0x1000 when only one interface is
      * enabled
@@ -266,8 +261,7 @@ int main(void) {
 
     logmsg("Before main loop");
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     /* Store the application start address @0x20000000.
      * Application start address will be 0x1000 when only one interface is
      * enabled
@@ -279,8 +273,7 @@ int main(void) {
     DEBUG_PIN_LOW;
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY ||                                  \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
         if (pCdc->IsConfigured(pCdc) != 0) {
             main_b_cdc_enable = true;
         }
@@ -295,8 +288,7 @@ int main(void) {
             }
         }
 #endif
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY ||                                    \
-    SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
         /* Check if a '#' has been received */
         if (!main_b_cdc_enable && usart_sharp_received()) {
             sam_ba_monitor_init(SAM_BA_INTERFACE_USART);

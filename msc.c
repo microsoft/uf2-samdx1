@@ -47,8 +47,7 @@ void msc_reset(void) {
 //! Structure to receive a CBW packet
 static struct usb_msc_cbw udi_msc_cbw;
 //! Structure to send a CSW packet
-static struct usb_msc_csw udi_msc_csw = {.dCSWSignature =
-                                             CPU_TO_BE32(USB_CSW_SIGNATURE)};
+static struct usb_msc_csw udi_msc_csw = {.dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE)};
 //! Structure with current SCSI sense data
 static struct scsi_request_sense_data udi_msc_sense;
 static bool udi_msc_b_cbw_invalid = false;
@@ -126,8 +125,7 @@ static void udi_msc_clear_sense(void);
  * \param add_sense     Additional Sense Code
  * \param lba           LBA corresponding at error
  */
-static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense,
-                               uint32_t lba);
+static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense, uint32_t lba);
 
 /**
  * \brief Update sense data with new value to signal success
@@ -239,8 +237,7 @@ void process_msc(void) {
     if (!USB_Read(NULL, 1, USB_EP_MSC_OUT))
         return; // no data available
 
-    uint32_t nb_received =
-        USB_Read((void *)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
+    uint32_t nb_received = USB_Read((void *)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
 
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
@@ -265,8 +262,7 @@ void process_msc(void) {
         return;
     }
     // Prepare CSW residue field with the size requested
-    udi_msc_csw.dCSWDataResidue =
-        le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
+    udi_msc_csw.dCSWDataResidue = le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
 
     // Decode opcode
     switch (udi_msc_cbw.CDB[0]) {
@@ -386,22 +382,18 @@ static void udi_msc_csw_process(void) {
     udi_msc_csw_send();
 }
 
-void udi_msc_csw_send(void) {
-    USB_Write((void *)&udi_msc_csw, sizeof(udi_msc_csw), USB_EP_MSC_IN);
-}
+void udi_msc_csw_send(void) { USB_Write((void *)&udi_msc_csw, sizeof(udi_msc_csw), USB_EP_MSC_IN); }
 
 //---------------------------------------------
 //------- Routines manage sense data
 
 static void udi_msc_clear_sense(void) {
-    memset((uint8_t *)&udi_msc_sense, 0,
-           sizeof(struct scsi_request_sense_data));
+    memset((uint8_t *)&udi_msc_sense, 0, sizeof(struct scsi_request_sense_data));
     udi_msc_sense.valid_reponse_code = SCSI_SENSE_VALID | SCSI_SENSE_CURRENT;
     udi_msc_sense.AddSenseLen = SCSI_SENSE_ADDL_LEN(sizeof(udi_msc_sense));
 }
 
-static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense,
-                               uint32_t lba) {
+static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense, uint32_t lba) {
     udi_msc_clear_sense();
     udi_msc_csw.bCSWStatus = USB_CSW_STATUS_FAIL;
     udi_msc_sense.sense_flag_key = sense_key;
@@ -419,18 +411,15 @@ static void udi_msc_sense_pass(void) {
 }
 
 static void udi_msc_sense_fail_hardware(void) {
-    udi_msc_sense_fail(SCSI_SK_HARDWARE_ERROR,
-                       SCSI_ASC_NO_ADDITIONAL_SENSE_INFO, 0);
+    udi_msc_sense_fail(SCSI_SK_HARDWARE_ERROR, SCSI_ASC_NO_ADDITIONAL_SENSE_INFO, 0);
 }
 
 static void udi_msc_sense_fail_cdb_invalid(void) {
-    udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST, SCSI_ASC_INVALID_FIELD_IN_CDB,
-                       0);
+    udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST, SCSI_ASC_INVALID_FIELD_IN_CDB, 0);
 }
 
 static void udi_msc_sense_command_invalid(void) {
-    udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST,
-                       SCSI_ASC_INVALID_COMMAND_OPERATION_CODE, 0);
+    udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST, SCSI_ASC_INVALID_COMMAND_OPERATION_CODE, 0);
 }
 
 //---------------------------------------------
@@ -648,8 +637,7 @@ static void udi_msc_sbc_trans(bool b_read) {
 
     // Compute number of byte to transfer and valid it
     trans_size = (uint32_t)udi_msc_nb_block * UDI_MSC_BLOCK_SIZE;
-    if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN
-                                                   : USB_CBW_DIRECTION_OUT))
+    if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
 
     for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {

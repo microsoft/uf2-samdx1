@@ -70,10 +70,9 @@ void usart_open() {
         port = (BOOT_USART_PAD0 & 0x200000) >> 21;
         pin = BOOT_USART_PAD0 >> 16;
         PORT->Group[port].PINCFG[(pin - (port * 32))].bit.PMUXEN = 1;
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &=
-            ~(0xF << (4 * (pin & 0x01u)));
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |=
-            (BOOT_USART_PAD0 & 0xFF) << (4 * (pin & 0x01u));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &= ~(0xF << (4 * (pin & 0x01u)));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |= (BOOT_USART_PAD0 & 0xFF)
+                                                               << (4 * (pin & 0x01u));
     }
     if (BOOT_USART_PAD1 != PINMUX_UNUSED) {
         /* Mask 6th bit in pin number to check whether it is greater than 32
@@ -81,10 +80,9 @@ void usart_open() {
         port = (BOOT_USART_PAD1 & 0x200000) >> 21;
         pin = BOOT_USART_PAD1 >> 16;
         PORT->Group[port].PINCFG[(pin - (port * 32))].bit.PMUXEN = 1;
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &=
-            ~(0xF << (4 * (pin & 0x01u)));
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |=
-            (BOOT_USART_PAD1 & 0xFF) << (4 * (pin & 0x01u));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &= ~(0xF << (4 * (pin & 0x01u)));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |= (BOOT_USART_PAD1 & 0xFF)
+                                                               << (4 * (pin & 0x01u));
     }
     if (BOOT_USART_PAD2 != PINMUX_UNUSED) {
         /* Mask 6th bit in pin number to check whether it is greater than 32
@@ -92,10 +90,9 @@ void usart_open() {
         port = (BOOT_USART_PAD2 & 0x200000) >> 21;
         pin = BOOT_USART_PAD2 >> 16;
         PORT->Group[port].PINCFG[(pin - (port * 32))].bit.PMUXEN = 1;
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &=
-            ~(0xF << (4 * (pin & 0x01u)));
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |=
-            (BOOT_USART_PAD2 & 0xFF) << (4 * (pin & 0x01u));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &= ~(0xF << (4 * (pin & 0x01u)));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |= (BOOT_USART_PAD2 & 0xFF)
+                                                               << (4 * (pin & 0x01u));
     }
     if (BOOT_USART_PAD3 != PINMUX_UNUSED) {
         /* Mask 6th bit in pin number to check whether it is greater than 32
@@ -103,10 +100,9 @@ void usart_open() {
         port = (BOOT_USART_PAD3 & 0x200000) >> 21;
         pin = BOOT_USART_PAD3 >> 16;
         PORT->Group[port].PINCFG[(pin - (port * 32))].bit.PMUXEN = 1;
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &=
-            ~(0xF << (4 * (pin & 0x01u)));
-        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |=
-            (BOOT_USART_PAD3 & 0xFF) << (4 * (pin & 0x01u));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg &= ~(0xF << (4 * (pin & 0x01u)));
+        PORT->Group[port].PMUX[(pin - (port * 32)) / 2].reg |= (BOOT_USART_PAD3 & 0xFF)
+                                                               << (4 * (pin & 0x01u));
     }
 
     inst = uart_get_sercom_index(BOOT_USART_MODULE);
@@ -423,8 +419,7 @@ uint32_t usart_getdata_xmd(void *data, uint32_t length) {
 
     // Copied from legacy source code ... might need some tweaking
     uint32_t loops_per_second =
-        CPU_FREQUENCY /
-        10; /* system_clock_source_get_hz(BOOT_USART_GCLK_GEN_SOURCE) / 10; */
+        CPU_FREQUENCY / 10; /* system_clock_source_get_hz(BOOT_USART_GCLK_GEN_SOURCE) / 10; */
 
     error_timeout = 0;
 

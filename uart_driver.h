@@ -38,15 +38,12 @@
 
 /* SERCOM UART available pad settings */
 enum uart_pad_settings {
-    UART_RX_PAD0_TX_PAD2 =
-        SERCOM_USART_CTRLA_RXPO(0) | SERCOM_USART_CTRLA_TXPO(1),
-    UART_RX_PAD1_TX_PAD2 =
-        SERCOM_USART_CTRLA_RXPO(1) | SERCOM_USART_CTRLA_TXPO(1),
+    UART_RX_PAD0_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(0) | SERCOM_USART_CTRLA_TXPO(1),
+    UART_RX_PAD1_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(1) | SERCOM_USART_CTRLA_TXPO(1),
     UART_RX_PAD2_TX_PAD0 = SERCOM_USART_CTRLA_RXPO(2),
     UART_RX_PAD3_TX_PAD0 = SERCOM_USART_CTRLA_RXPO(3),
     UART_RX_PAD1_TX_PAD0 = SERCOM_USART_CTRLA_RXPO(1),
-    UART_RX_PAD3_TX_PAD2 =
-        SERCOM_USART_CTRLA_RXPO(3) | SERCOM_USART_CTRLA_TXPO(1),
+    UART_RX_PAD3_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(3) | SERCOM_USART_CTRLA_TXPO(1),
 };
 
 /**
@@ -64,8 +61,7 @@ uint32_t uart_get_sercom_index(Sercom *sercom_instance);
  * \param Baud value corresponding to the desired baudrate
  * \param SERCOM pad settings
  */
-void uart_basic_init(Sercom *sercom, uint16_t baud_val,
-                     enum uart_pad_settings pad_conf);
+void uart_basic_init(Sercom *sercom, uint16_t baud_val, enum uart_pad_settings pad_conf);
 
 /**
  * \brief Disables UART interface
