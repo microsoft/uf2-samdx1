@@ -235,6 +235,7 @@ void sam_ba_monitor_run(void) {
 
     // Start waiting some cmd
     while (1) {
+        process_msc();
         length = ptr_monitor_if->getdata(data, SIZEBUFMAX);
         ptr = data;
         for (i = 0; i < length; i++) {

@@ -64,9 +64,9 @@ const char devDescriptor[] = {
     0x61, //
     0x10, // bcdDeviceL
     0x01, //
-    0x00, // iManufacturer    // 0x01
-    0x00, // iProduct
-    0x00, // SerialNumber
+    0x01, // iManufacturer    // 0x01
+    0x02, // iProduct
+    0x03, // SerialNumber
     0x01  // bNumConfigs
 };
 
@@ -190,6 +190,35 @@ char cfgDescriptor[] = {
     0, /// maximum NAK rate
 };
 
+typedef struct {
+    uint8_t len;
+    uint8_t type;
+    uint8_t data[26];
+} StringDescriptor;
+
+#define STRING_DESCRIPTOR_COUNT 4
+
+static const StringDescriptor string_descriptors[STRING_DESCRIPTOR_COUNT] = {
+    /*! index 0 - language */
+    {
+        4,                 // length
+        3,                 // descriptor type - string
+        {0x09, 0x04, 0, 0} // languageID - United States
+    },
+    /*! index 1 - product ID */
+    {18, // length
+     3,  // descriptor type - string
+     {'A', 0, 't', 0, 'm', 0, 'e', 0, 'g', 0, 'a', 0, '3', 0, '2', 0, 0, 0}},
+    /*! index 2 - manufacturer ID */
+    {12, // length
+     3,  // descriptor type - string
+     {'J', 0, 'A', 0, 'M', 0, 'E', 0, 'S', 0, 0, 0}},
+    /*! index 3 - serial number */
+    {26, // length
+     3,  // descriptor type - string
+     {'1', 0,   '2', 0,   '3', 0,   '4', 0,   '5', 0,   '6', 0, '7',
+      0,   '8', 0,   '9', 0,   'A', 0,   'B', 0,   'C', 0,   0, 0}}};
+
 static usb_cdc_line_coding_t line_coding = {
     115200, // baudrate
     0,      // 1 Stop Bit
@@ -239,6 +268,8 @@ static void AT91F_CDC_Enumerate(P_USB_CDC pCdc);
  */
 void AT91F_InitUSB(void) {
     uint32_t pad_transn, pad_transp, pad_trim;
+
+    assert(sizeof(cfgDescriptor) == 0x5A);
 
     /* Enable USB clock */
     PM->APBBMASK.reg |= PM_APBBMASK_USB;
@@ -369,8 +400,6 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc) {
     } else if (pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_RXSTP) {
         AT91F_CDC_Enumerate(pCdc);
     }
-
-    process_msc();
 
     return pCdc->currentConfiguration;
 }
@@ -547,14 +576,20 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
      * specification Rev 1.1 */
     switch ((bRequest << 8) | bmRequestType) {
     case STD_GET_DESCRIPTOR:
-        logval("DESC", wValue);
+        //logval("DESC", wValue);
+        //logval("wlen", wLength);
         if (wValue == 0x100)
             /* Return Device Descriptor */
             AT91F_USB_SendData(pCdc, devDescriptor, MIN(sizeof(devDescriptor), wLength));
         else if (wValue == 0x200)
             /* Return Configuration Descriptor */
             AT91F_USB_SendData(pCdc, cfgDescriptor, MIN(sizeof(cfgDescriptor), wLength));
-        else
+        else if (ctrlOutCache.buf[3] == 3) {
+            if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
+                stall_ep(0);
+            AT91F_USB_SendData(pCdc, (void *)&string_descriptors[ctrlOutCache.buf[2]],
+                               MIN(sizeof(StringDescriptor), wLength));
+        } else
             /* Stall the request */
             stall_ep(0);
         break;
@@ -730,7 +765,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
 static bool isInEP(uint8_t ep) { return ep == USB_EP_IN || ep == USB_EP_MSC_IN; }
 
 void reset_ep(uint8_t ep) {
-    Assert(ep != 0);
+    assert(ep != 0);
 
     // Stop transfer
     if (isInEP(ep)) {

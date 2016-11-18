@@ -145,4 +145,12 @@ void logval(const char *lbl, uint32_t v);
 void logwritenum(uint32_t n);
 void logwrite(const char *msg);
 
+#define assert(cond) \
+  if (!(cond)) { \
+    logwrite("Assertion failed: "); \
+    logwrite(#cond); \
+    logwrite("\n"); \
+    while (1) {} }
+
+
 #endif // CDC_ENUMERATE_H
