@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Store xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="AtmelPackComponentManagement">
+	<ProjectComponents>
+		<ProjectComponent z:Id="i1" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+			<CApiVersion></CApiVersion>
+			<CBundle></CBundle>
+			<CClass>CMSIS</CClass>
+			<CGroup>CORE</CGroup>
+			<CSub></CSub>
+			<CVariant></CVariant>
+			<CVendor>ARM</CVendor>
+			<CVersion>3.40.0</CVersion>
+			<DefaultRepoPath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs</DefaultRepoPath>
+			<DependentComponents xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+				<d4p1:anyType z:Id="i2" i:type="ProjectComponent">
+					<CApiVersion></CApiVersion>
+					<CBundle></CBundle>
+					<CClass>Device</CClass>
+					<CGroup>Startup</CGroup>
+					<CSub></CSub>
+					<CVariant></CVariant>
+					<CVendor>Atmel</CVendor>
+					<CVersion>1.1.0</CVersion>
+					<DefaultRepoPath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs</DefaultRepoPath>
+					<DependentComponents />
+					<Description></Description>
+					<Files>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\include</AbsolutePath>
+							<Attribute></Attribute>
+							<Category>include</Category>
+							<Condition>C</Condition>
+							<FileContentHash i:nil="true" />
+							<FileVersion></FileVersion>
+							<Name>samd21a/include</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\include\sam.h</AbsolutePath>
+							<Attribute></Attribute>
+							<Category>header</Category>
+							<Condition>C</Condition>
+							<FileContentHash>PFFghf5Q4MbucclAkQ+zwA==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/include/sam.h</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\templates\main.c</AbsolutePath>
+							<Attribute>template</Attribute>
+							<Category>source</Category>
+							<Condition>C Exe</Condition>
+							<FileContentHash>L/BeMwRnoLYVpOelGd1KuQ==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/templates/main.c</Name>
+							<SelectString>Main file (.c)</SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\templates\main.cpp</AbsolutePath>
+							<Attribute>template</Attribute>
+							<Category>source</Category>
+							<Condition>C Exe</Condition>
+							<FileContentHash>nU+WlKcYaWh0AWBBS+WVpA==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/templates/main.cpp</Name>
+							<SelectString>Main file (.cpp)</SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\gcc\system_samd21.c</AbsolutePath>
+							<Attribute>config</Attribute>
+							<Category>source</Category>
+							<Condition>GCC Exe</Condition>
+							<FileContentHash>YoFdlfnv5f9zseCWzVv1Gg==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/gcc/system_samd21.c</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\gcc\gcc\startup_samd21.c</AbsolutePath>
+							<Attribute>config</Attribute>
+							<Category>source</Category>
+							<Condition>GCC Exe</Condition>
+							<FileContentHash>mBJERsj2AspTLgwpLSJEVw==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/gcc/gcc/startup_samd21.c</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\gcc\gcc\samd21g18a_flash.ld</AbsolutePath>
+							<Attribute>config</Attribute>
+							<Category>linkerScript</Category>
+							<Condition>GCC Exe</Condition>
+							<FileContentHash>6ucgGj6M2uKzgsLBLS8N7g==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/gcc/gcc/samd21g18a_flash.ld</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+						<d4p1:anyType i:type="FileInfo">
+							<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAMD21_DFP\1.1.271\samd21a\gcc\gcc\samd21g18a_sram.ld</AbsolutePath>
+							<Attribute>config</Attribute>
+							<Category>other</Category>
+							<Condition>GCC Exe</Condition>
+							<FileContentHash>h60HuJDlfk7ph+B7orZ5Dg==</FileContentHash>
+							<FileVersion></FileVersion>
+							<Name>samd21a/gcc/gcc/samd21g18a_sram.ld</Name>
+							<SelectString></SelectString>
+							<SourcePath></SourcePath>
+						</d4p1:anyType>
+					</Files>
+					<PackName>SAMD21_DFP</PackName>
+					<PackPath>C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/SAMD21_DFP/1.1.271/Atmel.SAMD21_DFP.pdsc</PackPath>
+					<PackVersion>1.1.271</PackVersion>
+					<PresentInProject>true</PresentInProject>
+					<ReferenceConditionId>ATSAMD21G18A</ReferenceConditionId>
+					<RteComponents>
+						<d4p1:string></d4p1:string>
+					</RteComponents>
+					<Status>Resolved</Status>
+					<VersionMode>Fixed</VersionMode>
+					<IsComponentInAtProject>true</IsComponentInAtProject>
+				</d4p1:anyType>
+			</DependentComponents>
+			<Description></Description>
+			<Files xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\cmsis\4.2.0\CMSIS\Documentation\Core\html\index.html</AbsolutePath>
+					<Attribute></Attribute>
+					<Category>doc</Category>
+					<Condition></Condition>
+					<FileContentHash>Fm1Ae7doPh4708FZQAIEpw==</FileContentHash>
+					<FileVersion></FileVersion>
+					<Name>CMSIS\Documentation\Core\html\index.html</Name>
+					<SelectString></SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\arm\cmsis\4.2.0\CMSIS\Include\</AbsolutePath>
+					<Attribute></Attribute>
+					<Category>include</Category>
+					<Condition></Condition>
+					<FileContentHash i:nil="true" />
+					<FileVersion></FileVersion>
+					<Name>CMSIS\Include\</Name>
+					<SelectString></SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+			</Files>
+			<PackName>CMSIS</PackName>
+			<PackPath>C:/Program Files (x86)/Atmel/Studio/7.0/Packs/arm/cmsis/4.2.0/ARM.CMSIS.pdsc</PackPath>
+			<PackVersion>4.2.0</PackVersion>
+			<PresentInProject>true</PresentInProject>
+			<ReferenceConditionId>CMSIS Core</ReferenceConditionId>
+			<RteComponents xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+				<d4p1:string></d4p1:string>
+			</RteComponents>
+			<Status>Resolved</Status>
+			<VersionMode>Fixed</VersionMode>
+			<IsComponentInAtProject>true</IsComponentInAtProject>
+		</ProjectComponent>
+		<ProjectComponent z:Ref="i2" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" />
+	</ProjectComponents>
+</Store>
