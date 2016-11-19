@@ -167,4 +167,22 @@ void read_block(uint32_t block_no, uint8_t *data) {
 #endif
 }
 
-void write_block(uint32_t block_no, uint8_t *data) {}
+void write_block(uint32_t block_no, uint8_t *data) {
+    UF2_Block *bl = (void *)data;
+    if (bl->magicStart != UF2_MAGIC_START || bl->magicEnd != UF2_MAGIC_END) {
+        logval("skip write @", block_no);
+        return;
+    }
+    if (bl->payloadSize != 256) {
+        logval("bad payload size", bl->payloadSize);
+        return;
+    }
+    if ((bl->targetAddr & 0xff) || bl->targetAddr < APP_START_ADDRESS ||
+        bl->targetAddr >= FLASH_SIZE) {
+        logval("invalid target addr", bl->targetAddr);
+        return;
+    }
+
+    logval("write block at", bl->targetAddr);
+    flash_write_row((void *)bl->targetAddr, (void *)bl->data);
+}
