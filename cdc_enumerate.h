@@ -102,6 +102,7 @@ bool cdc_is_rx_ready(void);
  * \return number of data sent
  */
 uint32_t cdc_write_buf(void const *data, uint32_t length);
+uint32_t cdc_write_buf_xmd(void const *data, uint32_t length);
 
 /**
  * \brief Gets data on USB CDC

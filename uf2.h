@@ -2,13 +2,14 @@
 #define UF2_H 1
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 4200
 #define VENDOR_NAME "PXT.IO"
 #define PRODUCT_NAME "UF2 Bootloader"
 #define SERIAL_NUMBER "F23456789ABC"
-#define USE_LOGS 1
+#define USE_LOGS 0
 #define USE_ASSERT 1
 #define USE_UART 1
 #define USE_FAT 1
@@ -41,6 +42,6 @@ void panic(void);
 #define assert(cond) NOOP
 #endif
 
-//extern volatile bool b_sam_ba_interface_usart;
+extern volatile bool b_sam_ba_interface_usart;
 
 #endif

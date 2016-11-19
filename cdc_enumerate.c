@@ -782,20 +782,17 @@ void usb_init(void) {
     pCdc.pUsb->HOST.CTRLA.bit.ENABLE = true;
 }
 
-int cdc_putc(int value) {
-    /* Send single byte on USB CDC */
-    USB_Write(&value, 1, USB_EP_IN);
-    return 1;
-}
+#include "usart_sam_ba.h"
 
-int cdc_getc(void) {
-    uint8_t rx_char;
-    /* Read singly byte on USB CDC */
-    USB_Read(&rx_char, 1, USB_EP_OUT);
-    return (int)rx_char;
-}
+#if USE_UART
+#define UART(e)  if (b_sam_ba_interface_usart) return e;
+#else
+#define UART(e)
+#endif
 
 bool cdc_is_rx_ready(void) {
+    UART(usart_is_rx_ready())
+    
     /* Check whether the device is configured */
     if (!USB_Ok())
         return 0;
@@ -806,12 +803,22 @@ bool cdc_is_rx_ready(void) {
 }
 
 uint32_t cdc_write_buf(void const *data, uint32_t length) {
+    UART(usart_putdata(data, length))
+    /* Send the specified number of bytes on USB CDC */
+    USB_Write((const char *)data, length, USB_EP_IN);
+    return length;
+}
+
+uint32_t cdc_write_buf_xmd(void const *data, uint32_t length) {
+    UART(usart_putdata_xmd(data, length))
     /* Send the specified number of bytes on USB CDC */
     USB_Write((const char *)data, length, USB_EP_IN);
     return length;
 }
 
 uint32_t cdc_read_buf(void *data, uint32_t length) {
+    UART(usart_getdata(data, length))
+
     /* Check whether the device is configured */
     if (!USB_Ok())
         return 0;
@@ -821,6 +828,7 @@ uint32_t cdc_read_buf(void *data, uint32_t length) {
 }
 
 uint32_t cdc_read_buf_xmd(void *data, uint32_t length) {
+    UART(usart_getdata_xmd(data, length))
     /* Check whether the device is configured */
     if (!USB_Ok())
         return 0;

@@ -38,39 +38,6 @@
 const char RomBOOT_Version[] = SAM_BA_VERSION;
 const char RomBOOT_ExtendedCapabilities[] = "[Arduino:XYZ]";
 
-/* Provides one common interface to handle both USART and USB-CDC */
-typedef struct {
-    /* send one byte of data */
-    int (*put_c)(int value);
-    /* Get one byte */
-    int (*get_c)(void);
-    /* Receive buffer not empty */
-    bool (*is_rx_ready)(void);
-    /* Send given data (polling) */
-    uint32_t (*putdata)(void const *data, uint32_t length);
-    /* Get data from comm. device */
-    uint32_t (*getdata)(void *data, uint32_t length);
-    /* Send given data (polling) using xmodem (if necessary) */
-    uint32_t (*putdata_xmd)(void const *data, uint32_t length);
-    /* Get data from comm. device using xmodem (if necessary) */
-    uint32_t (*getdata_xmd)(void *data, uint32_t length);
-} t_monitor_if;
-
-#if USE_UART
-/* Initialize structures with function pointers from supported interfaces */
-const t_monitor_if uart_if = {usart_putc,    usart_getc,        usart_is_rx_ready, usart_putdata,
-                              usart_getdata, usart_putdata_xmd, usart_getdata_xmd};
-#endif
-
-// Please note that USB doesn't use Xmodem protocol, since USB already includes
-// flow control and data verification
-// Data are simply forwarded without further coding.
-const t_monitor_if usbcdc_if = {cdc_putc,     cdc_getc,      cdc_is_rx_ready, cdc_write_buf,
-                                cdc_read_buf, cdc_write_buf, cdc_read_buf_xmd};
-
-/* The pointer to the interface object use by the monitor */
-t_monitor_if *ptr_monitor_if;
-
 /* b_terminal_mode mode (ascii) or hex mode */
 volatile bool b_terminal_mode = false;
 volatile bool b_sam_ba_interface_usart = false;
@@ -79,13 +46,9 @@ void sam_ba_monitor_init(uint8_t com_interface) {
 #if USE_UART
     // Selects the requested interface for future actions
     if (com_interface == SAM_BA_INTERFACE_USART) {
-        ptr_monitor_if = (t_monitor_if *)&uart_if;
         b_sam_ba_interface_usart = true;
     }
 #endif
-    if (com_interface == SAM_BA_INTERFACE_USBCDC) {
-        ptr_monitor_if = (t_monitor_if *)&usbcdc_if;
-    }
 }
 
 /**
@@ -124,9 +87,9 @@ void sam_ba_putdata_term(uint8_t *data, uint32_t length) {
         buf[1] = 'x';
         buf[length * 2 + 2] = '\n';
         buf[length * 2 + 3] = '\r';
-        ptr_monitor_if->putdata(buf, length * 2 + 4);
+        cdc_write_buf(buf, length * 2 + 4);
     } else
-        ptr_monitor_if->putdata(data, length);
+        cdc_write_buf(data, length);
     return;
 }
 
@@ -211,7 +174,7 @@ void put_uint32(uint32_t n) {
 
         buff[7 - i] = d > 9 ? 'A' + d - 10 : '0' + d;
     }
-    ptr_monitor_if->putdata(buff, 8);
+    cdc_write_buf(buff, 8);
 }
 
 /**
@@ -224,13 +187,13 @@ void sam_ba_monitor_run(void) {
     // Start waiting some cmd
     while (1) {
         process_msc();
-        length = ptr_monitor_if->getdata(data, SIZEBUFMAX);
+        length = cdc_read_buf(data, SIZEBUFMAX);
         ptr = data;
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {
                 if (*ptr == '#') {
                     if (b_terminal_mode) {
-                        ptr_monitor_if->putdata("\n\r", 2);
+                        cdc_write_buf("\n\r", 2);
                     }
                     if (command == 'S') {
                         // Check if some data are remaining in the "data" buffer
@@ -253,11 +216,11 @@ void sam_ba_monitor_run(void) {
                         ptr--;
                         // Do we expect more data ?
                         if (j < current_number)
-                            ptr_monitor_if->getdata_xmd(ptr_data, current_number - j);
+                            cdc_read_buf_xmd(ptr_data, current_number - j);
 
                         __asm("nop");
                     } else if (command == 'R') {
-                        ptr_monitor_if->putdata_xmd(ptr_data, current_number);
+                        cdc_write_buf_xmd(ptr_data, current_number);
                     } else if (command == 'O') {
                         *ptr_data = (char)current_number;
                     } else if (command == 'H') {
@@ -278,30 +241,30 @@ void sam_ba_monitor_run(void) {
                         __set_MSP(sp);
                         cpu_irq_enable();
                         if (b_sam_ba_interface_usart) {
-                            ptr_monitor_if->put_c(0x6);
+                            cdc_write_buf("\x06", 1);
                         }
                     } else if (command == 'T') {
                         b_terminal_mode = 1;
-                        ptr_monitor_if->putdata("\n\r", 2);
+                        cdc_write_buf("\n\r", 2);
                     } else if (command == 'N') {
                         if (b_terminal_mode == 0) {
-                            ptr_monitor_if->putdata("\n\r", 2);
+                            cdc_write_buf("\n\r", 2);
                         }
                         b_terminal_mode = 0;
                     } else if (command == 'V') {
-                        ptr_monitor_if->putdata("v", 1);
-                        ptr_monitor_if->putdata((uint8_t *)RomBOOT_Version,
+                        cdc_write_buf("v", 1);
+                        cdc_write_buf((uint8_t *)RomBOOT_Version,
                                                 strlen(RomBOOT_Version));
-                        ptr_monitor_if->putdata(" ", 1);
-                        ptr_monitor_if->putdata((uint8_t *)RomBOOT_ExtendedCapabilities,
+                        cdc_write_buf(" ", 1);
+                        cdc_write_buf((uint8_t *)RomBOOT_ExtendedCapabilities,
                                                 strlen(RomBOOT_ExtendedCapabilities));
-                        ptr_monitor_if->putdata(" ", 1);
+                        cdc_write_buf(" ", 1);
                         ptr = (uint8_t *)&(__DATE__);
-                        ptr_monitor_if->putdata(ptr, strlen((char *)ptr));
-                        ptr_monitor_if->putdata(" ", 1);
+                        cdc_write_buf(ptr, strlen((char *)ptr));
+                        cdc_write_buf(" ", 1);
                         ptr = (uint8_t *)&(__TIME__);
-                        ptr_monitor_if->putdata(ptr, strlen((char *)ptr));
-                        ptr_monitor_if->putdata("\n\r", 2);
+                        cdc_write_buf(ptr, strlen((char *)ptr));
+                        cdc_write_buf("\n\r", 2);
                     } else if (command == 'X') {
                         // Syntax: X[ADDR]#
                         // Erase the flash memory starting from ADDR to the end
@@ -322,7 +285,7 @@ void sam_ba_monitor_run(void) {
                         }
 
                         // Notify command completed
-                        ptr_monitor_if->putdata("X\n\r", 3);
+                        cdc_write_buf("X\n\r", 3);
                     } else if (command == 'Y') {
                         // This command writes the content of a buffer in SRAM
                         // into flash memory.
@@ -346,7 +309,7 @@ void sam_ba_monitor_run(void) {
                         }
 
                         // Notify command completed
-                        ptr_monitor_if->putdata("Y\n\r", 3);
+                        cdc_write_buf("Y\n\r", 3);
                     } else if (command == 'Z') {
                         // This command calculate CRC for a given area of
                         // memory.
@@ -365,16 +328,16 @@ void sam_ba_monitor_run(void) {
                             crc = add_crc(*data++, crc);
 
                         // Send response
-                        ptr_monitor_if->putdata("Z", 1);
+                        cdc_write_buf("Z", 1);
                         put_uint32(crc);
-                        ptr_monitor_if->putdata("#\n\r", 3);
+                        cdc_write_buf("#\n\r", 3);
                     }
 
                     command = 'z';
                     current_number = 0;
 
                     if (b_terminal_mode) {
-                        ptr_monitor_if->putdata(">", 1);
+                        cdc_write_buf(">", 1);
                     }
                 } else {
                     if (('0' <= *ptr) && (*ptr <= '9')) {
