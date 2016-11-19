@@ -502,7 +502,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 //* \brief Send Data through the control endpoint
 //*----------------------------------------------------------------------------
 
-static void AT91F_USB_SendData(P_USB_CDC pCdc, const char *pData, uint32_t length) {
+static void AT91F_USB_SendData(const char *pData, uint32_t length) {
     USB_Write(pData, length, 0);
 }
 
@@ -578,10 +578,10 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         //logval("wlen", wLength);
         if (wValue == 0x100)
             /* Return Device Descriptor */
-            AT91F_USB_SendData(pCdc, devDescriptor, MIN(sizeof(devDescriptor), wLength));
+            AT91F_USB_SendData(devDescriptor, MIN(sizeof(devDescriptor), wLength));
         else if (wValue == 0x200)
             /* Return Configuration Descriptor */
-            AT91F_USB_SendData(pCdc, cfgDescriptor, MIN(sizeof(cfgDescriptor), wLength));
+            AT91F_USB_SendData(cfgDescriptor, MIN(sizeof(cfgDescriptor), wLength));
         else if (ctrlOutCache.buf[3] == 3) {
             if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
                 stall_ep(0);
@@ -598,7 +598,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
                     desc.data[i * 2] = ptr[i];
                 }
             }
-            AT91F_USB_SendData(pCdc, (void *)&desc,
+            AT91F_USB_SendData((void *)&desc,
                                MIN(sizeof(StringDescriptor), wLength));
         } else
             /* Stall the request */
@@ -629,16 +629,16 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
     case STD_GET_CONFIGURATION:
         /* Return current configuration value */
-        AT91F_USB_SendData(pCdc, (char *)&(pCdc->currentConfiguration),
+        AT91F_USB_SendData((char *)&(pCdc->currentConfiguration),
                            sizeof(pCdc->currentConfiguration));
         break;
     case STD_GET_STATUS_ZERO:
         wStatus = 0;
-        AT91F_USB_SendData(pCdc, (char *)&wStatus, sizeof(wStatus));
+        AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
         break;
     case STD_GET_STATUS_INTERFACE:
         wStatus = 0;
-        AT91F_USB_SendData(pCdc, (char *)&wStatus, sizeof(wStatus));
+        AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
         break;
     case STD_GET_STATUS_ENDPOINT:
         wStatus = 0;
@@ -657,7 +657,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
                               : 0;
             }
             /* Return current status of endpoint */
-            AT91F_USB_SendData(pCdc, (char *)&wStatus, sizeof(wStatus));
+            AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
         } else
             /* Stall the request */
             stall_ep(0);
@@ -745,7 +745,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
     case GET_LINE_CODING:
         /* Send current line coding */
-        AT91F_USB_SendData(pCdc, (char *)&line_coding, MIN(sizeof(usb_cdc_line_coding_t), wLength));
+        AT91F_USB_SendData((char *)&line_coding, MIN(sizeof(usb_cdc_line_coding_t), wLength));
         break;
     case SET_CONTROL_LINE_STATE:
         /* Store the current connection */
@@ -763,7 +763,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
     case MSC_GET_MAX_LUN:
         logmsg("MSC maxlun");
         wStatus = MAX_LUN;
-        AT91F_USB_SendData(pCdc, (char *)&wStatus, 1);
+        AT91F_USB_SendData((char *)&wStatus, 1);
         break;
 
     default:
