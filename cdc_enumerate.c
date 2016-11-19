@@ -246,7 +246,7 @@ static USB_CDC pCdc;
 #define MSC_RESET 0xFF21
 #define MSC_GET_MAX_LUN 0xFEA1
 
-static void AT91F_CDC_Enumerate(P_USB_CDC pCdc);
+static void AT91F_CDC_Enumerate(void);
 
 /**
  * \fn AT91F_InitUSB
@@ -334,30 +334,13 @@ void AT91F_InitUSB(void) {
     memset((uint8_t *)(&usb_endpoint_table[0]), 0, sizeof(usb_endpoint_table));
 }
 
-static uint8_t USB_IsConfigured(P_USB_CDC pCdc);
-
-//*----------------------------------------------------------------------------
-//* \fn    AT91F_CDC_Open
-//* \brief
-//*----------------------------------------------------------------------------
-P_USB_CDC AT91F_CDC_Open(P_USB_CDC pCdc, Usb *pUsb) {
-    pCdc->pUsb = pUsb;
-    pCdc->currentConfiguration = 0;
-    pCdc->currentConnection = 0;
-    pCdc->IsConfigured = USB_IsConfigured;
-    pCdc->pUsb->HOST.CTRLA.bit.ENABLE = true;
-    return pCdc;
-}
-
-bool USB_Ok() { return !!USB_IsConfigured(&pCdc); }
-
 //*----------------------------------------------------------------------------
 //* \fn    USB_IsConfigured
 //* \brief Test if the device is configured and handle
 // enumerationDEVICE.DeviceEndpoint[ep_num].EPCFG.bit.EPTYPE1
 //*----------------------------------------------------------------------------
-static uint8_t USB_IsConfigured(P_USB_CDC pCdc) {
-    Usb *pUsb = pCdc->pUsb;
+bool USB_Ok() {
+    Usb *pUsb = pCdc.pUsb;
 
     /* Check for End of Reset flag */
     if (pUsb->DEVICE.INTFLAG.reg & USB_DEVICE_INTFLAG_EORST) {
@@ -385,12 +368,12 @@ static uint8_t USB_IsConfigured(P_USB_CDC pCdc) {
         pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
 
         // Reset current configuration value to 0
-        pCdc->currentConfiguration = 0;
+        pCdc.currentConfiguration = 0;
     } else if (pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_RXSTP) {
-        AT91F_CDC_Enumerate(pCdc);
+        AT91F_CDC_Enumerate();
     }
 
-    return pCdc->currentConfiguration;
+    return pCdc.currentConfiguration != 0;
 }
 
 //*----------------------------------------------------------------------------
@@ -540,8 +523,8 @@ static void configureInOut(Usb *pUsb, uint8_t in_ep) {
 //* \fn    AT91F_CDC_Enumerate
 //* \brief This function is a callback invoked when a SETUP packet is received
 //*----------------------------------------------------------------------------
-void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
-    Usb *pUsb = pCdc->pUsb;
+void AT91F_CDC_Enumerate() {
+    Usb *pUsb = pCdc.pUsb;
     static volatile uint8_t bmRequestType, bRequest, dir;
     static volatile uint16_t wValue, wIndex, wLength, wStatus;
 
@@ -606,7 +589,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
     case STD_SET_CONFIGURATION:
         /* Store configuration */
-        pCdc->currentConfiguration = (uint8_t)wValue;
+        pCdc.currentConfiguration = (uint8_t)wValue;
         /* Send ZLP */
         AT91F_USB_SendZlp(pUsb);
 
@@ -623,8 +606,8 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
     case STD_GET_CONFIGURATION:
         /* Return current configuration value */
-        AT91F_USB_SendData((char *)&(pCdc->currentConfiguration),
-                           sizeof(pCdc->currentConfiguration));
+        AT91F_USB_SendData((char *)&(pCdc.currentConfiguration),
+                           sizeof(pCdc.currentConfiguration));
         break;
     case STD_GET_STATUS_ZERO:
         wStatus = 0;
@@ -743,7 +726,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         break;
     case SET_CONTROL_LINE_STATE:
         /* Store the current connection */
-        pCdc->currentConnection = wValue;
+        pCdc.currentConnection = wValue;
         /* Send ZLP */
         AT91F_USB_SendZlp(pUsb);
         break;
@@ -797,14 +780,13 @@ void stall_ep(uint8_t ep) {
     }
 }
 
-P_USB_CDC usb_init(void) {
+void usb_init(void) {
     pCdc.pUsb = USB;
-
     /* Initialize USB */
     AT91F_InitUSB();
-    /* Get the default CDC structure settings */
-    AT91F_CDC_Open((P_USB_CDC)&pCdc, pCdc.pUsb);
-    return &pCdc;
+    pCdc.currentConfiguration = 0;
+    pCdc.currentConnection = 0;
+    pCdc.pUsb->HOST.CTRLA.bit.ENABLE = true;
 }
 
 int cdc_putc(int value) {

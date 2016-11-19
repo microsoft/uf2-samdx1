@@ -56,8 +56,6 @@ typedef struct _USB_CDC {
     Usb *pUsb;
     uint8_t currentConfiguration;
     uint8_t currentConnection;
-    // Public Methods:
-    uint8_t (*IsConfigured)(struct _USB_CDC *pCdc);
 } USB_CDC, *P_USB_CDC;
 
 typedef struct {
@@ -69,10 +67,8 @@ typedef struct {
 
 /**
  * \brief Initializes the USB module
- *
- * \return Pointer to the USB CDC structure
  */
-P_USB_CDC usb_init(void);
+void usb_init(void);
 
 /**
  * \brief Sends a single byte through USB CDC

@@ -227,9 +227,6 @@ void system_init(void) {
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
-    P_USB_CDC pCdc;
-#endif
     DEBUG_PIN_HIGH;
 
     logmsg("Start");
@@ -268,13 +265,13 @@ int main(void) {
      * Application start address will be 0x2000 when both interfaces are enabled
      */
     //*data_ptr = *data_ptr + 0x1000;
-    pCdc = (P_USB_CDC)usb_init();
+    usb_init();
 #endif
     DEBUG_PIN_LOW;
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
 #if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
-        if (pCdc->IsConfigured(pCdc) != 0) {
+        if (USB_Ok()) {
             main_b_cdc_enable = true;
         }
 
