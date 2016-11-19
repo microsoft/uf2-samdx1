@@ -36,7 +36,7 @@ OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
 NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 
-all: dirs $(EXECUTABLE)
+all: dirs $(EXECUTABLE) build/uf2conv
 
 r: run
 b: burn
@@ -65,7 +65,10 @@ $(EXECUTABLE): $(OBJECTS)
 $(BUILD_PATH)/%.o: %.c
 	@echo "$<"
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
-	
+
+build/uf2conv:	uf2conv.c
+	cc -W -Wall -o $@ uf2conv.c
+
 clean:
 	rm -rf $(EXECUTABLE) $(BUILD_PATH) $(NAME).elf
 

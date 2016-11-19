@@ -1,8 +1,7 @@
 #ifndef UF2_H
 #define UF2_H 1
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "uf2format.h"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 4200
@@ -13,7 +12,6 @@
 #define USE_ASSERT 1
 #define USE_UART 0
 #define USE_FAT 1
-#define APP_START_ADDRESS 0x00002000
 
 
 /*
@@ -55,18 +53,5 @@ void panic(void);
 extern volatile bool b_sam_ba_interface_usart;
 void flash_write_row(uint32_t *dst, uint32_t *src);
 void writeNum(char *buf, uint32_t n);
-
-#define UF2_MAGIC_START 0x9E5D5157UL
-#define UF2_MAGIC_END   0xD8B16F30UL
-
-typedef struct {
-    uint32_t magicStart;
-    uint32_t flags;
-    uint32_t targetAddr;
-    uint32_t payloadSize;
-    uint32_t reserved[3];
-    uint8_t data[512 - 8 * 4];
-    uint32_t magicEnd;
-} UF2_Block;
 
 #endif
