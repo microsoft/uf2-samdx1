@@ -640,7 +640,7 @@ static void udi_msc_sbc_read_capacity(void) {
     if (!udi_msc_cbw_validate(sizeof(udi_msc_capacity), USB_CBW_DIRECTION_IN))
         return;
 
-    udi_msc_capacity.max_lba = NUM_FAT_BLOCKS;
+    udi_msc_capacity.max_lba = NUM_FAT_BLOCKS - 1;
     // Format capacity data
     udi_msc_capacity.block_len = CPU_TO_BE32(UDI_MSC_BLOCK_SIZE);
     udi_msc_capacity.max_lba = cpu_to_be32(udi_msc_capacity.max_lba);
@@ -672,10 +672,19 @@ static void udi_msc_sbc_trans(bool b_read) {
     if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
     
-    logval("read bytes", trans_size);
-    logval("read addr", udi_msc_addr);
+    logwrite("read ");
+    logwritenum(trans_size);
+    logwrite(" @");
+    logwritenum(udi_msc_addr);
+    logwrite("\n");
 
     for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {
+        if (!USB_Ok()) {
+            logmsg("Transfer aborted.");
+            return;
+        }
+
+        //logval("readblk", i);
         if (b_read) {
             read_block(udi_msc_addr + i, block_buffer);
             USB_Write(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_IN);

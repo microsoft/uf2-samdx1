@@ -70,13 +70,15 @@ const char devDescriptor[] = {
     0x01  // bNumConfigs
 };
 
+#define USE_CDC 0
+
 COMPILER_WORD_ALIGNED
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
-    0x09, // CbLength
-    0x02, // CbDescriptorType
-    0x5A, // CwTotalLength 2 EP + Control
+    0x09,                  // CbLength
+    0x02,                  // CbDescriptorType
+    USE_CDC ? 0x5A : 0x20, // CwTotalLength 2 EP + Control
     0x00,
     0x03, // CbNumInterfaces
     0x01, // CbConfigurationValue
@@ -84,6 +86,7 @@ char cfgDescriptor[] = {
     0xC0, // CbmAttributes 0xA0
     0x00, // CMaxPower
 
+#if USE_CDC
     /* Communication Class Interface Descriptor Requirement */
     0x09, // bLength
     0x04, // bDescriptorType
@@ -160,18 +163,19 @@ char cfgDescriptor[] = {
     PKT_SIZE, // wMaxPacketSize
     0x00,
     0x00, // bInterval
+#endif
 
     // MSC
 
-    9,  /// descriptor size in bytes
-    4,  /// descriptor type - interface
-    2,  /// interface number
-    0,  /// alternate setting number
-    2,  /// number of endpoints
-    8,  /// class code - mass storage
-    6,  /// subclass code - SCSI transparent command set
-    80, /// protocol code - bulk only transport
-    0,  /// interface string index
+    9,               /// descriptor size in bytes
+    4,               /// descriptor type - interface
+    USE_CDC ? 2 : 0, /// interface number
+    0,               /// alternate setting number
+    2,               /// number of endpoints
+    8,               /// class code - mass storage
+    6,               /// subclass code - SCSI transparent command set
+    80,              /// protocol code - bulk only transport
+    0,               /// interface string index
 
     7,        /// descriptor size in bytes
     5,        /// descriptor type - endpoint
@@ -269,7 +273,7 @@ static void AT91F_CDC_Enumerate(P_USB_CDC pCdc);
 void AT91F_InitUSB(void) {
     uint32_t pad_transn, pad_transp, pad_trim;
 
-    assert(sizeof(cfgDescriptor) == 0x5A);
+    assert(sizeof(cfgDescriptor) == cfgDescriptor[2]);
 
     /* Enable USB clock */
     PM->APBBMASK.reg |= PM_APBBMASK_USB;
@@ -361,6 +365,8 @@ P_USB_CDC AT91F_CDC_Open(P_USB_CDC pCdc, Usb *pUsb) {
     pCdc->pUsb->HOST.CTRLA.bit.ENABLE = true;
     return pCdc;
 }
+
+bool USB_Ok() { return !!USB_IsConfigured(&pCdc); }
 
 //*----------------------------------------------------------------------------
 //* \fn    USB_IsConfigured
@@ -459,6 +465,8 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep) {
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep) {
     /* Blocking read till specified number of bytes is received */
     while (length) {
+        if (!USB_Ok())
+            return;
         uint32_t curr = USB_Read(dst, length, ep);
         length -= curr;
         dst = (char *)dst + curr;
@@ -474,7 +482,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
         /* Update the EP data address */
         data_address = (uint32_t)pData;
         /* Enable auto zlp */
-        usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
+        //usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);
@@ -495,8 +503,10 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
     pUsb->DEVICE.DeviceEndpoint[ep_num].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK1RDY;
 
     /* Wait for transfer to complete */
-    while (!(pUsb->DEVICE.DeviceEndpoint[ep_num].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1))
-        ;
+    while (!(pUsb->DEVICE.DeviceEndpoint[ep_num].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1)) {
+        if (!USB_Ok())
+            return -1;
+    }
 
     return length;
 }
@@ -819,7 +829,7 @@ int cdc_getc(void) {
 
 bool cdc_is_rx_ready(void) {
     /* Check whether the device is configured */
-    if (!USB_IsConfigured(&pCdc))
+    if (!USB_Ok())
         return 0;
 
     /* Return transfer complete 0 flag status */
@@ -835,7 +845,7 @@ uint32_t cdc_write_buf(void const *data, uint32_t length) {
 
 uint32_t cdc_read_buf(void *data, uint32_t length) {
     /* Check whether the device is configured */
-    if (!USB_IsConfigured(&pCdc))
+    if (!USB_Ok())
         return 0;
 
     /* Read from USB CDC */
@@ -844,7 +854,7 @@ uint32_t cdc_read_buf(void *data, uint32_t length) {
 
 uint32_t cdc_read_buf_xmd(void *data, uint32_t length) {
     /* Check whether the device is configured */
-    if (!USB_IsConfigured(&pCdc))
+    if (!USB_Ok())
         return 0;
 
     /* Blocking read till specified number of bytes is received */

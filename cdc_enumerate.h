@@ -129,6 +129,7 @@ void stall_ep(uint8_t ep);
 uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep);
 uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num);
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep);
+bool USB_Ok(void);
 
 // move to msc.h
 // index of highest LUN
