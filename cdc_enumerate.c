@@ -81,10 +81,10 @@ char cfgDescriptor[] = {
     USE_CDC ? 0x5A : 0x20, // CwTotalLength 2 EP + Control
     0x00,
     USE_CDC ? 0x03 : 0x01, // CbNumInterfaces
-    0x01, // CbConfigurationValue
-    0x00, // CiConfiguration
-    0xC0, // CbmAttributes 0xA0
-    0x00, // CMaxPower
+    0x01,                  // CbConfigurationValue
+    0x00,                  // CiConfiguration
+    0xC0,                  // CbmAttributes 0xA0
+    0x00,                  // CMaxPower
 
 #if USE_CDC
     /* Communication Class Interface Descriptor Requirement */
@@ -202,11 +202,8 @@ typedef struct {
 
 #define STRING_DESCRIPTOR_COUNT 4
 
-static const char* string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    0,
-    "UF2 Bootloader",
-    "PXT.IO",
-    "F23456789ABC",
+static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {
+    0, "UF2 Bootloader", "PXT.IO", "F23456789ABC",
 };
 
 static usb_cdc_line_coding_t line_coding = {
@@ -468,7 +465,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
         /* Update the EP data address */
         data_address = (uint32_t)pData;
         /* Enable auto zlp */
-        //usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
+        // usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);
@@ -502,9 +499,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 //* \brief Send Data through the control endpoint
 //*----------------------------------------------------------------------------
 
-static void AT91F_USB_SendData(const char *pData, uint32_t length) {
-    USB_Write(pData, length, 0);
-}
+static void AT91F_USB_SendData(const char *pData, uint32_t length) { USB_Write(pData, length, 0); }
 
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_USB_SendZlp
@@ -574,8 +569,8 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
      * specification Rev 1.1 */
     switch (reqId) {
     case STD_GET_DESCRIPTOR:
-        //logval("DESC", wValue);
-        //logval("wlen", wLength);
+        // logval("DESC", wValue);
+        // logval("wlen", wLength);
         if (wValue == 0x100)
             /* Return Device Descriptor */
             AT91F_USB_SendData(devDescriptor, MIN(sizeof(devDescriptor), wLength));
@@ -598,8 +593,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
                     desc.data[i * 2] = ptr[i];
                 }
             }
-            AT91F_USB_SendData((void *)&desc,
-                               MIN(sizeof(StringDescriptor), wLength));
+            AT91F_USB_SendData((void *)&desc, MIN(sizeof(StringDescriptor), wLength));
         } else
             /* Stall the request */
             stall_ep(0);
