@@ -9,11 +9,11 @@ for (let line of s.split("\n")) {
   bufs.push(bb)
 }
 let total = Buffer.concat(bufs)
-let ptr = total.indexOf("LOGHEADER_42_42")
-if (ptr < 0) {
+
+let len = total.readUInt32LE(0)
+if (len == 0 || len > total.length) {
   console.log("No logs.")
 } else {
-  let len = total.readUInt32LE(ptr + 16)
   console.log("*\n* Logs\n*\n")
-  console.log(total.slice(ptr + 20, ptr + 20 + len).toString("binary"))
+  console.log(total.slice(4, 4 + len).toString("binary"))
 }

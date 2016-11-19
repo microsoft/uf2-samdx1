@@ -292,12 +292,9 @@ void panic(void) {
 
 #if USE_LOGS
 static struct {
-    char header[16];
     int ptr;
     char buffer[4096];
-} log = {
-    .header = "LOGHEADER_42_42",
-};
+} logStoreUF2;
 
 void logwritenum(uint32_t n) {
     char buff[9];
@@ -318,19 +315,19 @@ void logwritenum(uint32_t n) {
 }
 
 void logwrite(const char *msg) {
-    const int jump = sizeof(log.buffer) / 4;
-    if (log.ptr >= sizeof(log.buffer) - jump) {
-        log.ptr -= jump;
-        memmove(log.buffer, log.buffer + jump, log.ptr);
+    const int jump = sizeof(logStoreUF2.buffer) / 4;
+    if (logStoreUF2.ptr >= sizeof(logStoreUF2.buffer) - jump) {
+        logStoreUF2.ptr -= jump;
+        memmove(logStoreUF2.buffer, logStoreUF2.buffer + jump, logStoreUF2.ptr);
     }
     int l = strlen(msg);
-    if (l + log.ptr >= sizeof(log.buffer)) {
+    if (l + logStoreUF2.ptr >= sizeof(logStoreUF2.buffer)) {
         logwrite("TOO LONG!\n");
         return;
     }
-    memcpy(log.buffer + log.ptr, msg, l);
-    log.ptr += l;
-    log.buffer[log.ptr] = 0;
+    memcpy(logStoreUF2.buffer + logStoreUF2.ptr, msg, l);
+    logStoreUF2.ptr += l;
+    logStoreUF2.buffer[logStoreUF2.ptr] = 0;
 }
 
 void logmsg(const char *msg) {
