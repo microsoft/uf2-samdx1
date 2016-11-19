@@ -202,26 +202,12 @@ typedef struct {
 
 #define STRING_DESCRIPTOR_COUNT 4
 
-static const StringDescriptor string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    /*! index 0 - language */
-    {
-        4,                 // length
-        3,                 // descriptor type - string
-        {0x09, 0x04, 0, 0} // languageID - United States
-    },
-    /*! index 1 - product ID */
-    {18, // length
-     3,  // descriptor type - string
-     {'A', 0, 't', 0, 'm', 0, 'e', 0, 'g', 0, 'a', 0, '3', 0, '2', 0, 0, 0}},
-    /*! index 2 - manufacturer ID */
-    {12, // length
-     3,  // descriptor type - string
-     {'J', 0, 'A', 0, 'M', 0, 'E', 0, 'S', 0, 0, 0}},
-    /*! index 3 - serial number */
-    {26, // length
-     3,  // descriptor type - string
-     {'2', 0,   '2', 0,   '3', 0,   '4', 0,   '5', 0,   '6', 0, '7',
-      0,   '8', 0,   '9', 0,   'A', 0,   'B', 0,   'C', 0,   0, 0}}};
+static const char* string_descriptors[STRING_DESCRIPTOR_COUNT] = {
+    0,
+    "UF2 Bootloader",
+    "PXT.IO",
+    "F23456789ABC",
+};
 
 static usb_cdc_line_coding_t line_coding = {
     115200, // baudrate
@@ -599,7 +585,20 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
         else if (ctrlOutCache.buf[3] == 3) {
             if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
                 stall_ep(0);
-            AT91F_USB_SendData(pCdc, (void *)&string_descriptors[ctrlOutCache.buf[2]],
+            StringDescriptor desc = {0};
+            desc.type = 3;
+            if (ctrlOutCache.buf[2] == 0) {
+                desc.len = 4;
+                desc.data[0] = 0x09;
+                desc.data[1] = 0x04;
+            } else {
+                const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
+                desc.len = strlen(ptr) * 2 + 2;
+                for (int i = 0; ptr[i]; i++) {
+                    desc.data[i * 2] = ptr[i];
+                }
+            }
+            AT91F_USB_SendData(pCdc, (void *)&desc,
                                MIN(sizeof(StringDescriptor), wLength));
         } else
             /* Stall the request */
