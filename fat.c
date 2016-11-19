@@ -56,7 +56,7 @@ static const struct TextFile info[] = {
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
-#define FLASH_SKIP 0x2000
+#define FLASH_SKIP APP_START_ADDRESS
 #define UF2_SIZE ((FLASH_SIZE - FLASH_SKIP) * 2)
 #define UF2_SECTORS (UF2_SIZE / 512)
 #define UF2_FIRST_SECTOR (NUM_INFO + 1)

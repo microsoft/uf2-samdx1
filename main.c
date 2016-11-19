@@ -83,7 +83,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define APP_START_ADDRESS 0x00002000
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL 64
@@ -222,6 +221,7 @@ void system_init(void) {
 
 void __libc_init_array(void) {}
 void __libc_fini_array(void) {}
+extern char _etext;
 
 /**
  *  \brief SAMD21 SAM-BA Main loop.
@@ -231,6 +231,7 @@ int main(void) {
     DEBUG_PIN_HIGH;
 
     logmsg("Start");
+    assert((uint32_t)&_etext < APP_START_ADDRESS);
 
     assert(8 << NVMCTRL->PARAM.bit.PSZ == FLASH_PAGE_SIZE);
     assert(FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP == FLASH_SIZE);

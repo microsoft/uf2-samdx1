@@ -11,8 +11,10 @@
 #define SERIAL_NUMBER "F23456789ABC"
 #define USE_LOGS 1
 #define USE_ASSERT 1
-#define USE_UART 1
+#define USE_UART 0
 #define USE_FAT 1
+#define APP_START_ADDRESS 0x00002000
+
 
 /*
 From CPU config:
