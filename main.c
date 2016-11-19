@@ -157,7 +157,6 @@ void system_init(void) {
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
         ;
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     SYSCTRL_DFLLCTRL_Type dfllctrl_conf = {0};
     SYSCTRL_DFLLVAL_Type dfllval_conf = {0};
     uint32_t coarse = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32)) >>
@@ -207,7 +206,6 @@ void system_init(void) {
     GCLK->GENCTRL.reg = (genctrl.reg | temp_genctrl);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
         ;
-#endif
 }
 
 #ifdef DEBUG_ENABLE
@@ -248,32 +246,18 @@ int main(void) {
     system_init();
     cpu_irq_enable();
 
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
-    /* Store the application start address @0x20000000.
-     * Application start address will be 0x1000 when only one interface is
-     * enabled
-     * Application start address will be 0x2000 when both interfaces are enabled
-     */
-    //*data_ptr = *data_ptr + 0x1000;
+#if USE_UART
     /* UART is enabled in all cases */
     usart_open();
 #endif
 
     logmsg("Before main loop");
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
-    /* Store the application start address @0x20000000.
-     * Application start address will be 0x1000 when only one interface is
-     * enabled
-     * Application start address will be 0x2000 when both interfaces are enabled
-     */
-    //*data_ptr = *data_ptr + 0x1000;
     usb_init();
-#endif
+
     DEBUG_PIN_LOW;
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
         if (USB_Ok()) {
             main_b_cdc_enable = true;
         }
@@ -288,8 +272,7 @@ int main(void) {
                 sam_ba_monitor_run();
             }
         }
-#endif
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if USE_UART
         /* Check if a '#' has been received */
         if (!main_b_cdc_enable && usart_sharp_received()) {
             sam_ba_monitor_init(SAM_BA_INTERFACE_USART);
@@ -299,6 +282,11 @@ int main(void) {
             }
         }
 #endif
+    }
+}
+
+void panic(void) {
+    while (1) {
     }
 }
 

@@ -30,8 +30,10 @@
 #ifndef CDC_ENUMERATE_H
 #define CDC_ENUMERATE_H
 
+#include "uf2.h"
 #include "iosamd21.h"
 #include "stdbool.h"
+
 
 #define PKT_SIZE 64
 
@@ -132,36 +134,8 @@ bool USB_Ok(void);
 #define MAX_LUN 0
 void process_msc(void);
 void msc_reset(void);
-// needs to be more than ~4200 (to force FAT16)
-#define NUM_FAT_BLOCKS 4200
 //! Static block size for all memories
 #define UDI_MSC_BLOCK_SIZE 512L
-
-#define VENDOR_NAME "PXT.IO"
-#define PRODUCT_NAME "UF2 Bootloader"
-#define SERIAL_NUMBER "F23456789ABC"
-
-#define USE_LOGS 0
-
-#if USE_LOGS
-void logmsg(const char *msg);
-void logval(const char *lbl, uint32_t v);
-void logwritenum(uint32_t n);
-void logwrite(const char *msg);
-#else
-#define NOOP do{}while(0)
-#define logmsg(...) NOOP
-#define logval(...) NOOP
-#define logwritenum(...) NOOP
-#define logwrite(...) NOOP
-#endif
-
-#define assert(cond) \
-  if (!(cond)) { \
-    logwrite("Assertion failed: "); \
-    logwrite(#cond); \
-    logwrite("\n"); \
-    while (1) {} }
 
 
 void read_block(uint32_t block_no, uint8_t *data);

@@ -34,15 +34,6 @@
 
 #define SAM_BA_VERSION "1.1"
 
-/* Enable the interfaces to save code size */
-#define SAM_BA_BOTH_INTERFACES 0
-#define SAM_BA_UART_ONLY 1
-#define SAM_BA_USBCDC_ONLY 2
-
-#ifndef SAM_BA_INTERFACE
-#define SAM_BA_INTERFACE SAM_BA_BOTH_INTERFACES
-#endif
-
 /* Selects USART as the communication interface of the monitor */
 #define SAM_BA_INTERFACE_USART 1
 /* Selects USB as the communication interface of the monitor */

@@ -558,7 +558,6 @@ static void udi_msc_spc_mode_sense(bool b_sense10) {
     uint8_t data_sense_lgt;
     uint8_t mode;
     uint8_t request_lgt;
-    uint8_t wp;
     struct spc_control_page_info_execpt *ptr_mode;
     COMPILER_ALIGNED(4) static union sense_6_10 sense;
 
@@ -594,18 +593,11 @@ static void udi_msc_spc_mode_sense(bool b_sense10) {
         return;
 
     // Fill mode parameter header length
-    wp = 0; // not write protected SCSI_MS_SBC_WP
 
     if (b_sense10) {
         sense.s10.header.mode_data_length = cpu_to_be16((data_sense_lgt - 2));
-        // sense.s10.header.medium_type                 = 0;
-        sense.s10.header.device_specific_parameter = wp;
-        // sense.s10.header.block_descriptor_length     = 0;
     } else {
         sense.s6.header.mode_data_length = data_sense_lgt - 1;
-        // sense.s6.header.medium_type                  = 0;
-        sense.s6.header.device_specific_parameter = wp;
-        // sense.s6.header.block_descriptor_length      = 0;
     }
 
     // Send mode sense data

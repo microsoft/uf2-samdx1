@@ -56,19 +56,17 @@ typedef struct {
     uint32_t (*getdata_xmd)(void *data, uint32_t length);
 } t_monitor_if;
 
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if USE_UART
 /* Initialize structures with function pointers from supported interfaces */
 const t_monitor_if uart_if = {usart_putc,    usart_getc,        usart_is_rx_ready, usart_putdata,
                               usart_getdata, usart_putdata_xmd, usart_getdata_xmd};
 #endif
 
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
 // Please note that USB doesn't use Xmodem protocol, since USB already includes
 // flow control and data verification
 // Data are simply forwarded without further coding.
 const t_monitor_if usbcdc_if = {cdc_putc,     cdc_getc,      cdc_is_rx_ready, cdc_write_buf,
                                 cdc_read_buf, cdc_write_buf, cdc_read_buf_xmd};
-#endif
 
 /* The pointer to the interface object use by the monitor */
 t_monitor_if *ptr_monitor_if;
@@ -78,18 +76,16 @@ volatile bool b_terminal_mode = false;
 volatile bool b_sam_ba_interface_usart = false;
 
 void sam_ba_monitor_init(uint8_t com_interface) {
-#if SAM_BA_INTERFACE == SAM_BA_UART_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
+#if USE_UART
     // Selects the requested interface for future actions
     if (com_interface == SAM_BA_INTERFACE_USART) {
         ptr_monitor_if = (t_monitor_if *)&uart_if;
         b_sam_ba_interface_usart = true;
     }
 #endif
-#if SAM_BA_INTERFACE == SAM_BA_USBCDC_ONLY || SAM_BA_INTERFACE == SAM_BA_BOTH_INTERFACES
     if (com_interface == SAM_BA_INTERFACE_USBCDC) {
         ptr_monitor_if = (t_monitor_if *)&usbcdc_if;
     }
-#endif
 }
 
 /**
@@ -162,16 +158,8 @@ uint32_t u32tmp;
 #define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
 int flash_size;
 
-void panic(void) {
-    while (1) {
-    }
-}
-
 void init_flash(void) {
-    int page_size = 8 << NVMCTRL->PARAM.bit.PSZ;
-    if (page_size != FLASH_PAGE_SIZE) {
-        panic();
-    }
+    assert(8 << NVMCTRL->PARAM.bit.PSZ == FLASH_PAGE_SIZE);
     flash_size = FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP;
 }
 
