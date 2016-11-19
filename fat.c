@@ -51,8 +51,17 @@ struct TextFile {
 
 #if USE_FAT
 static const struct TextFile info[] = {
-    {.name = "INFO", .ext = "TXT", .content = "Hello world! build at " __TIME__}};
+    {.name = "INFO", .ext = "TXT", .content = "UF2 Bootloader.\nBuild at: " __DATE__ __TIME__},
+    {.name = "FLASH", .ext = "UF2"},
+};
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
+
+#define FLASH_SKIP 0x2000
+#define UF2_SIZE ((FLASH_SIZE - FLASH_SKIP) * 2)
+#define UF2_SECTORS (UF2_SIZE / 512)
+#define UF2_FIRST_SECTOR (NUM_INFO + 1)
+#define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
+
 #endif
 
 #define RESERVED_SECTORS 1
@@ -107,26 +116,32 @@ void read_block(uint32_t block_no, uint8_t *data) {
         logval("sidx", sectionIdx);
         if (sectionIdx >= SECTORS_PER_FAT)
             sectionIdx -= SECTORS_PER_FAT;
+#if USE_FAT
         if (sectionIdx == 0) {
-            #if USE_FAT
-                data[0] = 0xf0;
-                for (int i = 1; i < NUM_INFO * 2 + 4; ++i) {
-                    data[i] = 0xff;
-                }
-            #else
-                memcpy(data, "\xf0\xff\xff\xff", 4);
-            #endif
+            data[0] = 0xf0;
+            for (int i = 1; i < NUM_INFO * 2 + 4; ++i) {
+                data[i] = 0xff;
+            }
         }
+        for (int i = 0; i < 256; ++i) {
+            uint32_t v = sectionIdx * 256 + i;
+            if (UF2_FIRST_SECTOR <= v && v <= UF2_LAST_SECTOR)
+                ((uint16_t *)(void *)data)[i] = v == UF2_LAST_SECTOR ? 0xffff : v + 1;
+        }
+#else
+        if (sectionIdx == 0)
+            memcpy(data, "\xf0\xff\xff\xff", 4);
+#endif
     }
-    #if USE_FAT 
+#if USE_FAT
     else if (block_no < START_CLUSTERS) {
         sectionIdx -= START_ROOTDIR;
         if (sectionIdx == 0) {
             for (int i = 0; i < NUM_INFO; ++i) {
-                struct DirEntry *d = (void *)(data + i * sizeof(d));
+                struct DirEntry *d = (void *)(data + i * sizeof(*d));
                 const struct TextFile *inf = &info[i];
                 assert(sizeof(*d) == 32);
-                d->size = strlen(inf->content);
+                d->size = inf->content ? strlen(inf->content) : UF2_SIZE;
                 d->startCluster = i + 2;
                 padded_memcpy(d->name, inf->name, 8);
                 padded_memcpy(d->ext, inf->ext, 3);
@@ -134,12 +149,22 @@ void read_block(uint32_t block_no, uint8_t *data) {
         }
     } else {
         sectionIdx -= START_CLUSTERS;
-        logval("data cluster", sectionIdx);
-        if (sectionIdx < NUM_INFO) {
+        if (sectionIdx < NUM_INFO - 1) {
             memcpy(data, info[sectionIdx].content, strlen(info[sectionIdx].content));
+        } else {
+            sectionIdx -= NUM_INFO - 1;
+            uint32_t addr = sectionIdx * 256 + FLASH_SKIP;
+            if (addr < FLASH_SIZE) {
+                UF2_Block *bl = (void *)data;
+                bl->magicStart = UF2_MAGIC_START;
+                bl->magicEnd = UF2_MAGIC_END;
+                bl->targetAddr = addr;
+                bl->payloadSize = 256;
+                memcpy(bl->data, (void *)addr, bl->payloadSize);
+            }
         }
     }
-    #endif
+#endif
 }
 
 void write_block(uint32_t block_no, uint8_t *data) {}

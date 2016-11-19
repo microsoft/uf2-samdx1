@@ -9,11 +9,19 @@
 #define VENDOR_NAME "PXT.IO"
 #define PRODUCT_NAME "UF2 Bootloader"
 #define SERIAL_NUMBER "F23456789ABC"
-#define USE_LOGS 0
+#define USE_LOGS 1
 #define USE_ASSERT 1
 #define USE_UART 1
 #define USE_FAT 1
 
+/*
+From CPU config:
+#define FLASH_SIZE            0x8000UL 
+#define FLASH_PAGE_SIZE       64
+#define FLASH_NB_OF_PAGES     512
+*/
+
+#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
 
 #define NOOP do{}while(0)
 
@@ -43,5 +51,20 @@ void panic(void);
 #endif
 
 extern volatile bool b_sam_ba_interface_usart;
+void flash_write_row(uint32_t *dst, uint32_t *src);
+void writeNum(char *buf, uint32_t n);
+
+#define UF2_MAGIC_START 0x9E5D5157UL
+#define UF2_MAGIC_END   0xD8B16F30UL
+
+typedef struct {
+    uint32_t magicStart;
+    uint32_t flags;
+    uint32_t targetAddr;
+    uint32_t payloadSize;
+    uint32_t reserved[3];
+    uint8_t data[512 - 8 * 4];
+    uint32_t magicEnd;
+} UF2_Block;
 
 #endif

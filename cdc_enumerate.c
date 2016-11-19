@@ -60,7 +60,7 @@ const char devDescriptor[] = {
     0x40, // bMaxPacketSize0
     0xEB, // idVendorL
     0x03, //
-    0x2a, // idProductL
+    0x2c, // idProductL
     0x61, //
     0x10, // bcdDeviceL
     0x01, //

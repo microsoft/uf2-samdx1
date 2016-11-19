@@ -117,15 +117,6 @@ uint8_t command, *ptr_data, *ptr, data[SIZEBUFMAX];
 uint8_t j;
 uint32_t u32tmp;
 
-#define FLASH_PAGE_SIZE 64
-#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
-int flash_size;
-
-void init_flash(void) {
-    assert(8 << NVMCTRL->PARAM.bit.PSZ == FLASH_PAGE_SIZE);
-    flash_size = FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP;
-}
-
 static void wait_ready(void) {
     while (NVMCTRL->INTFLAG.bit.READY == 0) {
     }
@@ -160,6 +151,12 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
 }
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {
+    for (int i = 0; i < FLASH_ROW_SIZE / 4; ++i)
+        if (src[i] != dst[i])
+            goto doflash;
+    return;
+    
+doflash:
     flash_erase_row(dst);
     flash_write_words(dst, src, FLASH_ROW_SIZE);
 }
@@ -253,11 +250,10 @@ void sam_ba_monitor_run(void) {
                         b_terminal_mode = 0;
                     } else if (command == 'V') {
                         cdc_write_buf("v", 1);
-                        cdc_write_buf((uint8_t *)RomBOOT_Version,
-                                                strlen(RomBOOT_Version));
+                        cdc_write_buf((uint8_t *)RomBOOT_Version, strlen(RomBOOT_Version));
                         cdc_write_buf(" ", 1);
                         cdc_write_buf((uint8_t *)RomBOOT_ExtendedCapabilities,
-                                                strlen(RomBOOT_ExtendedCapabilities));
+                                      strlen(RomBOOT_ExtendedCapabilities));
                         cdc_write_buf(" ", 1);
                         ptr = (uint8_t *)&(__DATE__);
                         cdc_write_buf(ptr, strlen((char *)ptr));
@@ -278,8 +274,7 @@ void sam_ba_monitor_run(void) {
 
                         uint32_t dst_addr = current_number; // starting address
 
-                        init_flash();
-                        while (dst_addr < flash_size) {
+                        while (dst_addr < FLASH_SIZE) {
                             flash_erase_row((void *)dst_addr);
                             dst_addr += FLASH_ROW_SIZE;
                         }

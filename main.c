@@ -232,11 +232,8 @@ int main(void) {
 
     logmsg("Start");
 
-    /* Pointer to store application start address */
-    // uint32_t *data_ptr = (uint32_t *)0x20000000;
-
-    /* Initialize the pointer */
-    //*data_ptr = 0;
+    assert(8 << NVMCTRL->PARAM.bit.PSZ == FLASH_PAGE_SIZE);
+    assert(FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP == FLASH_SIZE);
 
     /* Jump in application if condition is satisfied */
     check_start_application();
@@ -290,6 +287,21 @@ void panic(void) {
     }
 }
 
+void writeNum(char *buf, uint32_t n) {
+    buf[0] = '0';
+    buf[1] = 'x';
+    int i = 2;
+    int sh = 28;
+    while (sh >= 0) {
+        int d = (n >> sh) & 0xf;
+        if (d || sh == 0 || i > 2) {
+            buf[i++] = d > 9 ? 'a' + d - 10 : '0' + d;
+        }
+        sh -= 4;
+    }
+    buf[i] = 0;
+}
+
 #if USE_LOGS
 static struct {
     int ptr;
@@ -297,21 +309,9 @@ static struct {
 } logStoreUF2;
 
 void logwritenum(uint32_t n) {
-    char buff[9];
-    int i;
-    for (i = 0; i < 8; i++) {
-        int d = n & 0XF;
-        n = (n >> 4);
-        buff[7 - i] = d > 9 ? 'A' + d - 10 : '0' + d;
-    }
-    buff[8] = 0;
-    char *p = buff;
-    while (*p && *p == '0')
-        p++;
-    if (!*p)
-        p--;
-    logwrite("0x");
-    logwrite(p);
+    char buff[12];
+    writeNum(buff, n);
+    logwrite(buff);
 }
 
 void logwrite(const char *msg) {
