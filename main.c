@@ -83,7 +83,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL 64
 
@@ -120,10 +119,16 @@ static void check_start_application(void) {
         return; // stay in bootloader
     } else {
         *DBL_TAP_PTR = DBL_TAP_MAGIC;
-        for (int i = 0; i < 100000; ++i)
-            asm("nop"); // wait for second reset
+        for (int i = 0; i < 100000; ++i) {
+            if ((i & 0x3fff) == 0) {
+                bulb_toggle();
+            }
+        }
+        asm("nop"); // wait for second reset
         *DBL_TAP_PTR = 0;
     }
+
+    bulb_off();
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);
@@ -207,18 +212,6 @@ void system_init(void) {
         ;
 }
 
-#ifdef DEBUG_ENABLE
-#define DEBUG_PIN_HIGH port_pin_set_output_level(BOOT_LED, 1)
-#define DEBUG_PIN_LOW port_pin_set_output_level(BOOT_LED, 0)
-#else
-#define DEBUG_PIN_HIGH                                                                             \
-    do {                                                                                           \
-    } while (0)
-#define DEBUG_PIN_LOW                                                                              \
-    do {                                                                                           \
-    } while (0)
-#endif
-
 void __libc_init_array(void) {}
 void __libc_fini_array(void) {}
 extern char _etext;
@@ -228,7 +221,8 @@ extern char _etext;
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
-    DEBUG_PIN_HIGH;
+    bulb_init();
+    bulb_on();
 
     logmsg("Start");
     assert((uint32_t)&_etext < APP_START_ADDRESS);
@@ -253,7 +247,6 @@ int main(void) {
 
     usb_init();
 
-    DEBUG_PIN_LOW;
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
         if (USB_Ok()) {
