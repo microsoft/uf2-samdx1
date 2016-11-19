@@ -222,6 +222,9 @@ void system_init(void) {
     } while (0)
 #endif
 
+void __libc_init_array(void) {}
+void __libc_fini_array(void) {}
+
 /**
  *  \brief SAMD21 SAM-BA Main loop.
  *  \return Unused (ANSI-C compatibility).

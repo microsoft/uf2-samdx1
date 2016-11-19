@@ -90,6 +90,8 @@ SECTIONS
         KEEP (*(SORT(.ctors.*)))
         KEEP (*crtend.o(.ctors))
 
+	/*
+
         . = ALIGN(4);
         KEEP(*(.fini))
 
@@ -103,6 +105,7 @@ SECTIONS
         KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
         KEEP (*(SORT(.dtors.*)))
         KEEP (*crtend.o(.dtors))
+	*/
 
         . = ALIGN(4);
         _efixed = .;            /* End of text section */
