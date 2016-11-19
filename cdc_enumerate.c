@@ -488,16 +488,9 @@ static void AT91F_USB_SendData(const char *pData, uint32_t length) { USB_Write(p
 //* \fn    AT91F_USB_SendZlp
 //* \brief Send zero length packet through the control endpoint
 //*----------------------------------------------------------------------------
-void AT91F_USB_SendZlp(Usb *pUsb) {
-    /* Set the byte count as zero */
-    usb_endpoint_table[0].DeviceDescBank[1].PCKSIZE.bit.BYTE_COUNT = 0;
-    /* Clear the transfer complete flag  */
-    pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT1;
-    /* Set the bank as ready */
-    pUsb->DEVICE.DeviceEndpoint[0].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK1RDY;
-    /* Wait for transfer to complete */
-    while (!(pUsb->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1))
-        ;
+void AT91F_USB_SendZlp(void) {
+    char c = 0;
+    AT91F_USB_SendData(&c, 0);
 }
 
 static void configureInOut(Usb *pUsb, uint8_t in_ep) {
@@ -583,7 +576,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_SET_ADDRESS:
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
         /* Set device address to the newly received address from host */
         pUsb->DEVICE.DADD.reg = USB_DEVICE_DADD_ADDEN | wValue;
         break;
@@ -591,7 +584,7 @@ void AT91F_CDC_Enumerate() {
         /* Store configuration */
         pCdc.currentConfiguration = (uint8_t)wValue;
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
 
         configureInOut(pUsb, USB_EP_IN);
 
@@ -645,7 +638,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_SET_FEATURE_INTERFACE:
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
         break;
     case STD_SET_FEATURE_ENDPOINT:
         dir = wIndex & 0x80;
@@ -660,7 +653,7 @@ void AT91F_CDC_Enumerate() {
                     USB_DEVICE_EPSTATUSSET_STALLRQ0;
             }
             /* Send ZLP */
-            AT91F_USB_SendZlp(pUsb);
+            AT91F_USB_SendZlp();
         } else
             /* Stall the request */
             stall_ep(0);
@@ -671,7 +664,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_CLEAR_FEATURE_INTERFACE:
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
         break;
     case STD_CLEAR_FEATURE_ENDPOINT:
         dir = wIndex & 0x80;
@@ -709,7 +702,7 @@ void AT91F_CDC_Enumerate() {
                 }
             }
             /* Send ZLP */
-            AT91F_USB_SendZlp(pUsb);
+            AT91F_USB_SendZlp();
         } else {
             stall_ep(0);
         }
@@ -718,7 +711,7 @@ void AT91F_CDC_Enumerate() {
     // handle CDC class requests
     case SET_LINE_CODING:
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
         break;
     case GET_LINE_CODING:
         /* Send current line coding */
@@ -728,7 +721,7 @@ void AT91F_CDC_Enumerate() {
         /* Store the current connection */
         pCdc.currentConnection = wValue;
         /* Send ZLP */
-        AT91F_USB_SendZlp(pUsb);
+        AT91F_USB_SendZlp();
         break;
 
     // MSC
