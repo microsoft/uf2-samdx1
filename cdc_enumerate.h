@@ -137,6 +137,10 @@ void msc_reset(void);
 //! Static block size for all memories
 #define UDI_MSC_BLOCK_SIZE 512L
 
+#define VENDOR_NAME "PXT.IO"
+#define PRODUCT_NAME "UF2 Bootloader"
+#define SERIAL_NUMBER "F23456789ABC"
+
 #define USE_LOGS 0
 
 #if USE_LOGS
@@ -162,5 +166,6 @@ void logwrite(const char *msg);
 
 void read_block(uint32_t block_no, uint8_t *data);
 void write_block(uint32_t block_no, uint8_t *data);
+void padded_memcpy(char *dst, const char *src, int len);
 
 #endif // CDC_ENUMERATE_H

@@ -82,6 +82,16 @@ static const FAT_BootBlock BootBlock = {
     .FilesystemIdentifier = "FAT16   ",
 };
 
+void padded_memcpy(char *dst, const char *src, int len) {
+    for (int i = 0; i < len; ++i) {
+        if (*src)
+            *dst = *src++;
+        else
+            *dst = ' ';
+        dst++;
+    }
+}
+
 void read_block(uint32_t block_no, uint8_t *data) {
     memset(data, 0, 512);
     uint32_t sectionIdx = block_no;
@@ -111,9 +121,8 @@ void read_block(uint32_t block_no, uint8_t *data) {
                 assert(sizeof(*d) == 32);
                 d->size = strlen(inf->content);
                 d->startCluster = i + 2;
-                memset(&d->name, ' ', 11);
-                memcpy(d->name, inf->name, strlen(inf->name));
-                memcpy(d->ext, inf->ext, min(3, strlen(inf->name)));
+                padded_memcpy(d->name, inf->name, 8);
+                padded_memcpy(d->ext, inf->ext, 3);
             }
         }
     } else {

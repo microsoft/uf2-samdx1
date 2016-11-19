@@ -203,7 +203,7 @@ typedef struct {
 #define STRING_DESCRIPTOR_COUNT 4
 
 static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    0, "UF2 Bootloader", "PXT.IO", "F23456789ABC",
+    0, PRODUCT_NAME, VENDOR_NAME, SERIAL_NUMBER,
 };
 
 static usb_cdc_line_coding_t line_coding = {
