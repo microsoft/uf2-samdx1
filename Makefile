@@ -11,7 +11,7 @@ WFLAGS = \
 -Wformat -Wmissing-format-attribute \
 -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs \
 -Wlong-long -Wunreachable-code -Wcast-align \
--Wno-overflow -Wno-shadow -Wno-attributes -Wno-packed -Werror
+-Wno-overflow -Wno-shadow -Wno-attributes -Wno-packed -Wno-pointer-sign -Werror
 CFLAGS = $(COMMON_FLAGS) \
 -x c -c -pipe -nostdlib \
 --param max-inline-insns-single=500 \
