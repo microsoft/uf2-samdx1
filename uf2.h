@@ -13,6 +13,8 @@
 #define USE_UART 0
 #define USE_FAT 1
 
+#define TIMER_STEP 1500
+
 
 /*
 From CPU config:

@@ -216,6 +216,23 @@ void __libc_init_array(void) {}
 void __libc_fini_array(void) {}
 extern char _etext;
 
+static uint32_t timerLow;
+uint32_t timerHigh, resetHorizon, blinkHorizon;
+void timerTick(void) {
+    if (timerLow-- == 0) {
+        timerLow = TIMER_STEP;
+        timerHigh++;
+        if (resetHorizon && timerHigh >= resetHorizon) {
+            resetHorizon = 0;
+            //check_start_application();
+        }
+        if (timerHigh < blinkHorizon)
+            bulb_toggle();
+        else
+            bulb_on();
+    }
+}
+
 /**
  *  \brief SAMD21 SAM-BA Main loop.
  *  \return Unused (ANSI-C compatibility).

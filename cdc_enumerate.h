@@ -149,4 +149,7 @@ inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_P
 inline void bulb_on(void) { PORT->Group[BULB_PORT].OUTSET.reg = (1 << BULB_PIN); }
 inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN); }
 
+extern uint32_t timerHigh, resetHorizon, blinkHorizon;
+void timerTick(void);
+
 #endif // CDC_ENUMERATE_H

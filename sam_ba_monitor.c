@@ -155,7 +155,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
         if (src[i] != dst[i])
             goto doflash;
     return;
-    
+
 doflash:
     flash_erase_row(dst);
     flash_write_words(dst, src, FLASH_ROW_SIZE);

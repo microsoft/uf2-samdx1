@@ -342,6 +342,8 @@ void AT91F_InitUSB(void) {
 bool USB_Ok() {
     Usb *pUsb = pCdc.pUsb;
 
+    timerTick();
+
     /* Check for End of Reset flag */
     if (pUsb->DEVICE.INTFLAG.reg & USB_DEVICE_INTFLAG_EORST) {
         /* Clear the flag */
@@ -384,6 +386,8 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep) {
     Usb *pUsb = pCdc.pUsb;
     uint32_t packetSize = 0;
     PacketBuffer *cache = &endpointCache[ep];
+
+    timerTick();
 
     if (cache->ptr < cache->size) {
         packetSize = MIN(cache->size - cache->ptr, length);
