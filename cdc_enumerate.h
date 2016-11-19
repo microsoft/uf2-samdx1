@@ -141,10 +141,20 @@ void msc_reset(void);
 //! Static block size for all memories
 #define UDI_MSC_BLOCK_SIZE 512L
 
+#define USE_LOGS 0
+
+#if USE_LOGS
 void logmsg(const char *msg);
 void logval(const char *lbl, uint32_t v);
 void logwritenum(uint32_t n);
 void logwrite(const char *msg);
+#else
+#define NOOP do{}while(0)
+#define logmsg(...) NOOP
+#define logval(...) NOOP
+#define logwritenum(...) NOOP
+#define logwrite(...) NOOP
+#endif
 
 #define assert(cond) \
   if (!(cond)) { \

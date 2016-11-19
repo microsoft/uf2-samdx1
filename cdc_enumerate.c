@@ -586,7 +586,7 @@ void AT91F_CDC_Enumerate(P_USB_CDC pCdc) {
 
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
-    switch ((bRequest << 8) | bmRequestType) {
+    switch (reqId) {
     case STD_GET_DESCRIPTOR:
         //logval("DESC", wValue);
         //logval("wlen", wLength);

@@ -302,6 +302,7 @@ int main(void) {
     }
 }
 
+#if USE_LOGS
 static struct {
     char header[16];
     int ptr;
@@ -355,3 +356,4 @@ void logval(const char *lbl, uint32_t v) {
     logwritenum(v);
     logwrite("\n");
 }
+#endif
