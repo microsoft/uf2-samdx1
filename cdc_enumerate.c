@@ -80,7 +80,7 @@ char cfgDescriptor[] = {
     0x02,                  // CbDescriptorType
     USE_CDC ? 0x5A : 0x20, // CwTotalLength 2 EP + Control
     0x00,
-    0x03, // CbNumInterfaces
+    USE_CDC ? 0x03 : 0x01, // CbNumInterfaces
     0x01, // CbConfigurationValue
     0x00, // CiConfiguration
     0xC0, // CbmAttributes 0xA0

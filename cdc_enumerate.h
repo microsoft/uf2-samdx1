@@ -136,8 +136,8 @@ bool USB_Ok(void);
 #define MAX_LUN 0
 void process_msc(void);
 void msc_reset(void);
-// needs to be more than 4084 (to force FAT16)
-#define NUM_FAT_BLOCKS 4096
+// needs to be more than ~4200 (to force FAT16)
+#define NUM_FAT_BLOCKS 4200
 //! Static block size for all memories
 #define UDI_MSC_BLOCK_SIZE 512L
 
