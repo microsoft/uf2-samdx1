@@ -11,6 +11,7 @@
 #define USE_LOGS 1
 #define USE_ASSERT 1
 #define USE_UART 1
+#define USE_FAT 1
 
 
 #define NOOP do{}while(0)
@@ -40,5 +41,6 @@ void panic(void);
 #define assert(cond) NOOP
 #endif
 
+//extern volatile bool b_sam_ba_interface_usart;
 
 #endif

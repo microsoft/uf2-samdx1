@@ -49,10 +49,11 @@ struct TextFile {
     const char *content;
 };
 
+#if USE_FAT
 static const struct TextFile info[] = {
     {.name = "INFO", .ext = "TXT", .content = "Hello world! build at " __TIME__}};
-
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
+#endif
 
 #define RESERVED_SECTORS 1
 #define ROOT_DIR_SECTORS 1
@@ -107,12 +108,18 @@ void read_block(uint32_t block_no, uint8_t *data) {
         if (sectionIdx >= SECTORS_PER_FAT)
             sectionIdx -= SECTORS_PER_FAT;
         if (sectionIdx == 0) {
-            data[0] = 0xf0;
-            for (int i = 1; i < NUM_INFO * 2 + 4; ++i) {
-                data[i] = 0xff;
-            }
+            #if USE_FAT
+                data[0] = 0xf0;
+                for (int i = 1; i < NUM_INFO * 2 + 4; ++i) {
+                    data[i] = 0xff;
+                }
+            #else
+                memcpy(data, "\xf0\xff\xff\xff", 4);
+            #endif
         }
-    } else if (block_no < START_CLUSTERS) {
+    }
+    #if USE_FAT 
+    else if (block_no < START_CLUSTERS) {
         sectionIdx -= START_ROOTDIR;
         if (sectionIdx == 0) {
             for (int i = 0; i < NUM_INFO; ++i) {
@@ -132,6 +139,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
             memcpy(data, info[sectionIdx].content, strlen(info[sectionIdx].content));
         }
     }
+    #endif
 }
 
 void write_block(uint32_t block_no, uint8_t *data) {}
