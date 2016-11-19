@@ -268,7 +268,7 @@ void process_msc(void) {
     // Prepare CSW residue field with the size requested
     udi_msc_csw.dCSWDataResidue = le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
 
-    logval("MSC CMD", udi_msc_cbw.CDB[0]);
+    //logval("MSC CMD", udi_msc_cbw.CDB[0]);
 
     // Decode opcode
     switch (udi_msc_cbw.CDB[0]) {
@@ -664,12 +664,14 @@ static void udi_msc_sbc_trans(bool b_read) {
     if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
     
+    #if 0
     logwrite("read ");
     logwritenum(trans_size);
     logwrite(" @");
     logwritenum(udi_msc_addr);
     logwrite("\n");
-
+    #endif
+    
     for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {
         if (!USB_Ok()) {
             logmsg("Transfer aborted.");
