@@ -55,14 +55,14 @@ logs:
 	sh scripts/getlogs.sh
 
 dirs:
-	-@mkdir $(BUILD_PATH)
+	-@mkdir -p $(BUILD_PATH)
 	
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(NAME).elf $@
 	@arm-none-eabi-size $(NAME).elf
 
-$(BUILD_PATH)/%.o: %.c
+$(BUILD_PATH)/%.o: %.c $(wildcard *.h)
 	@echo "$<"
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
