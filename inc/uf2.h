@@ -6,13 +6,14 @@
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 4200
-#define VENDOR_NAME "PXT.IO"
+#define VENDOR_NAME "ACME Corp."
 #define PRODUCT_NAME "UF2 Bootloader"
 #define SERIAL_NUMBER "F23456789ABC"
 #define USE_LOGS 1
 #define USE_ASSERT 1
 #define USE_UART 0
 #define USE_FAT 1
+#define USE_CDC 1
 
 #define TIMER_STEP 1500
 

@@ -71,7 +71,6 @@ const char devDescriptor[] = {
     0x01  // bNumConfigs
 };
 
-#define USE_CDC 1
 
 COMPILER_WORD_ALIGNED
 char cfgDescriptor[] = {

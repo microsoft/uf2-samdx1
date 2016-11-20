@@ -65,4 +65,6 @@ The bootloader sits at 0x00000000, and the application starts at 0x00002000.
 
 ## License
 
+The original SAM-BA bootloader is licensed under BSD-like license from Atmel.
 
+The new code is licensed under MIT.

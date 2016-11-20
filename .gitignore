@@ -2,3 +2,4 @@ build/
 .vs/
 uf2-bootloader.elf
 tmp
+*.sw?
