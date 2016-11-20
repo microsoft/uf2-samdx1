@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// if you increase that, you will also need to update the linker script file
 #define APP_START_ADDRESS 0x00002000
 
 #define UF2_MAGIC_START 0x9E5D5157UL
