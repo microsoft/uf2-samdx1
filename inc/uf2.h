@@ -9,11 +9,17 @@
 #define VENDOR_NAME "ACME Corp."
 #define PRODUCT_NAME "UF2 Bootloader"
 #define SERIAL_NUMBER "F23456789ABC"
+
+// Logging to help debugging
 #define USE_LOGS 1
+// Check various conditions; best leave on
 #define USE_ASSERT 1
-#define USE_UART 0
+// Enable reading flash via FAT files; otherwise drive will appear empty
 #define USE_FAT 1
+// Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
 #define USE_CDC 1
+// Support the UART (real serial port, not USB)
+#define USE_UART 0
 
 #define TIMER_STEP 1500
 

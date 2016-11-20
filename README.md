@@ -63,8 +63,8 @@ than 8k. Also, the linker script will not allow it.
 
 Two typical configurations are:
 
-* USB CDC and MSC, plus flash reading via FLASH; UART disabled; logging optional; **recommended**
-* USB CDC and MSC, no flash reading via FLASH; UART enabled; logging disabled; only this one if you need the UART support in bootloader for whatever reason
+* USB CDC and MSC, plus flash reading via FAT; UART disabled; logging optional; **recommended**
+* USB CDC and MSC, no flash reading via FAT; UART enabled; logging disabled; only this one if you need the UART support in bootloader for whatever reason
 
 The bootloader sits at 0x00000000, and the application starts at 0x00002000.
 
