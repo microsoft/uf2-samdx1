@@ -24,10 +24,11 @@ In `uf2conv.c` you can find a small converter from `.bin` to `.uf2`.
 
 ## Features
 
-* USB CDC (Serial) monitor mode compatible with Arduino (including XYZ commands) and BOSSA flashing tool
+* USB CDC (Serial emulation) monitor mode compatible with Arduino 
+  (including XYZ commands) and BOSSA flashing tool
 * USB MSC interface for writing UF2 files
 * reading of the contests of the flash as an UF2 file via USB MSC
-* UART Serial monitor mode (typically disabled due to space constraints)
+* UART Serial (real serial wire) monitor mode (typically disabled due to space constraints)
 * In-memory logging for debugging - use the `logs` target to extract the logs using `openocd`
 * double-tap reset to stay in the bootloader mode
 * automatic reset after UF2 file is written
