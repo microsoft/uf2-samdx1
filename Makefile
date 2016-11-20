@@ -24,14 +24,11 @@ LDFLAGS= $(COMMON_FLAGS) \
 -save-temps  -T./asf/sam0/utils/linker_scripts/samd21/gcc/samd21j18a_flash.ld \
 --specs=nano.specs --specs=nosys.specs 
 BUILD_PATH=build
-INCLUDES = -I. -I./preprocessor 
+INCLUDES = -I./inc -I./inc/preprocessor
 INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Include -I./asf/sam0/utils/cmsis/samd21/source
 INCLUDES += -I./asf/common
-SOURCES = main.c sam_ba_monitor.c startup_samd21.c \
-usart_sam_ba.c cdc_enumerate.c uart_driver.c \
-interrupt_sam_nvic.c msc.c fat.c
- 
-OBJECTS = $(addprefix $(BUILD_PATH)/, $(SOURCES:.c=.o))
+SOURCES = $(wildcard src/*.c)
+OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SOURCES))
 
 NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
@@ -62,12 +59,12 @@ $(EXECUTABLE): $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
 
-$(BUILD_PATH)/%.o: %.c $(wildcard *.h)
+$(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h)
 	@echo "$<"
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-build/uf2conv:	uf2conv.c
-	cc -W -Wall -o $@ uf2conv.c
+build/uf2conv: utils/uf2conv.c
+	cc -Iinc -W -Wall -o $@ utils/uf2conv.c
 
 clean:
 	rm -rf $(BUILD_PATH)
