@@ -61,6 +61,11 @@ By default, you cannot enable all the features, as the bootloader would exceed
 the 8k allocated to it by Arduino etc. It will assert on startup that it's not bigger
 than 8k. Also, the linker script will not allow it.
 
+Two typical configurations are:
+
+* USB CDC and MSC, plus flash reading via FLASH; UART disabled; logging optional; **recommended**
+* USB CDC and MSC, no flash reading via FLASH; UART enabled; logging disabled; only this one if you need the UART support in bootloader for whatever reason
+
 The bootloader sits at 0x00000000, and the application starts at 0x00002000.
 
 
