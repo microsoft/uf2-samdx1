@@ -58,9 +58,9 @@ dirs:
 	-@mkdir -p $(BUILD_PATH)
 	
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(NAME).elf $(OBJECTS)
-	arm-none-eabi-objcopy -O binary $(NAME).elf $@
-	@arm-none-eabi-size $(NAME).elf
+	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
+	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
+	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
 
 $(BUILD_PATH)/%.o: %.c $(wildcard *.h)
 	@echo "$<"
@@ -70,7 +70,4 @@ build/uf2conv:	uf2conv.c
 	cc -W -Wall -o $@ uf2conv.c
 
 clean:
-	rm -rf $(EXECUTABLE) $(BUILD_PATH) $(NAME).elf
-
-
-
+	rm -rf $(BUILD_PATH)
