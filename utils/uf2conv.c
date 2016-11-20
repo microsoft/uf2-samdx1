@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
         fwrite(&bl, 1, sizeof(bl), fout);
         numbl++;
         bl.targetAddr += bl.payloadSize;
+        // clear for next iteration, in case we get a short read
+        memset(bl.data, 0, sizeof(bl.data));
     }
     fclose(fout);
     fclose(f);
