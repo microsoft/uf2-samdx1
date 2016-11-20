@@ -30,7 +30,6 @@
 #include "sam_ba_monitor.h"
 #include "cdc_enumerate.h"
 #include "compiler.h"
-#include "iosamd21.h"
 #include "uart_driver.h"
 #include "usart_sam_ba.h"
 #include <string.h>

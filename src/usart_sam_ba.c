@@ -29,7 +29,6 @@
 
 #include "usart_sam_ba.h"
 #include "compiler.h"
-#include "iosamd21.h"
 #include "main.h"
 #include "uart_driver.h"
 

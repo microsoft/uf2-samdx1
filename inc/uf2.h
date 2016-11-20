@@ -1,6 +1,7 @@
 #ifndef UF2_H
 #define UF2_H 1
 
+#include "samd21.h"
 #include "uf2format.h"
 
 // needs to be more than ~4200 (to force FAT16)

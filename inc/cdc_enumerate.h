@@ -31,8 +31,6 @@
 #define CDC_ENUMERATE_H
 
 #include "uf2.h"
-#include "iosamd21.h"
-#include "stdbool.h"
 
 #define PKT_SIZE 64
 

@@ -32,6 +32,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#undef ENABLE
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef struct {

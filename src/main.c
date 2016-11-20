@@ -79,9 +79,10 @@
 #include "compiler.h"
 #include "sam_ba_monitor.h"
 #include "usart_sam_ba.h"
-#include <iosamd21.h>
 #include <stdio.h>
 #include <string.h>
+
+#undef ENABLE
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL 64
