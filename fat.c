@@ -187,5 +187,5 @@ void write_block(uint32_t block_no, uint8_t *data) {
     flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 
     blinkHorizon = timerHigh + 5;
-    resetHorizon = timerHigh + 100;
+    resetHorizon = timerHigh + 50;
 }

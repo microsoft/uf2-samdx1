@@ -119,12 +119,9 @@ static void check_start_application(void) {
         return; // stay in bootloader
     } else {
         *DBL_TAP_PTR = DBL_TAP_MAGIC;
-        for (int i = 0; i < 100000; ++i) {
-            if ((i & 0x3fff) == 0) {
-                bulb_toggle();
-            }
+        for (int i = 1; i < 100000; ++i) {
+            asm("nop");
         }
-        asm("nop"); // wait for second reset
         *DBL_TAP_PTR = 0;
     }
 
@@ -224,7 +221,7 @@ void timerTick(void) {
         timerHigh++;
         if (resetHorizon && timerHigh >= resetHorizon) {
             resetHorizon = 0;
-            //check_start_application();
+            NVIC_SystemReset();
         }
         if (timerHigh < blinkHorizon)
             bulb_toggle();
