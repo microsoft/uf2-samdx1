@@ -15,12 +15,13 @@ int main(int argc, char **argv) {
 
     const char *outname = argc > 2 ? argv[2] : "flash.uf2";
 
-    FILE *fout = fopen("flash.uf2", "wb");
+    FILE *fout = fopen(outname, "wb");
 
     UF2_Block bl;
     memset(&bl, 0, sizeof(bl));
    
-    bl.magicStart = UF2_MAGIC_START;
+    bl.magicStart0 = UF2_MAGIC_START0;
+    bl.magicStart1 = UF2_MAGIC_START1;
     bl.magicEnd = UF2_MAGIC_END;
     bl.targetAddr = APP_START_ADDRESS;
     bl.payloadSize = 256;

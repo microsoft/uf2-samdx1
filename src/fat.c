@@ -110,7 +110,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
         logval("data[0]", data[0]);
     } else if (block_no < START_ROOTDIR) {
         sectionIdx -= START_FAT0;
-        //logval("sidx", sectionIdx);
+        // logval("sidx", sectionIdx);
         if (sectionIdx >= SECTORS_PER_FAT)
             sectionIdx -= SECTORS_PER_FAT;
 #if USE_FAT
@@ -153,7 +153,8 @@ void read_block(uint32_t block_no, uint8_t *data) {
             uint32_t addr = sectionIdx * 256 + FLASH_SKIP;
             if (addr < FLASH_SIZE) {
                 UF2_Block *bl = (void *)data;
-                bl->magicStart = UF2_MAGIC_START;
+                bl->magicStart0 = UF2_MAGIC_START0;
+                bl->magicStart1 = UF2_MAGIC_START1;
                 bl->magicEnd = UF2_MAGIC_END;
                 bl->targetAddr = addr;
                 bl->payloadSize = 256;
@@ -166,8 +167,9 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data) {
     UF2_Block *bl = (void *)data;
-    if (bl->magicStart != UF2_MAGIC_START || bl->magicEnd != UF2_MAGIC_END) {
-        //logval("skip write @", block_no);
+    if (bl->magicStart0 != UF2_MAGIC_START0 || bl->magicStart1 != UF2_MAGIC_START1 ||
+        bl->magicEnd != UF2_MAGIC_END || (bl->flags & UF2_FLAG_NOFLASH)) {
+        // logval("skip write @", block_no);
         return;
     }
     if (bl->payloadSize != 256) {

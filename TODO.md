@@ -1,8 +1,8 @@
 ## Current
 * [ ] separate logs out
 * [ ] no volume label shows under Windows
-* [ ] extend magic with "UF2\n" string
-* [ ] align data in block to 32 bytes (for hex viewer)
+* [x] extend magic with "UF2\n" string
+* [x] align data in block to 32 bytes (for hex viewer)
 * [ ] show board serial number and name in info file
 * [ ] organize board configs in directories
 * [ ] use BOOTPROT bits

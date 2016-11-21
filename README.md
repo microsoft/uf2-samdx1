@@ -15,7 +15,7 @@ Each 512 byte block consist of (see `uf2format.h` for details):
 * magic numbers at the beginning and at the end
 * address where the data should be flashed
 * size of data
-* data (up to 480 bytes; for SAMD it's 256 bytes so it's easy to flash in one go)
+* data (up to 476 bytes; for SAMD it's 256 bytes so it's easy to flash in one go)
 
 Thus, it's really easy for the microcontroller to recognize a block of
 a UF2 file is written and immediately write it to flash.
