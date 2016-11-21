@@ -43,7 +43,7 @@ l: logs
 
 burn: all
 	sh scripts/openocd.sh \
-	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{build/uf2-bootloader.bin}} verify reset; shutdown "
+	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{$(BUILD_PATH)/$(NAME).bin}} verify reset; shutdown "
 
 run: burn wait logs
 
@@ -51,7 +51,7 @@ wait:
 	sleep 5
 
 logs:
-	sh scripts/getlogs.sh
+	sh scripts/getlogs.sh $(BUILD_PATH)/$(NAME).map
 
 dirs:
 	-@mkdir -p $(BUILD_PATH)

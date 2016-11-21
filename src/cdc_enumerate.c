@@ -55,10 +55,14 @@ const char devDescriptor[] = {
     0x00, // bDeviceSubclass: CDC class sub code
     0x00, // bDeviceProtocol: CDC Device protocol
     0x40, // bMaxPacketSize0
-    0xEB, // idVendorL
-    0x03, //
-    0x2c, // idProductL
-    0x61, //
+    USB_VID & 0xff,
+    USB_VID >> 8,
+    USB_PID & 0xff,
+    USB_PID >> 8,
+    //0xEB, // idVendorL
+    //0x03, //
+    //0x2c, // idProductL
+    //0x61, //
     0x10, // bcdDeviceL
     0x01, //
     0x01, // iManufacturer    // 0x01
@@ -194,13 +198,13 @@ const char cfgDescriptor[] = {
 typedef struct {
     uint8_t len;
     uint8_t type;
-    uint8_t data[26];
+    uint8_t data[40];
 } StringDescriptor;
 
 #define STRING_DESCRIPTOR_COUNT 4
 
 static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    0, PRODUCT_NAME, VENDOR_NAME, SERIAL_NUMBER,
+    0, PRODUCT_NAME, VENDOR_NAME, serialNumber,
 };
 
 static usb_cdc_line_coding_t line_coding = {

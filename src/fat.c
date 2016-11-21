@@ -52,6 +52,8 @@ struct TextFile {
     const char *content;
 };
 
+char serialNumber[17];
+
 #if USE_FAT
 uint32_t infoPtr;
 char infoFile[256];
@@ -71,27 +73,27 @@ static void infoWrite(const char *ptr) {
     memcpy(infoFile + infoPtr, ptr, len);
     infoPtr += len;
 }
-
-static void infoWriteNum(uint32_t num) {
-    writeNum(infoFile + infoPtr, num, true);
-    infoPtr += 8;
-}
+#endif
 
 void init_fat() {
-    infoWrite("UF2 Bootloader.\r\n"
+#if USE_FAT
+    infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
               "Built at: " __DATE__ " " __TIME__ "\r\n"
               "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
               "Serial: ");
+    
+    writeNum(serialNumber, SERIAL0 ^ SERIAL1, true);
+    writeNum(serialNumber + 8, SERIAL2 ^ SERIAL3, true);
 
-    infoWriteNum(SERIAL0);
-    infoWriteNum(SERIAL1);
-    infoWriteNum(SERIAL2);
-    infoWriteNum(SERIAL3);
+    infoWrite(serialNumber);
+    infoWrite("\r\n");
 
     assert(infoPtr < sizeof(infoFile));
     infoFile[infoPtr] = 0;
-}
+#else
+
 #endif
+}
 
 #define RESERVED_SECTORS 1
 #define ROOT_DIR_SECTORS 1

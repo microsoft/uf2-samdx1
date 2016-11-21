@@ -17,10 +17,13 @@
 #undef DISABLE
 #undef ENABLE
 
+#define UF2_VERSION "v1.0.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
 #define SERIAL_NUMBER "F23456789ABC"
+
+extern char serialNumber[];
 
 // Logging to help debugging
 #define USE_LOGS 1
