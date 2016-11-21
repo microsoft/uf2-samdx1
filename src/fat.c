@@ -52,7 +52,7 @@ struct TextFile {
     const char *content;
 };
 
-char serialNumber[17];
+char serialNumber[33];
 
 #if USE_FAT
 const char indexFile[] = "<!doctype html>\n"
@@ -75,8 +75,7 @@ static const struct TextFile info[] = {
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
-#define FLASH_SKIP APP_START_ADDRESS
-#define UF2_SIZE ((FLASH_SIZE - FLASH_SKIP) * 2)
+#define UF2_SIZE (FLASH_SIZE * 2)
 #define UF2_SECTORS (UF2_SIZE / 512)
 #define UF2_FIRST_SECTOR (NUM_INFO + 1)
 #define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
@@ -93,18 +92,23 @@ void init_fat() {
     infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
               "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
               "Board-ID: " BOARD_ID "\r\n"
-              "Serial: ");
+#if USE_SERIAL_NUMBER
+              "Serial: "
+#endif
+              );
 
-    writeNum(serialNumber, SERIAL0 ^ SERIAL1, true);
-    writeNum(serialNumber + 8, SERIAL2 ^ SERIAL3, true);
+#if USE_SERIAL_NUMBER
+    writeNum(serialNumber + 0, SERIAL0, true);
+    writeNum(serialNumber + 8, SERIAL1, true);
+    writeNum(serialNumber + 16, SERIAL2, true);
+    writeNum(serialNumber + 24, SERIAL3, true);
 
     infoWrite(serialNumber);
     infoWrite("\r\n");
+#endif
 
     assert(infoPtr < sizeof(infoFile));
     infoFile[infoPtr] = 0;
-#else
-    serialNumber[0] = 'X';
 #endif
 }
 
@@ -198,7 +202,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
             memcpy(data, info[sectionIdx].content, strlen(info[sectionIdx].content));
         } else {
             sectionIdx -= NUM_INFO - 1;
-            uint32_t addr = sectionIdx * 256 + FLASH_SKIP;
+            uint32_t addr = sectionIdx * 256;
             if (addr < FLASH_SIZE) {
                 UF2_Block *bl = (void *)data;
                 bl->magicStart0 = UF2_MAGIC_START0;

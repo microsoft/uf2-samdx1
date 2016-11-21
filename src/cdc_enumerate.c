@@ -194,7 +194,7 @@ char cfgDescriptor[] = {
 typedef struct {
     uint8_t len;
     uint8_t type;
-    uint8_t data[40];
+    uint8_t data[70];
 } StringDescriptor;
 
 #define STRING_DESCRIPTOR_COUNT 4

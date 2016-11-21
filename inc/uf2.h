@@ -38,6 +38,8 @@ extern char serialNumber[];
 #define USE_CDC 0
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
+// Show serial number in info_uf2.txt file
+#define USE_SERIAL_NUMBER 1
 
 // End of config
 
