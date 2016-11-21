@@ -90,7 +90,7 @@ void init_fat() {
     assert(infoPtr < sizeof(infoFile));
     infoFile[infoPtr] = 0;
 #else
-
+    serialNumber[0] = 'X';
 #endif
 }
 

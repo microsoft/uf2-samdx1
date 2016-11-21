@@ -67,7 +67,7 @@ const char devDescriptor[] = {
     0x01, //
     0x01, // iManufacturer    // 0x01
     0x02, // iProduct
-    0x03, // SerialNumber
+    0x00, // SerialNumber
     0x01  // bNumConfigs
 };
 
@@ -553,7 +553,7 @@ void AT91F_CDC_Enumerate() {
      * specification Rev 1.1 */
     switch (reqId) {
     case STD_GET_DESCRIPTOR:
-        // logval("DESC", wValue);
+        logval("DESC", wValue);
         // logval("wlen", wLength);
         if (wValue == 0x100)
             /* Return Device Descriptor */

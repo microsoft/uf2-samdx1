@@ -30,9 +30,9 @@ extern char serialNumber[];
 // Check various conditions; best leave on
 #define USE_ASSERT 1
 // Enable reading flash via FAT files; otherwise drive will appear empty
-#define USE_FAT 1
+#define USE_FAT 0
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
-#define USE_CDC 0
+#define USE_CDC 1
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 
