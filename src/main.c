@@ -208,6 +208,7 @@ void system_init(void) {
 }
 
 extern char _etext;
+extern char _end;
 
 /**
  *  \brief SAMD21 SAM-BA Main loop.
@@ -219,6 +220,8 @@ int main(void) {
 
     logmsg("Start");
     assert((uint32_t)&_etext < APP_START_ADDRESS);
+    // bossac writes at 0x20005000
+    assert(!USE_MONITOR || (uint32_t)&_end < 0x20005000);
 
     assert(8 << NVMCTRL->PARAM.bit.PSZ == FLASH_PAGE_SIZE);
     assert(FLASH_PAGE_SIZE * NVMCTRL->PARAM.bit.NVMP == FLASH_SIZE);

@@ -70,7 +70,7 @@ const char devDescriptor[] = {
 #define CFG_DESC_SIZE (USE_CDC ? 0x5A : 0x20)
 
 COMPILER_WORD_ALIGNED
-const char cfgDescriptor[] = {
+char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
     0x09,          // CbLength
@@ -426,6 +426,9 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep) {
         cache->read_job = false;
     }
 
+    //if (packetSize)
+    //    logval("read", packetSize);
+
     return packetSize;
 }
 
@@ -435,6 +438,8 @@ void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep) {
         if (!USB_Ok())
             return;
         uint32_t curr = USB_Read(dst, length, ep);
+        //if (curr > 0)
+        //    logval("readbl", length);
         length -= curr;
         dst = (char *)dst + curr;
     }
@@ -448,10 +453,12 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
     if (length >= (1 << (usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
         /* Update the EP data address */
         data_address = (uint32_t)pData;
+        // data must be in RAM!
+        assert(data_address >= HMCRAMC0_ADDR);
 
         // always disable AUTO_ZLP on MSC channel, otherwise enable
-        // usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP =
-        //    ep_num == USB_EP_MSC_IN ? false : true;
+        usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP =
+            ep_num == USB_EP_MSC_IN ? false : true;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);

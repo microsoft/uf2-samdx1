@@ -107,7 +107,7 @@ void call_applet(uint32_t address) {
 
 uint32_t current_number;
 uint32_t i, length;
-uint8_t command, *ptr_data, *ptr, data[SIZEBUFMAX];
+uint8_t command, *ptr_data, *ptr, data[SIZEBUFMAX + 1];
 uint8_t j;
 uint32_t u32tmp;
 
@@ -130,6 +130,11 @@ void sam_ba_monitor_run(void) {
     while (1) {
         process_msc();
         length = cdc_read_buf(data, SIZEBUFMAX);
+        data[length] = 0;
+        if (length) {
+            logwrite("SERIAL:");
+            logmsg(data);
+        }
         ptr = data;
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {
