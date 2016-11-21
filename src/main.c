@@ -264,7 +264,9 @@ int main(void) {
         }
 #endif
 #else // no monitor
+    if (main_b_cdc_enable) {
         process_msc();
+    }
 #endif
 
     }
