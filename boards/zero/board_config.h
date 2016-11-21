@@ -7,6 +7,8 @@
 #define PRODUCT_NAME "Zero"
 #define VOLUME_LABEL "ARDUINO-M0"
 
+#define BOARD_ID "SAMD21G18A-Zero-v0"
+
 #define USB_VID 0x2341
 #define USB_PID 0x024D
 

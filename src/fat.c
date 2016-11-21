@@ -55,10 +55,23 @@ struct TextFile {
 char serialNumber[17];
 
 #if USE_FAT
+const char indexFile[] = "<!doctype html>\n"
+                         "<html>"
+                         "<head>"
+                         "<script>\n"
+                         "window.location.replace(\"" INDEX_URL "\");\n"
+                         "</script>"
+                         "</head>"
+                         "<body>"
+                         "</body>"
+                         "</html>\n";
+
 uint32_t infoPtr;
 char infoFile[256];
 static const struct TextFile info[] = {
-    {.name = "INFO    TXT", .content = infoFile}, {.name = "CURRENT UF2"},
+    {.name = "INFO_UF2TXT", .content = infoFile},
+    {.name = "INDEX   HTM", .content = indexFile},
+    {.name = "CURRENT UF2"},
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
@@ -79,8 +92,9 @@ void init_fat() {
 #if USE_FAT
     infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
               "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
+              "Board-ID: " BOARD_ID "\r\n"
               "Serial: ");
-    
+
     writeNum(serialNumber, SERIAL0 ^ SERIAL1, true);
     writeNum(serialNumber + 8, SERIAL2 ^ SERIAL3, true);
 

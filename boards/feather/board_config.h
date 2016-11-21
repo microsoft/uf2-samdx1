@@ -7,6 +7,8 @@
 #define PRODUCT_NAME "Feather M0"
 #define VOLUME_LABEL "FEATHER-M0"
 
+#define BOARD_ID "SAMD21G18A-Feather-v0"
+
 #define USB_VID 0x239A
 #define USB_PID 0x0015
 

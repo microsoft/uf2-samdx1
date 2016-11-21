@@ -10,6 +10,8 @@
 #define USB_VID 0x03EB   // Atmel
 #define USB_PID 0x6124   // Example device
 
+#define BOARD_ID "SAMD21G18A-Generic"
+
 #define BULB_PORT 0
 #define BULB_PIN 17
 

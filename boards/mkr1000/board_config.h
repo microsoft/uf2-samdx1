@@ -7,6 +7,8 @@
 #define PRODUCT_NAME "MKR1000"
 #define VOLUME_LABEL "MKR1000"
 
+#define BOARD_ID "SAMD21G18A-MKR1000-v0"
+
 #define USB_VID 0x2341
 #define USB_PID 0x024E
 
