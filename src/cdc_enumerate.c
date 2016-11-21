@@ -47,28 +47,24 @@ COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
 COMPILER_WORD_ALIGNED
 const char devDescriptor[] = {
     /* Device descriptor */
-    0x12, // bLength
-    0x01, // bDescriptorType
-    0x10, // bcdUSBL
-    0x01, //
-    0x00, // bDeviceClass:    CDC class code
-    0x00, // bDeviceSubclass: CDC class sub code
-    0x00, // bDeviceProtocol: CDC Device protocol
-    0x40, // bMaxPacketSize0
-    USB_VID & 0xff,
-    USB_VID >> 8,
-    USB_PID & 0xff,
-    USB_PID >> 8,
-    //0xEB, // idVendorL
-    //0x03, //
-    //0x2c, // idProductL
-    //0x61, //
-    0x10, // bcdDeviceL
-    0x01, //
-    0x01, // iManufacturer    // 0x01
-    0x02, // iProduct
-    0x00, // SerialNumber
-    0x01  // bNumConfigs
+    0x12,           // bLength
+    0x01,           // bDescriptorType
+    0x10,           // bcdUSBL
+    0x01,           //
+    0x00,           // bDeviceClass:    CDC class code
+    0x00,           // bDeviceSubclass: CDC class sub code
+    0x00,           // bDeviceProtocol: CDC Device protocol
+    0x40,           // bMaxPacketSize0
+    USB_VID & 0xff, // vendor ID
+    USB_VID >> 8,   //
+    USB_PID & 0xff, // product ID
+    USB_PID >> 8,   //
+    0x10,           // bcdDeviceL
+    0x01,           //
+    0x01,           // iManufacturer    // 0x01
+    0x02,           // iProduct
+    0x00,           // SerialNumber
+    0x01            // bNumConfigs
 };
 
 #define CFG_DESC_SIZE (USE_CDC ? 0x5A : 0x20)
@@ -77,8 +73,8 @@ COMPILER_WORD_ALIGNED
 const char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
-    0x09,                  // CbLength
-    0x02,                  // CbDescriptorType
+    0x09,          // CbLength
+    0x02,          // CbDescriptorType
     CFG_DESC_SIZE, // CwTotalLength 2 EP + Control
     0x00,
     USE_CDC ? 0x03 : 0x01, // CbNumInterfaces
@@ -448,15 +444,14 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
     Usb *pUsb = pCdc.pUsb;
     uint32_t data_address;
 
-    // always disable AUTO_ZLP - causes problems with MSC
-    usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = false;
-
     /* Check for requirement for multi-packet or auto zlp */
     if (length >= (1 << (usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
         /* Update the EP data address */
         data_address = (uint32_t)pData;
-        /* Enable auto zlp */
-        // usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = true;
+
+        // always disable AUTO_ZLP on MSC channel, otherwise enable
+        // usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP =
+        //    ep_num == USB_EP_MSC_IN ? false : true;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);
@@ -478,7 +473,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 
     /* Wait for transfer to complete */
     while (!(pUsb->DEVICE.DeviceEndpoint[ep_num].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1)) {
-        if (!USB_Ok())
+        if (ep_num && !USB_Ok())
             return -1;
     }
 
@@ -547,14 +542,16 @@ void AT91F_CDC_Enumerate() {
 
     uint32_t reqId = (bRequest << 8) | bmRequestType;
 
-    logval("USBReq", reqId);
+    logwrite("USBReq: ");
+    logwritenum(reqId);
+    logwrite(" wValue: ");
+    logwritenum(wValue);
+    logval(" wLen", wLength);
 
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
     switch (reqId) {
     case STD_GET_DESCRIPTOR:
-        logval("DESC", wValue);
-        // logval("wlen", wLength);
         if (wValue == 0x100)
             /* Return Device Descriptor */
             AT91F_USB_SendData(devDescriptor, MIN(sizeof(devDescriptor), wLength));
