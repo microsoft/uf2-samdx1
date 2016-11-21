@@ -58,6 +58,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
+	@node -p '"Free space: " + (8192 - require("fs").readFileSync("$(BUILD_PATH)/$(NAME).bin").length)'
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h)
 	@echo "$<"

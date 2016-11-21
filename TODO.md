@@ -11,6 +11,6 @@
 * [ ] look into reset into bootloader from host to continue flashing
 
 ## Backlog
-* [ ] if `!USE_CDC && !USE_UART` - don't compile monitor
-* [ ] if `!USE_CDC` don't compile the CDC code (not only exclude descriptors)
+* [x] if `!USE_CDC && !USE_UART` - don't compile monitor
+* [x] if `!USE_CDC` don't compile the CDC code (not only exclude descriptors)
 

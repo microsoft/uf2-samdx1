@@ -29,7 +29,7 @@
 // Enable reading flash via FAT files; otherwise drive will appear empty
 #define USE_FAT 1
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
-#define USE_CDC 1
+#define USE_CDC 0
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 

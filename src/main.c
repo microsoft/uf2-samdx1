@@ -260,6 +260,7 @@ int main(void) {
             main_b_cdc_enable = true;
         }
 
+#if USE_MONITOR
         // Check if a USB enumeration has succeeded
         // And com port was opened
         if (main_b_cdc_enable) {
@@ -280,6 +281,10 @@ int main(void) {
             }
         }
 #endif
+#else // no monitor
+        process_msc();
+#endif
+
     }
 }
 
