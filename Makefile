@@ -70,4 +70,4 @@ build/uf2conv: utils/uf2conv.c inc/uf2format.h
 	cc -Iinc -W -Wall -o $@ utils/uf2conv.c
 
 clean:
-	rm -rf $(BUILD_PATH)
+	rm -rf build
