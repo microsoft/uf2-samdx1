@@ -1,6 +1,8 @@
 #ifndef UF2_H
 #define UF2_H 1
 
+#include "board_config.h"
+
 #include "samd21.h"
 #include "uf2format.h"
 #include "main.h"
@@ -15,12 +17,10 @@
 #undef DISABLE
 #undef ENABLE
 
+
 // needs to be more than ~4200 (to force FAT16)
-#define NUM_FAT_BLOCKS 4200
-#define VENDOR_NAME "ACME Corp."
-#define PRODUCT_NAME "UF2 Bootloader"
+#define NUM_FAT_BLOCKS 8000
 #define SERIAL_NUMBER "F23456789ABC"
-#define VOLUME_LABEL "UF2-SAMD"
 
 // Logging to help debugging
 #define USE_LOGS 1

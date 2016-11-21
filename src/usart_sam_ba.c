@@ -27,9 +27,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "usart_sam_ba.h"
-#include "compiler.h"
-#include "main.h"
+#include "uf2.h"
 #include "uart_driver.h"
 
 /* Variable to let the main task select the appropriate communication interface

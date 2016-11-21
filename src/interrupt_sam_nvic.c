@@ -27,6 +27,7 @@
  * ----------------------------------------------------------------------------
  */
 
+#include "board_config.h"
 #include "interrupt_sam_nvic.h"
 
 #if !defined(__DOXYGEN__)

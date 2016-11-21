@@ -27,6 +27,7 @@
  * ----------------------------------------------------------------------------
  */
 
+#include "board_config.h"
 #include "uart_driver.h"
 
 bool uart_drv_error_flag = false;

@@ -41,6 +41,7 @@
  *
  */
 
+#include "board_config.h"
 #include "samd21.h"
 
 /* Initialize segments */
