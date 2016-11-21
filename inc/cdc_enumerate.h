@@ -125,27 +125,4 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num);
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep);
 bool USB_Ok(void);
 
-// move to msc.h
-// index of highest LUN
-#define MAX_LUN 0
-void process_msc(void);
-void msc_reset(void);
-//! Static block size for all memories
-#define UDI_MSC_BLOCK_SIZE 512L
-
-void read_block(uint32_t block_no, uint8_t *data);
-void write_block(uint32_t block_no, uint8_t *data);
-void padded_memcpy(char *dst, const char *src, int len);
-
-#define BULB_PORT 0
-#define BULB_PIN 17
-
-inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
-inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_PIN); }
-inline void bulb_on(void) { PORT->Group[BULB_PORT].OUTSET.reg = (1 << BULB_PIN); }
-inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN); }
-
-extern uint32_t timerHigh, resetHorizon, blinkHorizon;
-void timerTick(void);
-
 #endif // CDC_ENUMERATE_H

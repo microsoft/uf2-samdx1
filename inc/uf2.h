@@ -7,10 +7,12 @@
 #include "cdc_enumerate.h"
 #include "sam_ba_monitor.h"
 #include "usart_sam_ba.h"
-#include <compiler.h>
 #include <stdio.h>
 #include <string.h>
 
+#include <compiler.h>
+
+#undef DISABLE
 #undef ENABLE
 
 
@@ -31,6 +33,10 @@
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 
+// End of config
+
+
+#define USE_MONITOR (USE_CDC || USE_UART)
 #define TIMER_STEP 1500
 
 
@@ -72,6 +78,32 @@ void panic(void);
 
 extern volatile bool b_sam_ba_interface_usart;
 void flash_write_row(uint32_t *dst, uint32_t *src);
+void flash_erase_row(uint32_t *dst);
+void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
+
 void writeNum(char *buf, uint32_t n);
+
+// index of highest LUN
+#define MAX_LUN 0
+void process_msc(void);
+void msc_reset(void);
+//! Static block size for all memories
+#define UDI_MSC_BLOCK_SIZE 512L
+
+void read_block(uint32_t block_no, uint8_t *data);
+void write_block(uint32_t block_no, uint8_t *data);
+void padded_memcpy(char *dst, const char *src, int len);
+
+#define BULB_PORT 0
+#define BULB_PIN 17
+
+inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
+inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_PIN); }
+inline void bulb_on(void) { PORT->Group[BULB_PORT].OUTSET.reg = (1 << BULB_PIN); }
+inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN); }
+
+extern uint32_t timerHigh, resetHorizon, blinkHorizon;
+void timerTick(void);
+
 
 #endif
