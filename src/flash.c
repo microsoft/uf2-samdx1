@@ -33,7 +33,7 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     }
 }
 
-// only disable for debugging
+// only disable for debugging/timing
 #define QUICK_FLASH 1
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {

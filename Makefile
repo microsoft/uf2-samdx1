@@ -54,6 +54,7 @@ logs:
 	sh scripts/getlogs.sh $(BUILD_PATH)/$(NAME).map
 
 dirs:
+	@echo "Building $(BOARD)"
 	-@mkdir -p $(BUILD_PATH)
 	
 $(EXECUTABLE): $(OBJECTS) 
