@@ -67,13 +67,15 @@ const char devDescriptor[] = {
     0x01  // bNumConfigs
 };
 
+#define CFG_DESC_SIZE (USE_CDC ? 0x5A : 0x20)
+
 COMPILER_WORD_ALIGNED
-char cfgDescriptor[] = {
+const char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
     0x09,                  // CbLength
     0x02,                  // CbDescriptorType
-    USE_CDC ? 0x5A : 0x20, // CwTotalLength 2 EP + Control
+    CFG_DESC_SIZE, // CwTotalLength 2 EP + Control
     0x00,
     USE_CDC ? 0x03 : 0x01, // CbNumInterfaces
     0x01,                  // CbConfigurationValue
@@ -243,6 +245,8 @@ static USB_CDC pCdc;
 
 static void AT91F_CDC_Enumerate(void);
 
+STATIC_ASSERT(sizeof(cfgDescriptor) == CFG_DESC_SIZE);
+
 /**
  * \fn AT91F_InitUSB
  *
@@ -250,8 +254,6 @@ static void AT91F_CDC_Enumerate(void);
  */
 void AT91F_InitUSB(void) {
     uint32_t pad_transn, pad_transp, pad_trim;
-
-    assert(sizeof(cfgDescriptor) == cfgDescriptor[2]);
 
     /* Enable USB clock */
     PM->APBBMASK.reg |= PM_APBBMASK_USB;

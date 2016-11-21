@@ -106,6 +106,8 @@ inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN)
 extern uint32_t timerHigh, resetHorizon, blinkHorizon;
 void timerTick(void);
 
-#define STATIC_ASSERT(e) enum { _static_assert_ ## __LINE__ = 1 / ((e) ? 1 : 0) }
+#define CONCAT_1(a, b) a ## b
+#define CONCAT_0(a, b) CONCAT_1(a, b)
+#define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }
 
 #endif
