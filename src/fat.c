@@ -45,6 +45,8 @@ struct DirEntry {
     uint32_t size;
 } __attribute__((packed));
 
+STATIC_ASSERT(sizeof(struct DirEntry) == 32);
+
 struct TextFile {
     const char *name;
     const char *ext;
@@ -168,7 +170,6 @@ void read_block(uint32_t block_no, uint8_t *data) {
             for (int i = 0; i < NUM_INFO; ++i) {
                 struct DirEntry *d = (void *)(data + i * sizeof(*d));
                 const struct TextFile *inf = &info[i];
-                assert(sizeof(*d) == 32);
                 d->size = inf->content ? strlen(inf->content) : UF2_SIZE;
                 d->startCluster = i + 2;
                 padded_memcpy(d->name, inf->name, 8);

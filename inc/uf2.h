@@ -15,7 +15,6 @@
 #undef DISABLE
 #undef ENABLE
 
-
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 4200
 #define VENDOR_NAME "ACME Corp."
@@ -35,21 +34,21 @@
 
 // End of config
 
-
 #define USE_MONITOR (USE_CDC || USE_UART)
 #define TIMER_STEP 1500
 
-
 /*
 From CPU config:
-#define FLASH_SIZE            0x8000UL 
+#define FLASH_SIZE            0x8000UL
 #define FLASH_PAGE_SIZE       64
 #define FLASH_NB_OF_PAGES     512
 */
 
 #define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
 
-#define NOOP do{}while(0)
+#define NOOP                                                                                       \
+    do {                                                                                           \
+    } while (0)
 
 #if USE_LOGS
 void logmsg(const char *msg);
@@ -66,12 +65,13 @@ void logwrite(const char *msg);
 void panic(void);
 
 #if USE_ASSERT
-#define assert(cond) \
-  if (!(cond)) { \
-    logwrite("Assertion failed: "); \
-    logwrite(#cond); \
-    logwrite("\n"); \
-    panic(); }
+#define assert(cond)                                                                               \
+    if (!(cond)) {                                                                                 \
+        logwrite("Assertion failed: ");                                                            \
+        logwrite(#cond);                                                                           \
+        logwrite("\n");                                                                            \
+        panic();                                                                                   \
+    }
 #else
 #define assert(cond) NOOP
 #endif
@@ -106,5 +106,6 @@ inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN)
 extern uint32_t timerHigh, resetHorizon, blinkHorizon;
 void timerTick(void);
 
+#define STATIC_ASSERT(e) enum { _static_assert_ ## __LINE__ = 1 / ((e) ? 1 : 0) }
 
 #endif
