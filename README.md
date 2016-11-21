@@ -33,6 +33,29 @@ In `uf2conv.c` you can find a small converter from `.bin` to `.uf2`.
 * double-tap reset to stay in the bootloader mode
 * automatic reset after UF2 file is written
 
+## Board identification
+
+Configuration files for board `foo` is in `boards/foo/board_config.h`. You can
+build it with `make BOARD=foo`. You can also create `Makefile.user` file with `BOARD=foo`
+to change the default.
+
+The board configuration specifies the USB vendor/product name and ID,
+as well as the volume label (main thing that the operating systems show).
+
+There is also `BOARD_ID`, which is meant to be machine-readable and specific
+to a given version of board hardware. The programming environment might use
+this to suggest packages to be imported (i.e., a package for a particular
+external flash chip, SD card etc.).
+
+These configuration values can be read from `INFO_UF2.TXT` file.
+Presence of this file can be tested to see if the board supports `UF2` flashing,
+while contest, particularly `Board-ID` field, can be used for feature detection.
+
+The current flash contents of the board is exposed as `CURRENT.UF2` file.
+This file includes the bootloader address space. When reading such file,
+an programming environment can look for `Board-ID: ...` in the first `8k`
+of flash data to determine which board does it come from.
+
 ## Build
 
 ### Requirements
