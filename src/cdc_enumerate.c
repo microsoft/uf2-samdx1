@@ -67,7 +67,6 @@ const char devDescriptor[] = {
     0x01  // bNumConfigs
 };
 
-
 COMPILER_WORD_ALIGNED
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
@@ -443,6 +442,9 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
     Usb *pUsb = pCdc.pUsb;
     uint32_t data_address;
 
+    // always disable AUTO_ZLP - causes problems with MSC
+    usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = false;
+
     /* Check for requirement for multi-packet or auto zlp */
     if (length >= (1 << (usb_endpoint_table[ep_num].DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
         /* Update the EP data address */
@@ -599,8 +601,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_GET_CONFIGURATION:
         /* Return current configuration value */
-        AT91F_USB_SendData((char *)&(pCdc.currentConfiguration),
-                           sizeof(pCdc.currentConfiguration));
+        AT91F_USB_SendData((char *)&(pCdc.currentConfiguration), sizeof(pCdc.currentConfiguration));
         break;
     case STD_GET_STATUS_ZERO:
         wStatus = 0;
@@ -785,14 +786,16 @@ void usb_init(void) {
 #include "usart_sam_ba.h"
 
 #if USE_UART
-#define UART(e)  if (b_sam_ba_interface_usart) return e;
+#define UART(e)                                                                                    \
+    if (b_sam_ba_interface_usart)                                                                  \
+        return e;
 #else
 #define UART(e)
 #endif
 
 bool cdc_is_rx_ready(void) {
     UART(usart_is_rx_ready())
-    
+
     /* Check whether the device is configured */
     if (!USB_Ok())
         return 0;
