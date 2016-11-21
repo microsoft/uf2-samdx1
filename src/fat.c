@@ -71,14 +71,24 @@ static void infoWrite(const char *ptr) {
     infoPtr += len;
 }
 
+static void infoWriteNum(uint32_t num) {
+    writeNum(infoFile + infoPtr, num, true);
+    infoPtr += 8;
+}
+
 void init_fat() {
     infoWrite("UF2 Bootloader.\n"
-              "Build at: " __DATE__ " " __TIME__ "\n"
-              "Model: ");
-    infoWrite(VENDOR_NAME);
-    infoWrite(" ");
-    infoWrite(PRODUCT_NAME);
+              "Built at: " __DATE__ " " __TIME__ "\n"
+              "Model: " VENDOR_NAME " " PRODUCT_NAME "\n"
+              "Serial: ");
+
+    infoWriteNum(SERIAL0);
+    infoWriteNum(SERIAL1);
+    infoWriteNum(SERIAL2);
+    infoWriteNum(SERIAL3);
+    
     assert(infoPtr < sizeof(infoFile));
+    infoFile[infoPtr] = 0;
 }
 #endif
 

@@ -3,7 +3,7 @@
 * [ ] no volume label shows under Windows
 * [x] extend magic with "UF2\n" string
 * [x] align data in block to 32 bytes (for hex viewer)
-* [ ] show board serial number and name in info file
+* [x] show board serial number and name in info file
 * [ ] organize board configs in directories
 * [ ] use BOOTPROT bits
 * [x] if `!USE_CDC && !USE_UART` - don't compile monitor
