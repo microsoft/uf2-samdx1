@@ -27,12 +27,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "sam_ba_monitor.h"
-#include "cdc_enumerate.h"
-#include "compiler.h"
-#include "uart_driver.h"
-#include "usart_sam_ba.h"
-#include <string.h>
+#include "uf2.h"
 
 const char RomBOOT_Version[] = SAM_BA_VERSION;
 const char RomBOOT_ExtendedCapabilities[] = "[Arduino:XYZ]";

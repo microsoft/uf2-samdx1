@@ -3,6 +3,16 @@
 
 #include "samd21.h"
 #include "uf2format.h"
+#include "main.h"
+#include "cdc_enumerate.h"
+#include "sam_ba_monitor.h"
+#include "usart_sam_ba.h"
+#include <compiler.h>
+#include <stdio.h>
+#include <string.h>
+
+#undef ENABLE
+
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 4200

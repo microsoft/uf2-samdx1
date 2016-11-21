@@ -74,15 +74,7 @@
  *
 */
 
-#include "main.h"
-#include "cdc_enumerate.h"
-#include "compiler.h"
-#include "sam_ba_monitor.h"
-#include "usart_sam_ba.h"
-#include <stdio.h>
-#include <string.h>
-
-#undef ENABLE
+#include "uf2.h"
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL 64

@@ -1,8 +1,5 @@
 
-#include "cdc_enumerate.h"
-#include <compiler.h>
-#include <stdint.h>
-#include <string.h>
+#include "uf2.h"
 
 typedef struct {
     uint8_t JumpInstruction[3];

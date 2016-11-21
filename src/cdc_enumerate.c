@@ -27,12 +27,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "cdc_enumerate.h"
-#include <compiler.h>
-#include <stdint.h>
-#include <string.h>
+#include "uf2.h"
 
-#undef ENABLE
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef struct {

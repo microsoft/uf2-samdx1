@@ -30,8 +30,6 @@
 #ifndef CDC_ENUMERATE_H
 #define CDC_ENUMERATE_H
 
-#include "uf2.h"
-
 #define PKT_SIZE 64
 
 #define USB_EP_IN 1

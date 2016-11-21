@@ -27,10 +27,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "cdc_enumerate.h"
-#include <compiler.h>
-#include <stdint.h>
-#include <string.h>
+#include "uf2.h"
 
 #include "services/usb/class/msc/sbc_protocol.h"
 #include "services/usb/class/msc/spc_protocol.h"
