@@ -9,7 +9,7 @@ void timerTick(void) {
         timerHigh++;
         if (resetHorizon && timerHigh >= resetHorizon) {
             resetHorizon = 0;
-            NVIC_SystemReset();
+            resetIntoApp();
         }
         /*
         if (timerHigh < blinkHorizon)

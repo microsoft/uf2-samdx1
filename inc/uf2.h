@@ -99,6 +99,8 @@ void write_block(uint32_t block_no, uint8_t *data);
 void padded_memcpy(char *dst, const char *src, int len);
 void init_fat(void);
 
+void resetIntoApp(void);
+
 inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
 inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_PIN); }
 inline void bulb_on(void) { PORT->Group[BULB_PORT].OUTSET.reg = (1 << BULB_PIN); }

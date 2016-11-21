@@ -7,10 +7,10 @@
 #define PRODUCT_NAME "Zero"
 #define VOLUME_LABEL "ARDUINO-M0"
 
-//#define USB_VID 0x2341
-//#define USB_PID 0x024D
-#define USB_VID 0x03EB
-#define USB_PID 0x612C
+#define USB_VID 0x2341
+#define USB_PID 0x024D
+//#define USB_VID 0x03EB   // Atmel
+//#define USB_PID 0x6124   // Example device
 
 #define BULB_PORT 0
 #define BULB_PIN 17

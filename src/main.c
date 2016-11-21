@@ -89,6 +89,13 @@ static volatile bool main_b_cdc_enable = false;
 // In other words, this word should survive reset.
 #define DBL_TAP_PTR ((volatile uint32_t *)(HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4))
 #define DBL_TAP_MAGIC 0xf01669ef // Randomly selected, adjusted to have first and last bit set
+#define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
+
+void resetIntoApp() {
+    // reset without waiting for double tap (only works for one reset)
+    *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
+    NVIC_SystemReset();
+}
 
 /**
  * \brief Check the application startup condition
@@ -116,9 +123,11 @@ static void check_start_application(void) {
         *DBL_TAP_PTR = 0;
         return; // stay in bootloader
     } else {
-        *DBL_TAP_PTR = DBL_TAP_MAGIC;
-        for (int i = 1; i < 100000; ++i) {
-            asm("nop");
+        if (*DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+            *DBL_TAP_PTR = DBL_TAP_MAGIC;
+            for (int i = 1; i < 100000; ++i) {
+                asm("nop");
+            }
         }
         *DBL_TAP_PTR = 0;
     }
@@ -272,10 +281,9 @@ int main(void) {
         }
 #endif
 #else // no monitor
-    if (main_b_cdc_enable) {
-        process_msc();
-    }
+        if (main_b_cdc_enable) {
+            process_msc();
+        }
 #endif
-
     }
 }

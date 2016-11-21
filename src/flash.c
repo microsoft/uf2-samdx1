@@ -33,13 +33,19 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     }
 }
 
+// only disable for debugging
+#define QUICK_FLASH 1
+
 void flash_write_row(uint32_t *dst, uint32_t *src) {
+    #if QUICK_FLASH
     for (int i = 0; i < FLASH_ROW_SIZE / 4; ++i)
         if (src[i] != dst[i])
             goto doflash;
     return;
 
 doflash:
+    #endif
+
     flash_erase_row(dst);
     flash_write_words(dst, src, FLASH_ROW_SIZE);
 }
