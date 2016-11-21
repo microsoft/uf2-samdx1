@@ -1,6 +1,6 @@
 ## Current
 * [x] separate logs out
-* [ ] no volume label shows under Windows
+* [x] no volume label shows under Windows
 * [x] extend magic with "UF2\n" string
 * [x] align data in block to 32 bytes (for hex viewer)
 * [x] show board serial number and name in info file

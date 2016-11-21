@@ -78,9 +78,9 @@ static void infoWriteNum(uint32_t num) {
 }
 
 void init_fat() {
-    infoWrite("UF2 Bootloader.\n"
-              "Built at: " __DATE__ " " __TIME__ "\n"
-              "Model: " VENDOR_NAME " " PRODUCT_NAME "\n"
+    infoWrite("UF2 Bootloader.\r\n"
+              "Built at: " __DATE__ " " __TIME__ "\r\n"
+              "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
               "Serial: ");
 
     infoWriteNum(SERIAL0);
