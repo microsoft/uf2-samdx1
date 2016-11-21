@@ -115,13 +115,7 @@ uint32_t u32tmp;
 // Prints a 32-bit integer in hex.
 void put_uint32(uint32_t n) {
     char buff[8];
-    int i;
-    for (i = 0; i < 8; i++) {
-        int d = n & 0XF;
-        n = (n >> 4);
-
-        buff[7 - i] = d > 9 ? 'A' + d - 10 : '0' + d;
-    }
+    writeNum(buff, n, true);
     cdc_write_buf(buff, 8);
 }
 

@@ -1,6 +1,11 @@
 
 #include "uf2.h"
 
+#define SERIAL0 (*(uint32_t *)0x0080A00C)
+#define SERIAL1 (*(uint32_t *)0x0080A040)
+#define SERIAL2 (*(uint32_t *)0x0080A044)
+#define SERIAL3 (*(uint32_t *)0x0080A048)
+
 typedef struct {
     uint8_t JumpInstruction[3];
     uint8_t OEMInfo[8];
@@ -47,9 +52,10 @@ struct TextFile {
 };
 
 #if USE_FAT
+uint32_t infoPtr;
+char infoFile[256];
 static const struct TextFile info[] = {
-    {.name = "INFO", .ext = "TXT", .content = "UF2 Bootloader.\nBuild at: " __DATE__ __TIME__},
-    {.name = "CURRENT", .ext = "UF2"},
+    {.name = "INFO", .ext = "TXT", .content = infoFile}, {.name = "CURRENT", .ext = "UF2"},
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
@@ -59,6 +65,21 @@ static const struct TextFile info[] = {
 #define UF2_FIRST_SECTOR (NUM_INFO + 1)
 #define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
 
+static void infoWrite(const char *ptr) {
+    int len = strlen(ptr);
+    memcpy(infoFile + infoPtr, ptr, len);
+    infoPtr += len;
+}
+
+void init_fat() {
+    infoWrite("UF2 Bootloader.\n"
+              "Build at: " __DATE__ " " __TIME__ "\n"
+              "Model: ");
+    infoWrite(VENDOR_NAME);
+    infoWrite(" ");
+    infoWrite(PRODUCT_NAME);
+    assert(infoPtr < sizeof(infoFile));
+}
 #endif
 
 #define RESERVED_SECTORS 1

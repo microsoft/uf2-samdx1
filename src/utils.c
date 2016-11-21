@@ -23,19 +23,17 @@ void panic(void) {
     }
 }
 
-void writeNum(char *buf, uint32_t n) {
-    buf[0] = '0';
-    buf[1] = 'x';
-    int i = 2;
+int writeNum(char *buf, uint32_t n, bool full) {
+    int i = 0;
     int sh = 28;
     while (sh >= 0) {
         int d = (n >> sh) & 0xf;
-        if (d || sh == 0 || i > 2) {
-            buf[i++] = d > 9 ? 'a' + d - 10 : '0' + d;
+        if (full || d || sh == 0 || i) {
+            buf[i++] = d > 9 ? 'A' + d - 10 : '0' + d;
         }
         sh -= 4;
     }
-    buf[i] = 0;
+    return i;
 }
 
 #if USE_LOGS
@@ -45,8 +43,9 @@ static struct {
 } logStoreUF2;
 
 void logwritenum(uint32_t n) {
-    char buff[12];
-    writeNum(buff, n);
+    char buff[9];
+    buff[writeNum(buff, n, false)] = 0;
+    logwrite("0x");
     logwrite(buff);
 }
 

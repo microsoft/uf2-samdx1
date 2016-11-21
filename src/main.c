@@ -233,6 +233,7 @@ int main(void) {
 
     logmsg("Before main loop");
 
+    init_fat();
     usb_init();
 
     /* Wait for a complete enum on usb or a '#' char on serial line */

@@ -81,7 +81,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src);
 void flash_erase_row(uint32_t *dst);
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
 
-void writeNum(char *buf, uint32_t n);
+int writeNum(char *buf, uint32_t n, bool full);
 
 // index of highest LUN
 #define MAX_LUN 0
@@ -93,6 +93,7 @@ void msc_reset(void);
 void read_block(uint32_t block_no, uint8_t *data);
 void write_block(uint32_t block_no, uint8_t *data);
 void padded_memcpy(char *dst, const char *src, int len);
+void init_fat(void);
 
 #define BULB_PORT 0
 #define BULB_PIN 17
