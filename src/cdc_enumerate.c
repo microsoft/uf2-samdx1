@@ -435,8 +435,6 @@ uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep) {
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep) {
     /* Blocking read till specified number of bytes is received */
     while (length) {
-        if (!USB_Ok())
-            return;
         uint32_t curr = USB_Read(dst, length, ep);
         //if (curr > 0)
         //    logval("readbl", length);

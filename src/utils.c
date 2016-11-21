@@ -11,10 +11,12 @@ void timerTick(void) {
             resetHorizon = 0;
             NVIC_SystemReset();
         }
+        /*
         if (timerHigh < blinkHorizon)
             bulb_toggle();
         else
             bulb_on();
+        */
     }
 }
 
