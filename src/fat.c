@@ -29,7 +29,7 @@ typedef struct {
     uint8_t FilesystemIdentifier[8];
 } __attribute__((packed)) FAT_BootBlock;
 
-struct DirEntry {
+typedef struct {
     char name[8];
     char ext[3];
     uint8_t attrs;
@@ -43,13 +43,12 @@ struct DirEntry {
     uint16_t updateDate;
     uint16_t startCluster;
     uint32_t size;
-} __attribute__((packed));
+} __attribute__((packed)) DirEntry;
 
-STATIC_ASSERT(sizeof(struct DirEntry) == 32);
+STATIC_ASSERT(sizeof(DirEntry) == 32);
 
 struct TextFile {
-    const char *name;
-    const char *ext;
+    const char name[11];
     const char *content;
 };
 
@@ -57,7 +56,7 @@ struct TextFile {
 uint32_t infoPtr;
 char infoFile[256];
 static const struct TextFile info[] = {
-    {.name = "INFO", .ext = "TXT", .content = infoFile}, {.name = "CURRENT", .ext = "UF2"},
+    {.name = "INFO    TXT", .content = infoFile}, {.name = "CURRENT UF2"},
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
@@ -88,7 +87,7 @@ void init_fat() {
     infoWriteNum(SERIAL1);
     infoWriteNum(SERIAL2);
     infoWriteNum(SERIAL3);
-    
+
     assert(infoPtr < sizeof(infoFile));
     infoFile[infoPtr] = 0;
 }
@@ -118,7 +117,7 @@ static const FAT_BootBlock BootBlock = {
     .Heads = 1,
     .ExtendedBootSig = 0x29,
     .VolumeSerialNumber = 0xdeadbeef,
-    .VolumeLabel = "SAMD UF2   ",
+    .VolumeLabel = VOLUME_LABEL,
     .FilesystemIdentifier = "FAT16   ",
 };
 
@@ -167,13 +166,15 @@ void read_block(uint32_t block_no, uint8_t *data) {
     else if (block_no < START_CLUSTERS) {
         sectionIdx -= START_ROOTDIR;
         if (sectionIdx == 0) {
+            DirEntry *d = (void *)data;
+            padded_memcpy(d->name, BootBlock.VolumeLabel, 11);
+            d->attrs = 0x28;
             for (int i = 0; i < NUM_INFO; ++i) {
-                struct DirEntry *d = (void *)(data + i * sizeof(*d));
+                d++;
                 const struct TextFile *inf = &info[i];
                 d->size = inf->content ? strlen(inf->content) : UF2_SIZE;
                 d->startCluster = i + 2;
-                padded_memcpy(d->name, inf->name, 8);
-                padded_memcpy(d->ext, inf->ext, 3);
+                padded_memcpy(d->name, inf->name, 11);
             }
         }
     } else {

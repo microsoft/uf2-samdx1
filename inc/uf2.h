@@ -20,6 +20,7 @@
 #define VENDOR_NAME "ACME Corp."
 #define PRODUCT_NAME "UF2 Bootloader"
 #define SERIAL_NUMBER "F23456789ABC"
+#define VOLUME_LABEL "UF2-SAMD"
 
 // Logging to help debugging
 #define USE_LOGS 1

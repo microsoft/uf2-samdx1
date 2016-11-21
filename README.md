@@ -52,6 +52,11 @@ flashing and getting logs, the other is for the exposed MSC interface.
 Otherwise, you can use other SAMD21 board and an external `openocd` compatible
 debugger.
 
+`openocd` will flash 16k, meaning the beginning of user program (if any) will
+be overwritten with `0xff`. This also means that after fresh flashing of bootloader
+no double-tap reset is necessary, as the bootloader will not try to start application
+at `0xffffffff`.
+
 ### Configuration
 
 There is a number of configuration parameters at the top of `uf2.h` file.
