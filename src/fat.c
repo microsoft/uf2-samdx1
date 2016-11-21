@@ -78,7 +78,6 @@ static void infoWrite(const char *ptr) {
 void init_fat() {
 #if USE_FAT
     infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
-              "Built at: " __DATE__ " " __TIME__ "\r\n"
               "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
               "Serial: ");
     

@@ -83,8 +83,13 @@ static void check_start_application(void);
 
 static volatile bool main_b_cdc_enable = false;
 
-#define DBL_TAP_PTR ((volatile uint32_t *)0x20007FFC)
-#define DBL_TAP_MAGIC 0xf01669ef
+// Last word in RAM
+// Unlike for ordinary applications, our link script doesn't place the stack at the bottom
+// of the RAM, but instead after all allocated BSS.
+// In other words, this word should survive reset.
+#define DBL_TAP_PTR ((volatile uint32_t *)(HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4))
+#define DBL_TAP_MAGIC 0xf01669ef // Randomly selected, adjusted to have first and last bit set
+
 /**
  * \brief Check the application startup condition
  *
