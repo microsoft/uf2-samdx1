@@ -26,8 +26,6 @@
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
 
-extern char serialNumber[];
-
 // Logging to help debugging
 #define USE_LOGS 1
 // Check various conditions; best leave on
@@ -38,8 +36,6 @@ extern char serialNumber[];
 #define USE_CDC 0
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
-// Show serial number in info_uf2.txt file
-#define USE_SERIAL_NUMBER 1
 
 // End of config
 

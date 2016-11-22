@@ -52,8 +52,6 @@ struct TextFile {
     const char *content;
 };
 
-char serialNumber[33];
-
 #if USE_FAT
 const char indexFile[] = "<!doctype html>\n"
                          "<html>"
@@ -92,20 +90,7 @@ void init_fat() {
     infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
               "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
               "Board-ID: " BOARD_ID "\r\n"
-#if USE_SERIAL_NUMBER
-              "Serial: "
-#endif
               );
-
-#if USE_SERIAL_NUMBER
-    writeNum(serialNumber + 0, SERIAL0, true);
-    writeNum(serialNumber + 8, SERIAL1, true);
-    writeNum(serialNumber + 16, SERIAL2, true);
-    writeNum(serialNumber + 24, SERIAL3, true);
-
-    infoWrite(serialNumber);
-    infoWrite("\r\n");
-#endif
 
     assert(infoPtr < sizeof(infoFile));
     infoFile[infoPtr] = 0;

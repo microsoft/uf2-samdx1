@@ -200,7 +200,7 @@ typedef struct {
 #define STRING_DESCRIPTOR_COUNT 4
 
 static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    0, PRODUCT_NAME, VENDOR_NAME, serialNumber,
+    0, PRODUCT_NAME, VENDOR_NAME,
 };
 
 static usb_cdc_line_coding_t line_coding = {
