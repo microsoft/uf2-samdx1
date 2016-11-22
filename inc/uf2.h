@@ -37,6 +37,8 @@
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 
+#define USE_HANDOVER 1
+
 // End of config
 
 #define USE_MONITOR (USE_CDC || USE_UART)

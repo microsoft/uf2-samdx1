@@ -52,9 +52,17 @@ Presence of this file can be tested to see if the board supports `UF2` flashing,
 while contest, particularly `Board-ID` field, can be used for feature detection.
 
 The current flash contents of the board is exposed as `CURRENT.UF2` file.
-This file includes the bootloader address space. When reading such file,
-an programming environment can look for `Board-ID: ...` in the first `8k`
-of flash data to determine which board does it come from.
+This file includes the bootloader address space. The last word of bootloader
+space points to the string holding the `INFO_UF2.TXT` file, so it can be parsed
+by a programming environment to determine which board does the `.UF2` file comes from.
+
+## Handover
+
+When the user space application implements the USB MSC protocol, it's possible to
+handover execution to the bootloader in the middle of MSC file transfer,
+when the application detects that a UF2 block is written.
+
+Details are being finalized.
 
 ## Bootloader update
 

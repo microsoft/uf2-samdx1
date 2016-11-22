@@ -52,12 +52,14 @@ struct TextFile {
     const char *content;
 };
 
-#if USE_FAT
+#if USE_FAT || USE_HANDOVER
 const char infoUf2File[] = //
     "UF2 Bootloader " UF2_VERSION "\r\n"
     "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
     "Board-ID: " BOARD_ID "\r\n";
+#endif
 
+#if USE_FAT
 const char indexFile[] = //
     "<!doctype html>\n"
     "<html>"
@@ -110,6 +112,21 @@ static const FAT_BootBlock BootBlock = {
     .VolumeLabel = VOLUME_LABEL,
     .FilesystemIdentifier = "FAT16   ",
 };
+
+#if USE_HANDOVER
+typedef struct {
+    void *reserved0;
+    void *reserved1;
+    void *handover;
+    const char *info_uf2;
+} UF2_BInfo;
+
+STATIC_ASSERT(sizeof(UF2_BInfo) == 4 * 4); // required by linker script
+
+__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
+    .info_uf2 = infoUf2File,
+};
+#endif
 
 void padded_memcpy(char *dst, const char *src, int len) {
     for (int i = 0; i < len; ++i) {

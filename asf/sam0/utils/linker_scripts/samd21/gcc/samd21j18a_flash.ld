@@ -157,4 +157,9 @@ SECTIONS
 
     . = ALIGN(4);
     _end = . ;
+
+    _binfo_start = 0x00002000 - 4 * 4;
+    .binfo _binfo_start : {
+      KEEP(*(.binfo)) ;
+    } > rom
 }

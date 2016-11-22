@@ -85,8 +85,9 @@ $(EXECUTABLE): $(OBJECTS)
 		 -T./asf/sam0/utils/linker_scripts/samd21/gcc/samd21j18a_flash.ld \
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
-	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf
-	@node -p '"Free space: " + (8192 - require("fs").readFileSync("$(BUILD_PATH)/$(NAME).bin").length)'
+	@echo
+	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " (8192-s) }'
+	@echo
 
 
 $(SELF_EXECUTABLE): $(SELF_OBJECTS)  build/uf2conv
