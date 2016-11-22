@@ -105,6 +105,7 @@ void padded_memcpy(char *dst, const char *src, int len);
 void init_fat(void);
 
 void resetIntoApp(void);
+void system_init(void);
 
 inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
 inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_PIN); }
