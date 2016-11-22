@@ -5,9 +5,10 @@
 * [x] align data in block to 32 bytes (for hex viewer)
 * [x] show board serial number and name in info file
 * [x] organize board configs in directories
-* [ ] use BOOTPROT bits
 * [x] if `!USE_CDC && !USE_UART` - don't compile monitor
 * [x] if `!USE_CDC` don't compile the CDC code (not only exclude descriptors)
+* [ ] write user program for updating bootloader
 
 ## Bigger
 * [ ] look into reset into bootloader from host to continue flashing
+* [ ] use BOOTPROT bits - requires device reset to set
