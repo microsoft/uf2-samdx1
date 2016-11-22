@@ -38,6 +38,18 @@ int writeNum(char *buf, uint32_t n, bool full) {
     return i;
 }
 
+void resetIntoApp() {
+    // reset without waiting for double tap (only works for one reset)
+    *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
+    NVIC_SystemReset();
+}
+
+void resetIntoBootloader() {
+    // reset without waiting for double tap (only works for one reset)
+    *DBL_TAP_PTR = DBL_TAP_MAGIC;
+    NVIC_SystemReset();
+}
+
 #if USE_LOGS
 static struct {
     int ptr;

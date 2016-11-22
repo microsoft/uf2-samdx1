@@ -104,7 +104,16 @@ void write_block(uint32_t block_no, uint8_t *data);
 void padded_memcpy(char *dst, const char *src, int len);
 void init_fat(void);
 
+// Last word in RAM
+// Unlike for ordinary applications, our link script doesn't place the stack at the bottom
+// of the RAM, but instead after all allocated BSS.
+// In other words, this word should survive reset.
+#define DBL_TAP_PTR ((volatile uint32_t *)(HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4))
+#define DBL_TAP_MAGIC 0xf01669ef // Randomly selected, adjusted to have first and last bit set
+#define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
+
 void resetIntoApp(void);
+void resetIntoBootloader(void);
 void system_init(void);
 
 inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
