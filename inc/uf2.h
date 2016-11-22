@@ -98,7 +98,6 @@ void msc_reset(void);
 void read_block(uint32_t block_no, uint8_t *data);
 void write_block(uint32_t block_no, uint8_t *data);
 void padded_memcpy(char *dst, const char *src, int len);
-void init_fat(void);
 
 // Last word in RAM
 // Unlike for ordinary applications, our link script doesn't place the stack at the bottom

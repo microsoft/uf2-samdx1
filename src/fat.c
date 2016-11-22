@@ -53,21 +53,25 @@ struct TextFile {
 };
 
 #if USE_FAT
-const char indexFile[] = "<!doctype html>\n"
-                         "<html>"
-                         "<head>"
-                         "<script>\n"
-                         "window.location.replace(\"" INDEX_URL "\");\n"
-                         "</script>"
-                         "</head>"
-                         "<body>"
-                         "</body>"
-                         "</html>\n";
+const char infoUf2File[] = //
+    "UF2 Bootloader " UF2_VERSION "\r\n"
+    "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
+    "Board-ID: " BOARD_ID "\r\n";
 
-uint32_t infoPtr;
-char infoFile[256];
+const char indexFile[] = //
+    "<!doctype html>\n"
+    "<html>"
+    "<head>"
+    "<script>\n"
+    "window.location.replace(\"" INDEX_URL "\");\n"
+    "</script>"
+    "</head>"
+    "<body>"
+    "</body>"
+    "</html>\n";
+
 static const struct TextFile info[] = {
-    {.name = "INFO_UF2TXT", .content = infoFile},
+    {.name = "INFO_UF2TXT", .content = infoUf2File},
     {.name = "INDEX   HTM", .content = indexFile},
     {.name = "CURRENT UF2"},
 };
@@ -77,25 +81,7 @@ static const struct TextFile info[] = {
 #define UF2_SECTORS (UF2_SIZE / 512)
 #define UF2_FIRST_SECTOR (NUM_INFO + 1)
 #define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
-
-static void infoWrite(const char *ptr) {
-    int len = strlen(ptr);
-    memcpy(infoFile + infoPtr, ptr, len);
-    infoPtr += len;
-}
 #endif
-
-void init_fat() {
-#if USE_FAT
-    infoWrite("UF2 Bootloader " UF2_VERSION "\r\n"
-              "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
-              "Board-ID: " BOARD_ID "\r\n"
-              );
-
-    assert(infoPtr < sizeof(infoFile));
-    infoFile[infoPtr] = 0;
-#endif
-}
 
 #define RESERVED_SECTORS 1
 #define ROOT_DIR_SECTORS 1
