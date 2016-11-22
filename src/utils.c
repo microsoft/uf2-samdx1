@@ -3,6 +3,13 @@
 static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon, blinkHorizon;
 
+void delay(uint32_t ms) {
+    ms <<= 8;
+    for (int i = 1; i < ms; ++i) {
+        asm("nop");
+    }
+}
+
 void timerTick(void) {
     if (timerLow-- == 0) {
         timerLow = TIMER_STEP;

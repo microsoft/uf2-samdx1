@@ -21,7 +21,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION "v1.0.0"
+#define UF2_VERSION "v1.0.5"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -123,6 +123,7 @@ inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN)
 
 extern uint32_t timerHigh, resetHorizon, blinkHorizon;
 void timerTick(void);
+void delay(uint32_t ms);
 
 #define CONCAT_1(a, b) a ## b
 #define CONCAT_0(a, b) CONCAT_1(a, b)

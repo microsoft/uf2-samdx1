@@ -92,10 +92,9 @@ static void check_start_application(void) {
 
     /**
      * Test reset vector of application @APP_START_ADDRESS+4
-     * Stay in SAM-BA if *(APP_START+0x4) == 0xFFFFFFFF
-     * Application erased condition
+     * Sanity check on the Reset_Handler address
      */
-    if (app_start_address == 0xFFFFFFFF) {
+    if (app_start_address < APP_START_ADDRESS || app_start_address > FLASH_SIZE) {
         /* Stay in bootloader */
         return;
     }
@@ -108,9 +107,7 @@ static void check_start_application(void) {
     } else {
         if (*DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             *DBL_TAP_PTR = DBL_TAP_MAGIC;
-            for (int i = 1; i < 100000; ++i) {
-                asm("nop");
-            }
+            delay(500);
         }
         *DBL_TAP_PTR = 0;
     }

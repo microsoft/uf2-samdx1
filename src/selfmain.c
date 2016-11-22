@@ -44,6 +44,14 @@ int main(void) {
 
     logmsg("Update successful!");
 
+    // erase first row of this updater app, so the bootloader doesn't start us again
+    flash_erase_row((void*)i);
+
+    for (i = 0; i < 20; ++i) {
+        bulb_toggle();
+        delay(200);
+    }
+
     bulb_off();
 
     resetIntoBootloader();

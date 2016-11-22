@@ -53,7 +53,7 @@ SELF_OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SELF_SOURCES)) $(BUILD_PAT
 
 NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
-SELF_EXECUTABLE=$(BUILD_PATH)/self-$(NAME).bin
+SELF_EXECUTABLE=$(BUILD_PATH)/self-$(NAME).uf2
 
 all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE) build/uf2conv
 
@@ -73,6 +73,9 @@ wait:
 logs:
 	sh scripts/getlogs.sh $(BUILD_PATH)/$(NAME).map
 
+selflogs:
+	sh scripts/getlogs.sh $(BUILD_PATH)/self-$(NAME).map
+
 dirs:
 	@echo "Building $(BOARD)"
 	-@mkdir -p $(BUILD_PATH)
@@ -86,12 +89,12 @@ $(EXECUTABLE): $(OBJECTS)
 	@node -p '"Free space: " + (8192 - require("fs").readFileSync("$(BUILD_PATH)/$(NAME).bin").length)'
 
 
-$(SELF_EXECUTABLE): $(SELF_OBJECTS) 
+$(SELF_EXECUTABLE): $(SELF_OBJECTS)  build/uf2conv
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
 		 -T./scripts/samd21j18a_self.ld \
 		 -Wl,-Map,$(BUILD_PATH)/self-$(NAME).map -o $(BUILD_PATH)/self-$(NAME).elf $(SELF_OBJECTS)
-	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/self-$(NAME).elf $@
-
+	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/self-$(NAME).elf $(BUILD_PATH)/self-$(NAME).bin
+	./build/uf2conv $(BUILD_PATH)/self-$(NAME).bin $@
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h)
 	@echo "$<"

@@ -7,7 +7,10 @@
 * [x] organize board configs in directories
 * [x] if `!USE_CDC && !USE_UART` - don't compile monitor
 * [x] if `!USE_CDC` don't compile the CDC code (not only exclude descriptors)
-* [ ] write user program for updating bootloader
+* [x] write user program for updating bootloader
+* [ ] document self-updater
+* [ ] write u2fconv in .js
+* [ ] investigate some blinking
 
 ## Bigger
 * [ ] look into reset into bootloader from host to continue flashing
