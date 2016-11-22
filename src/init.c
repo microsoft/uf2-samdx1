@@ -32,6 +32,9 @@
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL 58
 #define NVM_SW_CALIB_DFLL48M_FINE_VAL 64
 
+volatile bool g_interrupt_enabled = true;
+
+
 void system_init(void) {
     /* Configure flash wait states */
     NVMCTRL->CTRLB.bit.RWS = FLASH_WAIT_STATES;
