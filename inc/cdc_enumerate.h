@@ -120,9 +120,18 @@ uint32_t cdc_read_buf_xmd(void *data, uint32_t length);
 void reset_ep(uint8_t ep);
 void stall_ep(uint8_t ep);
 
+typedef struct {
+    uint8_t size;
+    uint8_t ptr;
+    uint8_t read_job;
+    uint8_t padding;
+    uint8_t buf[PKT_SIZE];
+} PacketBuffer __attribute__((aligned(4)));
+
 uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep);
 uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num);
-void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep);
+void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep, PacketBuffer *cache);
+uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *cache);
 bool USB_Ok(void);
 
 #endif // CDC_ENUMERATE_H

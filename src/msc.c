@@ -208,7 +208,6 @@ static void udi_msc_sbc_trans(bool b_read);
 
 static void udi_msc_read_format_capacity(void);
 
-
 void udd_ep_set_halt(uint8_t ep) {
     stall_ep(ep);
     reset_ep(ep);
@@ -234,16 +233,17 @@ static void udi_msc_csw_invalid(void) {
     // TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
 }
 
-void process_msc(void) {
-    if (!USB_Read(NULL, 1, USB_EP_MSC_OUT))
-        return; // no data available
+bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, bool handoverMode) {
+    if (!USB_Read(NULL, 1, ep))
+        return false; // no data available
 
-    uint32_t nb_received = USB_Read((void *)&udi_msc_cbw, sizeof(udi_msc_cbw), USB_EP_MSC_OUT);
+    uint32_t nb_received = USB_Read((void *)cbw, sizeof(*cbw), ep);
 
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
-    if ((sizeof(udi_msc_cbw) != nb_received) ||
-        (udi_msc_cbw.dCBWSignature != CPU_TO_BE32(USB_CBW_SIGNATURE))) {
+    if ((sizeof(*cbw) != nb_received) || (cbw->dCBWSignature != CPU_TO_BE32(USB_CBW_SIGNATURE))) {
+        if (handoverMode)
+            resetIntoBootloader();
         // (5.2.1) Devices receiving a CBW with an invalid signature should
         // stall
         // further traffic on the Bulk In pipe, and either stall further traffic
@@ -252,20 +252,33 @@ void process_msc(void) {
         udi_msc_b_cbw_invalid = true;
         udi_msc_cbw_invalid();
         udi_msc_csw_invalid();
-        return;
+        return false;
     }
+
+    // in handover mode we don't care about LUN
+    if (handoverMode)
+        return true;
+
     // Check LUN asked
-    udi_msc_cbw.bCBWLUN &= USB_CBW_LUN_MASK;
-    if (udi_msc_cbw.bCBWLUN > MAX_LUN) {
+    cbw->bCBWLUN &= USB_CBW_LUN_MASK;
+    if (cbw->bCBWLUN > MAX_LUN) {
         // Bad LUN, then stop command process
         udi_msc_sense_fail_cdb_invalid();
         udi_msc_csw_process();
-        return;
+        return false;
     }
+
+    return true;
+}
+
+void process_msc(void) {
+    if (!try_read_cbw(&udi_msc_cbw, USB_EP_MSC_OUT, false))
+        return; // no data
+
     // Prepare CSW residue field with the size requested
     udi_msc_csw.dCSWDataResidue = le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
 
-    //if (SBC_WRITE10 != udi_msc_cbw.CDB[0])
+    // if (SBC_WRITE10 != udi_msc_cbw.CDB[0])
     //    logval("MSC CMD", udi_msc_cbw.CDB[0]);
 
     // Decode opcode
@@ -681,7 +694,7 @@ static void udi_msc_sbc_trans(bool b_read) {
             read_block(udi_msc_addr + i, block_buffer);
             USB_Write(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_IN);
         } else {
-            USB_ReadBlocking(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_OUT);
+            USB_ReadBlocking(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_OUT, 0);
             write_block(udi_msc_addr + i, block_buffer);
         }
         udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
@@ -691,4 +704,33 @@ static void udi_msc_sbc_trans(bool b_read) {
 
     // Send status of transfer in CSW packet
     udi_msc_csw_process();
+}
+
+void process_handover(UF2_HandoverArgs *handover) {
+    struct usb_msc_cbw cbw;
+
+    if (!try_read_cbw(&cbw, handover->ep_out, true))
+        return; // no data
+
+    struct usb_msc_csw csw = {.dCSWTag = cbw.dCBWTag,
+                              .dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE),
+                              .dCSWDataResidue = le32_to_cpu(cbw.dCBWDataTransferLength)};
+
+    // if (SBC_WRITE10 != udi_msc_cbw.CDB[0])
+    //    logval("MSC CMD", udi_msc_cbw.CDB[0]);
+
+    switch (cbw.CDB[0]) {
+    case SPC_TEST_UNIT_READY:
+        csw.bCSWStatus = USB_CSW_STATUS_PASS;
+        USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
+        break;
+
+    case SBC_WRITE10:
+        udi_msc_sbc_trans(false);
+        break;
+
+    default:
+        resetIntoBootloader();
+        break;
+    }
 }
