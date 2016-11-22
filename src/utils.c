@@ -63,6 +63,11 @@ static struct {
     char buffer[4096];
 } logStoreUF2;
 
+void logreset() {
+    logStoreUF2.ptr = 0;
+    logmsg("Reset logs.");
+}
+
 void logwritenum(uint32_t n) {
     char buff[9];
     buff[writeNum(buff, n, false)] = 0;

@@ -4,6 +4,7 @@
 #include "board_config.h"
 
 #include "samd21.h"
+#define UF2_DEFINE_HANDOVER 1 // for testing
 #include "uf2format.h"
 #include "main.h"
 #include "cdc_enumerate.h"
@@ -62,11 +63,13 @@ void logmsg(const char *msg);
 void logval(const char *lbl, uint32_t v);
 void logwritenum(uint32_t n);
 void logwrite(const char *msg);
+void logreset(void);
 #else
 #define logmsg(...) NOOP
 #define logval(...) NOOP
 #define logwritenum(...) NOOP
 #define logwrite(...) NOOP
+#define logreset() NOOP
 #endif
 
 void panic(void);

@@ -265,7 +265,8 @@ void process_msc(void) {
     // Prepare CSW residue field with the size requested
     udi_msc_csw.dCSWDataResidue = le32_to_cpu(udi_msc_cbw.dCBWDataTransferLength);
 
-    //logval("MSC CMD", udi_msc_cbw.CDB[0]);
+    //if (SBC_WRITE10 != udi_msc_cbw.CDB[0])
+    //    logval("MSC CMD", udi_msc_cbw.CDB[0]);
 
     // Decode opcode
     switch (udi_msc_cbw.CDB[0]) {
@@ -314,7 +315,7 @@ void process_msc(void) {
     case SBC_WRITE10:
         udi_msc_sbc_trans(false);
         break;
-    
+
     case 0x23:
         udi_msc_read_format_capacity();
         break;
@@ -476,7 +477,7 @@ static void udi_msc_read_format_capacity(void) {
                        0};
 
     size_t length = 12;
-    
+
     if (udi_msc_csw.dCSWDataResidue > length)
         udi_msc_csw.dCSWDataResidue = length;
 
@@ -494,7 +495,7 @@ static void udi_msc_spc_inquiry(void) {
         .version = 2, // SCSI_INQ_VER_SPC,
         .flags1 = SCSI_INQ_RMB,
         .flags3 = SCSI_INQ_RSP_SPC2,
-        .addl_len = 36-4,//SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
+        .addl_len = 36 - 4, // SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
         .vendor_id = {'A', 'T', 'M', 'E', 'L', ' ', ' ', ' '},
         .product_id = "UF2 MSC Boot    ",
         .product_rev = {'1', '.', '0', '0'},
@@ -509,20 +510,20 @@ static void udi_msc_spc_inquiry(void) {
     if (!udi_msc_cbw_validate(length, USB_CBW_DIRECTION_IN))
         return;
 
-        /*
-    if ((0 != (udi_msc_cbw.CDB[1] & (SCSI_INQ_REQ_EVPD | SCSI_INQ_REQ_CMDT))) ||
-        (0 != udi_msc_cbw.CDB[2])) {
-        logval("unsupp", udi_msc_cbw.CDB[1]);
-        // CMDT and EPVD bits are not at 0
-        // PAGE or OPERATION CODE fields are not empty
-        //  = No standard inquiry asked
-        udi_msc_sense_fail_cdb_invalid(); // Command is unsupported
-        udi_msc_csw_process();
-        return;
-    }
-    */
+    /*
+if ((0 != (udi_msc_cbw.CDB[1] & (SCSI_INQ_REQ_EVPD | SCSI_INQ_REQ_CMDT))) ||
+    (0 != udi_msc_cbw.CDB[2])) {
+    logval("unsupp", udi_msc_cbw.CDB[1]);
+    // CMDT and EPVD bits are not at 0
+    // PAGE or OPERATION CODE fields are not empty
+    //  = No standard inquiry asked
+    udi_msc_sense_fail_cdb_invalid(); // Command is unsupported
+    udi_msc_csw_process();
+    return;
+}
+*/
 
-    //logval("Sense Size", length);
+    // logval("Sense Size", length);
 
     // Send inquiry data
     udi_msc_data_send((uint8_t *)&udi_msc_inquiry_data, length);
@@ -660,22 +661,22 @@ static void udi_msc_sbc_trans(bool b_read) {
     trans_size = (uint32_t)udi_msc_nb_block * UDI_MSC_BLOCK_SIZE;
     if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
-    
-    #if 0
-    logwrite("read ");
-    logwritenum(trans_size);
-    logwrite(" @");
+
+#if 1
+    logwrite(b_read ? "read @" : "write @");
     logwritenum(udi_msc_addr);
+    logwrite(" sz:");
+    logwritenum(trans_size);
     logwrite("\n");
-    #endif
-    
+#endif
+
     for (uint32_t i = 0; i < udi_msc_nb_block; ++i) {
         if (!USB_Ok()) {
             logmsg("Transfer aborted.");
             return;
         }
 
-        //logval("readblk", i);
+        // logval("readblk", i);
         if (b_read) {
             read_block(udi_msc_addr + i, block_buffer);
             USB_Write(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_IN);

@@ -113,21 +113,6 @@ static const FAT_BootBlock BootBlock = {
     .FilesystemIdentifier = "FAT16   ",
 };
 
-#if USE_HANDOVER
-typedef struct {
-    void *reserved0;
-    void *reserved1;
-    void *handover;
-    const char *info_uf2;
-} UF2_BInfo;
-
-STATIC_ASSERT(sizeof(UF2_BInfo) == 4 * 4); // required by linker script
-
-__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
-    .info_uf2 = infoUf2File,
-};
-#endif
-
 void padded_memcpy(char *dst, const char *src, int len) {
     for (int i = 0; i < len; ++i) {
         if (*src)
@@ -207,8 +192,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data) {
     UF2_Block *bl = (void *)data;
-    if (bl->magicStart0 != UF2_MAGIC_START0 || bl->magicStart1 != UF2_MAGIC_START1 ||
-        bl->magicEnd != UF2_MAGIC_END || (bl->flags & UF2_FLAG_NOFLASH)) {
+    if (!is_uf2_block(bl) || (bl->flags & UF2_FLAG_NOFLASH)) {
         // logval("skip write @", block_no);
         return;
     }
@@ -222,9 +206,27 @@ void write_block(uint32_t block_no, uint8_t *data) {
         return;
     }
 
-    logval("write block at", bl->targetAddr);
+    // logval("write block at", bl->targetAddr);
     flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 
     blinkHorizon = timerHigh + 5;
-    resetHorizon = timerHigh + 20;
+    // resetHorizon = timerHigh + 20;
 }
+
+#if USE_HANDOVER
+static void handover(UF2_HandoverArgs *args) {
+    logreset();
+    logmsg("Handover");
+    bulb_init();
+    while (1) {
+        bulb_on();
+        delay(300);
+        bulb_off();
+        delay(100);
+    }
+}
+
+__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
+    .handover = handover, .info_uf2 = infoUf2File,
+};
+#endif
