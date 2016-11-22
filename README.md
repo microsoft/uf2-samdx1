@@ -56,6 +56,25 @@ This file includes the bootloader address space. When reading such file,
 an programming environment can look for `Board-ID: ...` in the first `8k`
 of flash data to determine which board does it come from.
 
+## Bootloader update
+
+The bootloader will never write to its own flash area directly.
+However, the user code can write there.
+Thus, to update the bootloader, one can ship a user-space program,
+that contains the new version of the bootloader and copies it to the
+appropriate place in flash.
+
+Such a program is generated during build in files `self-uf2-bootloader.bin`
+and `self-uf2-bootloader.uf2`.
+
+## Fuses
+
+The SAMD21 supports a BOOTPROT fuse, which write-protects the flash area of
+the bootloader. Changes to this fuse only take effect after device reset.
+
+This fuse is currently not utilized by this bootloader. It needs to be investigated.
+
+
 ## Build
 
 ### Requirements

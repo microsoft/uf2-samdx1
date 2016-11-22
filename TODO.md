@@ -11,6 +11,7 @@
 * [ ] document self-updater
 * [ ] write u2fconv in .js
 * [ ] investigate some blinking
+* [ ] add optional logic to self-updater to check if existing bootloader has the same board-id
 
 ## Bigger
 * [ ] look into reset into bootloader from host to continue flashing
