@@ -101,7 +101,7 @@ void msc_reset(void);
 #define UDI_MSC_BLOCK_SIZE 512L
 
 void read_block(uint32_t block_no, uint8_t *data);
-void write_block(uint32_t block_no, uint8_t *data);
+void write_block(uint32_t block_no, uint8_t *data, bool quiet);
 void padded_memcpy(char *dst, const char *src, int len);
 
 // Last word in RAM

@@ -10,8 +10,10 @@
 * [x] write user program for updating bootloader
 * [ ] document self-updater
 * [ ] write u2fconv in .js
-* [ ] investigate some blinking
+* [ ] investigate some blinking; also RX/TX leds
 * [ ] add optional logic to self-updater to check if existing bootloader has the same board-id
+* [ ] detect end of transmission by request other than read/ready not time
+
 
 ## Bigger
 * [ ] look into reset into bootloader from host to continue flashing

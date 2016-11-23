@@ -6,6 +6,9 @@ static void wait_ready(void) {
 }
 
 void flash_erase_row(uint32_t *dst) {
+    wait_ready();
+    NVMCTRL->STATUS.reg = NVMCTRL_STATUS_MASK;
+
     // Execute "ER" Erase Row
     NVMCTRL->ADDR.reg = (uint32_t)dst / 2;
     NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER;
@@ -37,14 +40,14 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
 #define QUICK_FLASH 1
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {
-    #if QUICK_FLASH
+#if QUICK_FLASH
     for (int i = 0; i < FLASH_ROW_SIZE / 4; ++i)
         if (src[i] != dst[i])
             goto doflash;
     return;
 
 doflash:
-    #endif
+#endif
 
     flash_erase_row(dst);
     flash_write_words(dst, src, FLASH_ROW_SIZE);

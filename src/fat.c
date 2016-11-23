@@ -190,19 +190,21 @@ void read_block(uint32_t block_no, uint8_t *data) {
 #endif
 }
 
-void write_block(uint32_t block_no, uint8_t *data) {
+void write_block(uint32_t block_no, uint8_t *data, bool quiet) {
     UF2_Block *bl = (void *)data;
     if (!is_uf2_block(bl) || (bl->flags & UF2_FLAG_NOFLASH)) {
         // logval("skip write @", block_no);
         return;
     }
     if (bl->payloadSize != 256) {
-        logval("bad payload size", bl->payloadSize);
+        if (!quiet)
+            logval("bad payload size", bl->payloadSize);
         return;
     }
     if ((bl->targetAddr & 0xff) || bl->targetAddr < APP_START_ADDRESS ||
         bl->targetAddr >= FLASH_SIZE) {
-        logval("invalid target addr", bl->targetAddr);
+        if (!quiet)
+            logval("invalid target addr", bl->targetAddr);
         return;
     }
 
@@ -210,6 +212,5 @@ void write_block(uint32_t block_no, uint8_t *data) {
     flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 
     blinkHorizon = timerHigh + 5;
-    // resetHorizon = timerHigh + 20;
+    resetHorizon = timerHigh + 20;
 }
-
