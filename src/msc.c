@@ -233,16 +233,16 @@ static void udi_msc_csw_invalid(void) {
     // TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
 }
 
-bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, bool handoverMode) {
-    if (!USB_Read(NULL, 1, ep))
+bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCache) {
+    if (!USB_ReadCore(NULL, 1, ep, handoverCache))
         return false; // no data available
 
-    uint32_t nb_received = USB_Read((void *)cbw, sizeof(*cbw), ep);
+    uint32_t nb_received = USB_ReadCore((void *)cbw, sizeof(*cbw), ep, handoverCache);
 
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
     if ((sizeof(*cbw) != nb_received) || (cbw->dCBWSignature != CPU_TO_BE32(USB_CBW_SIGNATURE))) {
-        if (handoverMode)
+        if (handoverCache)
             resetIntoBootloader();
         // (5.2.1) Devices receiving a CBW with an invalid signature should
         // stall
@@ -256,7 +256,7 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, bool handoverMode) {
     }
 
     // in handover mode we don't care about LUN
-    if (handoverMode)
+    if (handoverCache)
         return true;
 
     // Check LUN asked
@@ -706,31 +706,83 @@ static void udi_msc_sbc_trans(bool b_read) {
     udi_msc_csw_process();
 }
 
-void process_handover(UF2_HandoverArgs *handover) {
+#if USE_HANDOVER
+static void handover_flash(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
+    for (uint32_t i = 0; i < handover->blocks_remaining; ++i) {
+        USB_ReadBlocking(handover->buffer, UDI_MSC_BLOCK_SIZE, handover->ep_out, handoverCache);
+        write_block(0x1000 + i, handover->buffer);
+    }
+}
+
+static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
+    struct usb_msc_csw csw = {.dCSWTag = handover->cbw_tag,
+                              .dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE),
+                              .bCSWStatus = USB_CSW_STATUS_PASS,
+                              .dCSWDataResidue = 0};
+    // write out the block passed from user space
+    write_block(0xfff, handover->buffer);
+    // read-write remaining blocks
+    handover_flash(handover, handoverCache);
+    // send USB response, as the user space isn't gonna do it
+    USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
+}
+
+static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
     struct usb_msc_cbw cbw;
 
-    if (!try_read_cbw(&cbw, handover->ep_out, true))
+    if (!try_read_cbw(&cbw, handover->ep_out, handoverCache))
         return; // no data
 
     struct usb_msc_csw csw = {.dCSWTag = cbw.dCBWTag,
                               .dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE),
+                              .bCSWStatus = USB_CSW_STATUS_PASS,
                               .dCSWDataResidue = le32_to_cpu(cbw.dCBWDataTransferLength)};
 
     // if (SBC_WRITE10 != udi_msc_cbw.CDB[0])
     //    logval("MSC CMD", udi_msc_cbw.CDB[0]);
 
+    uint16_t udi_msc_nb_block;
+
     switch (cbw.CDB[0]) {
     case SPC_TEST_UNIT_READY:
-        csw.bCSWStatus = USB_CSW_STATUS_PASS;
-        USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
+        // ready, nothing to do
         break;
 
     case SBC_WRITE10:
-        udi_msc_sbc_trans(false);
+        MSB(udi_msc_nb_block) = cbw.CDB[7];
+        LSB(udi_msc_nb_block) = cbw.CDB[8];
+        handover->blocks_remaining = udi_msc_nb_block;
+        handover_flash(handover, handoverCache);
+        csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE * udi_msc_nb_block;
         break;
 
     default:
         resetIntoBootloader();
         break;
     }
+
+    USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
 }
+
+static void handover(UF2_HandoverArgs *args) {
+    // reset interrupt vectors, so that we're not disturbed by
+    // interrupt handlers from user space
+    SCB->VTOR = 0;
+
+    PacketBuffer cache;
+
+    // They may have 0x80 bit set
+    args->ep_in &= 0xf;
+    args->ep_out &= 0xf;
+
+    process_handover_initial(args, &cache);
+    while (1) {
+        process_handover(args, &cache);
+    }
+}
+
+extern const char infoUf2File[];
+__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
+    .handover = handover, .info_uf2 = infoUf2File,
+};
+#endif

@@ -213,20 +213,3 @@ void write_block(uint32_t block_no, uint8_t *data) {
     // resetHorizon = timerHigh + 20;
 }
 
-#if USE_HANDOVER
-static void handover(UF2_HandoverArgs *args) {
-    logreset();
-    logmsg("Handover");
-    bulb_init();
-    while (1) {
-        bulb_on();
-        delay(300);
-        bulb_off();
-        delay(100);
-    }
-}
-
-__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
-    .handover = handover, .info_uf2 = infoUf2File,
-};
-#endif
