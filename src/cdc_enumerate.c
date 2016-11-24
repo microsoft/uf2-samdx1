@@ -373,10 +373,10 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
     uint32_t packetSize = 0;
     UsbDeviceDescriptor *epdesc = (UsbDeviceDescriptor *)USB->HOST.DESCADD.reg + ep;
 
-    if (!cache)
+    if (!cache) {
         cache = &endpointCache[ep];
-
-    timerTick();
+        timerTick();
+    }
 
     if (cache->ptr < cache->size) {
         packetSize = MIN(cache->size - cache->ptr, length);
@@ -810,8 +810,7 @@ bool cdc_is_rx_ready(void) {
         return 0;
 
     /* Return transfer complete 0 flag status */
-    return (USB->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg &
-            USB_DEVICE_EPINTFLAG_TRCPT0);
+    return (USB->DEVICE.DeviceEndpoint[USB_EP_OUT].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0);
 }
 
 uint32_t cdc_write_buf(void const *data, uint32_t length) {

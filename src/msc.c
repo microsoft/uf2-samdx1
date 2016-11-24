@@ -735,9 +735,14 @@ static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *h
 
 static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
     struct usb_msc_cbw cbw;
+    int num = 0;
 
-    if (!try_read_cbw(&cbw, handover->ep_out, handoverCache))
-        return; // no data
+    while (!try_read_cbw(&cbw, handover->ep_out, handoverCache)) {
+        // TODO is this the right value?
+        if (num++ > TIMER_STEP * 50) {
+            NVIC_SystemReset();
+        }
+    }
 
     struct usb_msc_csw csw = {.dCSWTag = cbw.dCBWTag,
                               .dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE),
@@ -770,15 +775,28 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
     USB_WriteCore((void *)&csw, sizeof(csw), handover->ep_in, true);
 }
 
+#include "system_interrupt.h"
+
 static void handover(UF2_HandoverArgs *args) {
     // reset interrupt vectors, so that we're not disturbed by
     // interrupt handlers from user space
+
+    // for (int i = 1; i <= 0x1f; ++i){
+    //    system_interrupt_disable(i);
+    //}
+
+    cpu_irq_disable();
+
+    USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
+    USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;
+
     SCB->VTOR = 0;
 
-	USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
-	USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;
-
     PacketBuffer cache = {0};
+
+    // for (int i = 0; i < 1000000; i++) {
+    //    asm("nop");
+    //}
 
     // They may have 0x80 bit set
     args->ep_in &= 0xf;
@@ -794,4 +812,5 @@ extern const char infoUf2File[];
 __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
     .handover = handover, .info_uf2 = infoUf2File,
 };
+
 #endif
