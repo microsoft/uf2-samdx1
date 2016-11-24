@@ -50,7 +50,6 @@
 
 typedef struct _USB_CDC {
     // Private members
-    Usb *pUsb;
     uint8_t currentConfiguration;
     uint8_t currentConnection;
 } USB_CDC, *P_USB_CDC;
