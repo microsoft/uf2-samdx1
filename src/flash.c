@@ -50,5 +50,5 @@ doflash:
 #endif
 
     flash_erase_row(dst);
-    flash_write_words(dst, src, FLASH_ROW_SIZE);
+    flash_write_words(dst, src, FLASH_ROW_SIZE / 4);
 }
