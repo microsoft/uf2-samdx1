@@ -695,6 +695,12 @@ static void udi_msc_sbc_trans(bool b_read) {
             USB_Write(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_IN);
         } else {
             USB_ReadBlocking(block_buffer, UDI_MSC_BLOCK_SIZE, USB_EP_MSC_OUT, 0);
+
+#if 0
+            check_uf2_handover(block_buffer, udi_msc_nb_block - i - 1, USB_EP_MSC_IN,
+                               USB_EP_MSC_OUT, udi_msc_cbw.dCBWTag);
+#endif
+
             write_block(udi_msc_addr + i, block_buffer, false);
         }
         udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
@@ -724,7 +730,7 @@ static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *h
     // read-write remaining blocks
     handover_flash(handover, handoverCache);
     // send USB response, as the user space isn't gonna do it
-    USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
+    USB_WriteCore((void *)&csw, sizeof(csw), handover->ep_in, true);
 }
 
 static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
@@ -761,7 +767,7 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
         break;
     }
 
-    USB_Write((void *)&csw, sizeof(csw), handover->ep_in);
+    USB_WriteCore((void *)&csw, sizeof(csw), handover->ep_in, true);
 }
 
 static void handover(UF2_HandoverArgs *args) {
@@ -769,7 +775,10 @@ static void handover(UF2_HandoverArgs *args) {
     // interrupt handlers from user space
     SCB->VTOR = 0;
 
-    PacketBuffer cache;
+	USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
+	USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;
+
+    PacketBuffer cache = {0};
 
     // They may have 0x80 bit set
     args->ep_in &= 0xf;

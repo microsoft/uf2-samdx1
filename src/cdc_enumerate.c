@@ -443,6 +443,10 @@ void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep, PacketBuffer *cac
 }
 
 uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
+    return USB_WriteCore(pData, length, ep_num, false);
+}
+
+uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool handoverMode) {
     Usb *pUsb = pCdc.pUsb;
     uint32_t data_address;
 
@@ -450,6 +454,7 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 
     /* Check for requirement for multi-packet or auto zlp */
     if (length >= (1 << (epdesc->DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
+        assert(!handoverMode);
         /* Update the EP data address */
         data_address = (uint32_t)pData;
         // data must be in RAM!
@@ -457,6 +462,8 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 
         // always disable AUTO_ZLP on MSC channel, otherwise enable
         epdesc->DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = ep_num == USB_EP_MSC_IN ? false : true;
+    } else if (handoverMode) {
+        data_address = (uint32_t)pData;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);
@@ -478,8 +485,8 @@ uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num) {
 
     /* Wait for transfer to complete */
     while (!(pUsb->DEVICE.DeviceEndpoint[ep_num].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT1)) {
-        if (ep_num && !USB_Ok())
-            return -1;
+        // if (ep_num && !USB_Ok())
+        //    return -1;
     }
 
     return length;

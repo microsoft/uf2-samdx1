@@ -130,6 +130,7 @@ typedef struct {
 
 uint32_t USB_Read(void *pData, uint32_t length, uint32_t ep);
 uint32_t USB_Write(const void *pData, uint32_t length, uint8_t ep_num);
+uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool handoverMode);
 void USB_ReadBlocking(void *dst, uint32_t length, uint32_t ep, PacketBuffer *cache);
 uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *cache);
 bool USB_Ok(void);
