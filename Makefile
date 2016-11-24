@@ -28,6 +28,7 @@ BUILD_PATH=build/$(BOARD)
 INCLUDES = -I./inc -I./inc/preprocessor
 INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Include -I./asf/sam0/utils/cmsis/samd21/source
 INCLUDES += -I./asf/common -I./asf/common/utils -I./asf/sam0/utils/header_files -I./asf/sam0/utils -I./asf/common/utils/interrupt
+INCLUDES += -I./asf/sam0/drivers/system/interrupt -I./asf/sam0/drivers/system/interrupt/system_interrupt_samd21
 INCLUDES += -I./boards/$(BOARD)
 
 COMMON_SRC = \

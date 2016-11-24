@@ -66,7 +66,7 @@ void Dummy_Handler(void);
 
 /* Cortex-M0+ core handlers */
 void NMI_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
-void HardFault_Handler       ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
+//void HardFault_Handler       ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void SVC_Handler             ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void PendSV_Handler          ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void SysTick_Handler         ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
@@ -273,10 +273,21 @@ void Reset_Handler(void)
         while (1);
 }
 
+#include "system_interrupt.h"
+
 /**
  * \brief Default interrupt handler for unused IRQs.
  */
 void Dummy_Handler(void)
 {
-        //while (1) {}
+        volatile int act = system_interrupt_get_active();
+        (void)act;
+        while (1) {
+        }
+}
+
+void HardFault_Handler(void) 
+{
+        while (1) {
+        }        
 }
