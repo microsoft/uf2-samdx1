@@ -34,7 +34,6 @@
 
 volatile bool g_interrupt_enabled = true;
 
-
 void system_init(void) {
     /* Configure flash wait states */
     NVMCTRL->CTRLB.bit.RWS = FLASH_WAIT_STATES;
@@ -105,4 +104,10 @@ void system_init(void) {
     GCLK->GENCTRL.reg = (genctrl.reg | temp_genctrl);
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
         ;
+
+    SysTick_Config(150);
+}
+
+void SysTick_Handler(void) {
+    LED_TICK();
 }

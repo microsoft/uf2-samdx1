@@ -12,7 +12,7 @@
 
 #define BOARD_ID "SAMD21G18A-Generic"
 
-#define BULB_PORT 0
-#define BULB_PIN 17
+#define LED_PIN PIN_PA17
+
 
 #endif

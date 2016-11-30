@@ -8,8 +8,7 @@ extern const uint16_t bootloader_crcs[];
 uint8_t pageBuf[FLASH_ROW_SIZE];
 
 int main(void) {
-    bulb_init();
-    bulb_on();
+    led_init();
 
     logmsg("Start");
 
@@ -48,11 +47,11 @@ int main(void) {
     flash_erase_row((void*)i);
 
     for (i = 0; i < 20; ++i) {
-        bulb_toggle();
+        LED_MSC_TGL();
         delay(200);
     }
 
-    bulb_off();
+    LED_MSC_OFF();
 
     resetIntoBootloader();
 

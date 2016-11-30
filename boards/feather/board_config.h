@@ -12,7 +12,6 @@
 #define USB_VID 0x239A
 #define USB_PID 0x0015
 
-#define BULB_PORT 0
-#define BULB_PIN 17
+#define LED_PIN PIN_PA17
 
 #endif

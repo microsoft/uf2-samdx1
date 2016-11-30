@@ -112,7 +112,7 @@ static void check_start_application(void) {
         *DBL_TAP_PTR = 0;
     }
 
-    bulb_off();
+    LED_MSC_OFF();
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);
@@ -132,8 +132,7 @@ extern char _end;
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
-    bulb_init();
-    bulb_on();
+    led_init();
 
     logmsg("Start");
     assert((uint32_t)&_etext < APP_START_ADDRESS);

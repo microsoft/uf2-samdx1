@@ -103,3 +103,43 @@ void logval(const char *lbl, uint32_t v) {
     logwrite("\n");
 }
 #endif
+
+static uint32_t now;
+static uint32_t signal_end;
+static int8_t step = 1;
+static uint8_t limit = 200;
+
+void led_tick() {
+    now++;
+    if (signal_end) {
+        if (now == signal_end - 400) {
+            LED_MSC_ON();
+        }
+        if (now == signal_end) {
+            signal_end = 0;
+        }
+    } else {
+        uint8_t curr = now & 0xff;
+        if (curr == 0) {
+            LED_MSC_ON();
+            if (limit < 10 || limit > 250) {
+                step = -step;
+            }
+            limit += step;
+        } else if (curr == limit) {
+            LED_MSC_OFF();
+        }
+    }
+}
+
+void led_signal() {
+    if (signal_end < now) {
+        signal_end = now + 1000;
+        LED_MSC_OFF();
+    }
+}
+
+void led_init() {
+    PINOP(LED_PIN, DIRSET);
+    LED_MSC_ON();
+}

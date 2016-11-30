@@ -116,16 +116,23 @@ void resetIntoApp(void);
 void resetIntoBootloader(void);
 void system_init(void);
 
-inline void bulb_init(void) { PORT->Group[BULB_PORT].DIRSET.reg = (1 << BULB_PIN); }
-inline void bulb_toggle(void) { PORT->Group[BULB_PORT].OUTTGL.reg = (1 << BULB_PIN); }
-inline void bulb_on(void) { PORT->Group[BULB_PORT].OUTSET.reg = (1 << BULB_PIN); }
-inline void bulb_off(void) { PORT->Group[BULB_PORT].OUTCLR.reg = (1 << BULB_PIN); }
+#define LED_TICK led_tick
+
+#define PINOP(pin, OP) (PORT->Group[(pin) / 32].OP.reg = (1 << ((pin) % 32)))
+
+void led_tick(void);
+void led_signal(void);
+void led_init(void);
+
+#define LED_MSC_OFF() PINOP(LED_PIN, OUTCLR)
+#define LED_MSC_ON() PINOP(LED_PIN, OUTSET)
+#define LED_MSC_TGL() PINOP(LED_PIN, OUTTGL)
 
 extern uint32_t timerHigh, resetHorizon, blinkHorizon;
 void timerTick(void);
 void delay(uint32_t ms);
 
-#define CONCAT_1(a, b) a ## b
+#define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)
 #define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }
 
