@@ -13,8 +13,12 @@
 * [ ] investigate some blinking; also RX/TX leds
 * [ ] add optional logic to self-updater to check if existing bootloader has the same board-id
 * [ ] detect end of transmission by request other than read/ready not time
-
+* [ ] add UF2 write support to PXT
+* [ ] add UF2 read support to PXT
 
 ## Bigger
 * [ ] look into reset into bootloader from host to continue flashing
 * [ ] use BOOTPROT bits - requires device reset to set
+* [ ] investigate no-reset on the MSD device
+* [ ] investigate webusb
+
