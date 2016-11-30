@@ -260,16 +260,9 @@ void AT91F_InitUSB(void) {
     PORT->Group[0].PMUX[PIN_PA25G_USB_DP / 2].reg |= MUX_PA25G_USB_DP
                                                      << (4 * (PIN_PA25G_USB_DP & 0x01u));
 
-    /* Setup clock for module */
-    GCLK_CLKCTRL_Type clkctrl = {0};
-    uint16_t temp;
-    /* GCLK_ID - USB - 0x06 */
-    GCLK->CLKCTRL.bit.ID = 0x06;
-    temp = GCLK->CLKCTRL.reg;
-    clkctrl.bit.CLKEN = true;
-    clkctrl.bit.WRTLOCK = false;
-    clkctrl.bit.GEN = GCLK_CLKCTRL_GEN_GCLK1_Val;
-    GCLK->CLKCTRL.reg = (clkctrl.reg | temp);
+    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(6) | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_CLKEN;
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
+        ;
 
     /* Reset */
     USB->HOST.CTRLA.bit.SWRST = 1;
