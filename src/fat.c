@@ -208,8 +208,6 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet) {
         return;
     }
 
-    led_signal();
-
     // logval("write block at", bl->targetAddr);
     flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 

@@ -702,6 +702,7 @@ static void udi_msc_sbc_trans(bool b_read) {
 #endif
 
             write_block(udi_msc_addr + i, block_buffer, false);
+            led_signal();
         }
         udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
     }

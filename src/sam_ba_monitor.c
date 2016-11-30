@@ -136,6 +136,7 @@ void sam_ba_monitor_run(void) {
             logmsg(data);
         }
         ptr = data;
+        led_signal();
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {
                 if (*ptr == '#') {
