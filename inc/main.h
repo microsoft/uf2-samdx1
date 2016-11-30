@@ -30,7 +30,7 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-#define CPU_FREQUENCY 8000000
+#define CPU_FREQUENCY 48000000
 
 #define FLASH_WAIT_STATES 1
 
