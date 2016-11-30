@@ -112,7 +112,7 @@ static uint8_t limit = 200;
 void led_tick() {
     now++;
     if (signal_end) {
-        if (now == signal_end - 400) {
+        if (now == signal_end - 1000) {
             LED_MSC_ON();
         }
         if (now == signal_end) {
@@ -134,7 +134,7 @@ void led_tick() {
 
 void led_signal() {
     if (signal_end < now) {
-        signal_end = now + 1000;
+        signal_end = now + 2000;
         LED_MSC_OFF();
     }
 }
