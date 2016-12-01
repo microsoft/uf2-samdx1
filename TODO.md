@@ -10,9 +10,9 @@
 * [x] write user program for updating bootloader
 * [ ] document self-updater
 * [ ] write u2fconv in .js
-* [ ] investigate some blinking; also RX/TX leds
+* [x] investigate some blinking; also RX/TX leds
 * [ ] add optional logic to self-updater to check if existing bootloader has the same board-id
-* [ ] detect end of transmission by request other than read/ready not time
+* [x] detect end of transmission by block numbers
 * [ ] add UF2 write support to PXT
 * [ ] add UF2 read support to PXT
 
