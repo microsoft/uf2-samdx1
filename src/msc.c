@@ -509,6 +509,7 @@ static void udi_msc_spc_inquiry(void) {
         .flags1 = SCSI_INQ_RMB,
         .flags3 = SCSI_INQ_RSP_SPC2,
         .addl_len = 36 - 4, // SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
+        // Linux seems to display this
         .vendor_id = {'A', 'T', 'M', 'E', 'L', ' ', ' ', ' '},
         .product_id = "UF2 MSC Boot    ",
         .product_rev = {'1', '.', '0', '0'},
