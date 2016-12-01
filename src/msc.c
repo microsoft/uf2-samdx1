@@ -653,6 +653,7 @@ static void udi_msc_sbc_read_capacity(void) {
 }
 
 COMPILER_ALIGNED(4) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
+static WriteState usbWriteState;
 
 static void udi_msc_sbc_trans(bool b_read) {
     uint32_t trans_size;
@@ -702,7 +703,7 @@ static void udi_msc_sbc_trans(bool b_read) {
                                USB_EP_MSC_OUT, udi_msc_cbw.dCBWTag);
 #endif
 
-            write_block(udi_msc_addr + i, block_buffer, false);
+            write_block(udi_msc_addr + i, block_buffer, false, &usbWriteState);
             led_signal();
         }
         udi_msc_csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE;
@@ -718,7 +719,7 @@ static void udi_msc_sbc_trans(bool b_read) {
 static void handover_flash(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
     for (uint32_t i = 0; i < handover->blocks_remaining; ++i) {
         USB_ReadBlocking(handover->buffer, UDI_MSC_BLOCK_SIZE, handover->ep_out, handoverCache);
-        write_block(0x1000 + i, handover->buffer, true);
+        write_block(0x1000 + i, handover->buffer, true, 0);
     }
 }
 
@@ -728,7 +729,7 @@ static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *h
                               .bCSWStatus = USB_CSW_STATUS_PASS,
                               .dCSWDataResidue = 0};
     // write out the block passed from user space
-    write_block(0xfff, handover->buffer, true);
+    write_block(0xfff, handover->buffer, true, 0);
     // read-write remaining blocks
     handover_flash(handover, handoverCache);
     // send USB response, as the user space isn't gonna do it

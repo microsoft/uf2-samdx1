@@ -127,7 +127,13 @@ void msc_reset(void);
 #define UDI_MSC_BLOCK_SIZE 512L
 
 void read_block(uint32_t block_no, uint8_t *data);
-void write_block(uint32_t block_no, uint8_t *data, bool quiet);
+#define MAX_BLOCKS (FLASH_SIZE / 256 + 100)
+typedef struct {
+    uint32_t numBlocks;
+    uint32_t numWritten;
+    uint8_t writtenMask[MAX_BLOCKS / 8 + 1];
+} WriteState;
+void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state);
 void padded_memcpy(char *dst, const char *src, int len);
 
 // Last word in RAM
@@ -154,7 +160,7 @@ void led_init(void);
 #define LED_MSC_ON() PINOP(LED_PIN, OUTSET)
 #define LED_MSC_TGL() PINOP(LED_PIN, OUTTGL)
 
-extern uint32_t timerHigh, resetHorizon, blinkHorizon;
+extern uint32_t timerHigh, resetHorizon;
 void timerTick(void);
 void delay(uint32_t ms);
 

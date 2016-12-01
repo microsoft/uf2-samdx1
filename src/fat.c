@@ -192,7 +192,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
 #endif
 }
 
-void write_block(uint32_t block_no, uint8_t *data, bool quiet) {
+void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state) {
     UF2_Block *bl = (void *)data;
     if (!is_uf2_block(bl) || (bl->flags & UF2_FLAG_NOFLASH)) {
         // logval("skip write @", block_no);
@@ -213,6 +213,25 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet) {
     // logval("write block at", bl->targetAddr);
     flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 
-    blinkHorizon = timerHigh + 5;
-    resetHorizon = timerHigh + 20;
+    if (state && bl->numBlocks) {
+        if (state->numBlocks != bl->numBlocks) {
+            if (bl->numBlocks >= MAX_BLOCKS || state->numBlocks)
+                state->numBlocks = 0xffffffff;
+            else
+                state->numBlocks = bl->numBlocks;
+        }
+        if (bl->blockNo < MAX_BLOCKS) {
+            uint8_t mask = 1 << (bl->blockNo % 8);
+            uint32_t pos = bl->blockNo / 8;
+            if (!(state->writtenMask[pos] & mask)) {
+                // logval("incr", state->numWritten);
+                state->writtenMask[pos] |= mask;
+                state->numWritten++;
+            }
+            if (state->numWritten >= state->numBlocks)
+                resetIntoApp();
+        }
+    } else {
+        resetHorizon = timerHigh + 300;
+    }
 }

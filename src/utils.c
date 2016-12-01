@@ -1,7 +1,7 @@
 #include "uf2.h"
 
 static uint32_t timerLow;
-uint32_t timerHigh, resetHorizon, blinkHorizon;
+uint32_t timerHigh, resetHorizon;
 
 void delay(uint32_t ms) {
     ms <<= 8;
@@ -18,12 +18,6 @@ void timerTick(void) {
             resetHorizon = 0;
             resetIntoApp();
         }
-        /*
-        if (timerHigh < blinkHorizon)
-            bulb_toggle();
-        else
-            bulb_on();
-        */
     }
 }
 
