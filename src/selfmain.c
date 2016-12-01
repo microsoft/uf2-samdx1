@@ -18,7 +18,7 @@ int main(void) {
     /* We have determined we should stay in the monitor. */
     /* System initialization */
     system_init();
-    cpu_irq_enable();
+    cpu_irq_disable();
 
     logmsg("Before main loop");
 
@@ -38,18 +38,18 @@ int main(void) {
 
     for (i = 0; i < BOOTLOADER_K * 1024; i += FLASH_ROW_SIZE) {
         memcpy(pageBuf, &bootloader[i], FLASH_ROW_SIZE);
-        flash_write_row((void *)i, (void*)pageBuf);
+        flash_write_row((void *)i, (void *)pageBuf);
     }
 
     logmsg("Update successful!");
 
-    // erase first row of this updater app, so the bootloader doesn't start us again
-    flash_erase_row((void*)i);
-
     for (i = 0; i < 20; ++i) {
         LED_MSC_TGL();
-        delay(200);
+        delay(1000);
     }
+
+    // erase first row of this updater app, so the bootloader doesn't start us again
+    //flash_erase_row((void *)i); - this seems to cause trouble
 
     LED_MSC_OFF();
 
