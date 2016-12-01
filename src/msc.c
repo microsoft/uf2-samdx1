@@ -716,27 +716,30 @@ static void udi_msc_sbc_trans(bool b_read) {
 }
 
 #if USE_HANDOVER
-static void handover_flash(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
+static void handover_flash(UF2_HandoverArgs *handover, PacketBuffer *handoverCache,
+                           WriteState *state) {
     for (uint32_t i = 0; i < handover->blocks_remaining; ++i) {
         USB_ReadBlocking(handover->buffer, UDI_MSC_BLOCK_SIZE, handover->ep_out, handoverCache);
-        write_block(0x1000 + i, handover->buffer, true, 0);
+        write_block(0x1000 + i, handover->buffer, true, state);
     }
 }
 
-static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
+static void process_handover_initial(UF2_HandoverArgs *handover, PacketBuffer *handoverCache,
+                                     WriteState *state) {
     struct usb_msc_csw csw = {.dCSWTag = handover->cbw_tag,
                               .dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE),
                               .bCSWStatus = USB_CSW_STATUS_PASS,
                               .dCSWDataResidue = 0};
     // write out the block passed from user space
-    write_block(0xfff, handover->buffer, true, 0);
+    write_block(0xfff, handover->buffer, true, state);
     // read-write remaining blocks
-    handover_flash(handover, handoverCache);
+    handover_flash(handover, handoverCache, state);
     // send USB response, as the user space isn't gonna do it
     USB_WriteCore((void *)&csw, sizeof(csw), handover->ep_in, true);
 }
 
-static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverCache) {
+static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverCache,
+                             WriteState *state) {
     struct usb_msc_cbw cbw;
     int num = 0;
 
@@ -766,7 +769,7 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
         MSB(udi_msc_nb_block) = cbw.CDB[7];
         LSB(udi_msc_nb_block) = cbw.CDB[8];
         handover->blocks_remaining = udi_msc_nb_block;
-        handover_flash(handover, handoverCache);
+        handover_flash(handover, handoverCache, state);
         csw.dCSWDataResidue -= UDI_MSC_BLOCK_SIZE * udi_msc_nb_block;
         break;
 
@@ -796,6 +799,7 @@ static void handover(UF2_HandoverArgs *args) {
     SCB->VTOR = 0;
 
     PacketBuffer cache = {0};
+    WriteState writeState = {0};
 
     // for (int i = 0; i < 1000000; i++) {
     //    asm("nop");
@@ -805,9 +809,9 @@ static void handover(UF2_HandoverArgs *args) {
     args->ep_in &= 0xf;
     args->ep_out &= 0xf;
 
-    process_handover_initial(args, &cache);
+    process_handover_initial(args, &cache, &writeState);
     while (1) {
-        process_handover(args, &cache);
+        process_handover(args, &cache, &writeState);
     }
 }
 
