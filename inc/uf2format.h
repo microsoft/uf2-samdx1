@@ -23,9 +23,9 @@ typedef struct {
     uint32_t flags;
     uint32_t targetAddr;
     uint32_t payloadSize;
-    uint32_t reserved0;
-    uint32_t reserved1;
-    uint32_t reserved2;
+    uint32_t blockNo;
+    uint32_t numBlocks;
+    uint32_t reserved;
 
     // raw data;
     uint8_t data[476];

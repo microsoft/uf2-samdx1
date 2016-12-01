@@ -181,6 +181,8 @@ void read_block(uint32_t block_no, uint8_t *data) {
                 bl->magicStart0 = UF2_MAGIC_START0;
                 bl->magicStart1 = UF2_MAGIC_START1;
                 bl->magicEnd = UF2_MAGIC_END;
+                bl->blockNo = sectionIdx;
+                bl->numBlocks = FLASH_SIZE / 256;
                 bl->targetAddr = addr;
                 bl->payloadSize = 256;
                 memcpy(bl->data, (void *)addr, bl->payloadSize);
