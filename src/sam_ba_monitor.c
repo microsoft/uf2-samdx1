@@ -111,7 +111,6 @@ uint8_t command, *ptr_data, *ptr, data[SIZEBUFMAX + 1];
 uint8_t j;
 uint32_t u32tmp;
 
-
 // Prints a 32-bit integer in hex.
 void put_uint32(uint32_t n) {
     char buff[8];
@@ -134,9 +133,9 @@ void sam_ba_monitor_run(void) {
         if (length) {
             logwrite("SERIAL:");
             logmsg(data);
+            led_signal();
         }
         ptr = data;
-        led_signal();
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {
                 if (*ptr == '#') {
