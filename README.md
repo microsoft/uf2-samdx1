@@ -107,6 +107,29 @@ be overwritten with `0xff`. This also means that after fresh flashing of bootloa
 no double-tap reset is necessary, as the bootloader will not try to start application
 at `0xffffffff`.
 
+### Build commands
+
+The default board is `zero`. You can build a different one using:
+
+```
+make BOARD=metro
+```
+
+You can also create `Makefile.local` with `BOARD=metro` to change the default.
+The names `zero` and `metro` refer to subdirectories of `boards/`.
+
+There are various targets:
+* `all` - just compile the board
+* `burn` or `b` - compile and deploy to the board using openocd
+* `logs` or `l` - shows logs
+* `run` or `r` - burn and show logs
+
+Typically, you will do:
+
+```
+make BOARD=mkr1000 burn
+```
+
 ### Configuration
 
 There is a number of configuration parameters at the top of `uf2.h` file.
