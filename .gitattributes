@@ -14,6 +14,7 @@
 *.exp text eol=lf
 *.manifest text eol=lf
 *.cpp text eol=lf
+*.c text eol=lf
 *.h text eol=lf
 *.hpp text eol=lf
 *.sh text eol=lf
