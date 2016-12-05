@@ -84,8 +84,15 @@ void process_hid(void) {
 
     if (!sz)
         return;
-    if (hidbuf.serial)
-        return; // serial
+
+    if (hidbuf.serial) {
+        // echo back serial input - just for testing
+        hidbuf.pbuf.buf[1] ^= 'a' - 'A';
+        hidbuf.pbuf.buf[2] ^= 'a' - 'A';
+        hidbuf.pbuf.buf[3] ^= 'a' - 'A';
+        USB_WriteCore(hidbuf.pbuf.buf, 64, USB_EP_HID, true);
+        return;
+    }
 
     logval("HID", hidbuf.buf32[0]);
     uint32_t resp[] = {hidbuf.buf32[0], HF2_STATUS_OK};
