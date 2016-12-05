@@ -151,7 +151,7 @@ usart_getdata_xmd(void *data,
  * \param number of data to get
  * \return value read on usart line
  */
-unsigned short add_crc(char ptr, unsigned short crc);
+uint16_t add_crc(uint8_t ch, unsigned short crc0);
 
 uint8_t getPacket(uint8_t *pData, uint8_t sno);
 

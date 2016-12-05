@@ -198,24 +198,27 @@ uint32_t usart_getdata(void *data, uint32_t length) {
     return (1);
 }
 
+static uint16_t crcCache[256];
+
 //*----------------------------------------------------------------------------
 //* \fn    add_crc
 //* \brief Compute the CRC
 //*----------------------------------------------------------------------------
-unsigned short add_crc(char ptr, unsigned short crc) {
-
-    unsigned short cmpt;
-
-    crc = crc ^ (int)ptr << 8;
-
-    for (cmpt = 0; cmpt < 8; cmpt++) {
-        if (crc & 0x8000)
-            crc = crc << 1 ^ CRC16POLY;
-        else
-            crc = crc << 1;
+uint16_t add_crc(uint8_t ch, unsigned short crc0) {
+    if (!crcCache[1]) {
+        for (int ptr = 0; ptr < 256; ptr++) {
+            uint16_t crc = (int)ptr << 8;
+            for (uint16_t cmpt = 0; cmpt < 8; cmpt++) {
+                if (crc & 0x8000)
+                    crc = crc << 1 ^ CRC16POLY;
+                else
+                    crc = crc << 1;
+            }
+            crcCache[ptr] = crc;
+        }
     }
 
-    return (crc & 0xFFFF);
+    return ((crc0 << 8) ^ crcCache[((crc0 >> 8) ^ ch) & 0xff]) & 0xffff;
 }
 
 //*----------------------------------------------------------------------------
