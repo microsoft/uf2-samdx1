@@ -33,6 +33,9 @@
 
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
+#if USE_HID
+PacketBuffer hidOutCache;
+#endif
 
 COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
 
@@ -41,11 +44,11 @@ const char devDescriptor[] = {
     /* Device descriptor */
     0x12,           // bLength
     0x01,           // bDescriptorType
-    0x10,           // bcdUSBL
-    0x01,           //
-    0x00,           // bDeviceClass:    CDC class code
-    0x00,           // bDeviceSubclass: CDC class sub code
-    0x00,           // bDeviceProtocol: CDC Device protocol
+    0x00,           // bcdUSBL
+    0x02,           //
+    0xEF,           // bDeviceClass:    Misc
+    0x02,           // bDeviceSubclass:
+    0x01,           // bDeviceProtocol:
     0x40,           // bMaxPacketSize0
     USB_VID & 0xff, // vendor ID
     USB_VID >> 8,   //
@@ -59,7 +62,44 @@ const char devDescriptor[] = {
     0x01            // bNumConfigs
 };
 
-#define CFG_DESC_SIZE (USE_CDC ? 0x5A : 0x20)
+#define CFG_DESC_SIZE ((USE_CDC ? 0x5A : 0x20) + USE_HID * 32)
+#define HID_IF_NUM (USE_CDC ? 3 : 1)
+
+#if USE_HID
+// can be requested separately from the entire config desc
+COMPILER_WORD_ALIGNED
+char hidCfgDescriptor[] = {
+    9,          // size
+    4,          // interface
+    HID_IF_NUM, // interface number
+    0,          // alternate
+    2,          // num. endpoints
+    0x03,       // HID
+    0,          // sub
+    0,          // sub
+    3,          // stringID
+};
+
+COMPILER_WORD_ALIGNED
+const char hidDescriptor[] = {
+    0x06, 0x00, 0xFF, // usage page vendor #0
+    0x09, 0x01,       // usage 1
+    0xA1, 0x01,       // collection - application
+    0x15, 0x00,       // logical min 0
+    0x26, 0xFF, 0x00, // logical max 255
+    0x75, 8,          // report size 8
+    0x95, 64,         // report count 64
+    0x09, 0x01,       // usage 1
+    0x81, 0x02,       // input: data, variable, absolute
+    0x95, 64,         // report count 64
+    0x09, 0x01,       // usage 1
+    0x91, 0x02,       // output: data, variable, absolute
+    0x95, 1,          // report count 1
+    0x09, 0x01,       // usage 1
+    0xB1, 0x02,       // feature: data, variable, absolute
+    0xC0,             // end
+};
+#endif
 
 COMPILER_WORD_ALIGNED
 char cfgDescriptor[] = {
@@ -69,11 +109,11 @@ char cfgDescriptor[] = {
     0x02,          // CbDescriptorType
     CFG_DESC_SIZE, // CwTotalLength 2 EP + Control
     0x00,
-    USE_CDC ? 0x03 : 0x01, // CbNumInterfaces
-    0x01,                  // CbConfigurationValue
-    0x00,                  // CiConfiguration
-    0xC0,                  // CbmAttributes 0xA0
-    0x00,                  // CMaxPower
+    1 + 2 * USE_CDC + USE_HID, // CbNumInterfaces
+    0x01,                      // CbConfigurationValue
+    0x00,                      // CiConfiguration
+    0xC0,                      // CbmAttributes 0xA0
+    0x00,                      // CMaxPower
 
 #if USE_CDC
     /* Communication Class Interface Descriptor Requirement */
@@ -166,21 +206,46 @@ char cfgDescriptor[] = {
     80,              /// protocol code - bulk only transport
     0,               /// interface string index
 
-    7,        /// descriptor size in bytes
-    5,        /// descriptor type - endpoint
-    0x84,     /// endpoint direction and number - in, 2
-    2,        /// transfer type - bulk
-    PKT_SIZE, /// maximum packet size
+    7,                    /// descriptor size in bytes
+    5,                    /// descriptor type - endpoint
+    USB_EP_MSC_IN | 0x80, /// endpoint direction and number - in, 2
+    2,                    /// transfer type - bulk
+    PKT_SIZE,             /// maximum packet size
     0,
     0, /// not used
 
-    7,        /// descriptor size in bytes
-    5,        /// descriptor type - endpoint
-    0x05,     /// endpoint direction and number - out, 1
-    2,        /// transfer type - bulk
-    PKT_SIZE, /// maximum packet size
+    7,              /// descriptor size in bytes
+    5,              /// descriptor type - endpoint
+    USB_EP_MSC_OUT, /// endpoint direction and number - out, 1
+    2,              /// transfer type - bulk
+    PKT_SIZE,       /// maximum packet size
     0,
     0, /// maximum NAK rate
+
+#if USE_HID
+    // HID
+    9,          // size
+    4,          // interface
+    HID_IF_NUM, // interface number
+    0,          // alternate
+    2,          // num. endpoints
+    0x03,       // HID
+    0,          // sub
+    0,          // sub
+    3,          // stringID
+
+    9,
+    0x21,                     // HID
+    0x00, 0x01,               // hidbcd 1.00
+    0x00,                     // country code
+    0x01,                     // num desc
+    0x22,                     // report desc type
+    sizeof(hidDescriptor), 0, // size of report
+
+    // interrupt endpoints with interval=1
+    7, 5, 0x80 | USB_EP_HID, 3, PKT_SIZE, 0, 1, // in
+    7, 5, USB_EP_HID, 3, PKT_SIZE, 0, 1,        // out
+#endif
 };
 
 typedef struct {
@@ -191,8 +256,10 @@ typedef struct {
 
 #define STRING_DESCRIPTOR_COUNT 4
 
-static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {
-    0, PRODUCT_NAME, VENDOR_NAME,
+static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {0, PRODUCT_NAME, VENDOR_NAME,
+#if USE_HID
+                                                                  "UF2-HID"
+#endif
 };
 
 static usb_cdc_line_coding_t line_coding = {
@@ -234,6 +301,14 @@ static USB_CDC pCdc;
 // MSC
 #define MSC_RESET 0xFF21
 #define MSC_GET_MAX_LUN 0xFEA1
+
+// HID
+#define HID_REQUEST_GET_REPORT 0x01A1
+#define HID_REQUEST_GET_IDLE 0x02A1
+#define HID_REQUEST_GET_PROTOCOL 0x03A1
+#define HID_REQUEST_SET_REPORT 0x0921
+#define HID_REQUEST_SET_IDLE 0x0A21
+#define HID_REQUEST_SET_PROTOCOL 0x0B21
 
 static void AT91F_CDC_Enumerate(void);
 
@@ -368,6 +443,10 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
 
     if (!cache) {
         cache = &endpointCache[ep];
+#if USE_HID
+        if (ep == USB_EP_HID)
+            cache = &hidOutCache;
+#endif
         timerTick();
     }
 
@@ -575,9 +654,18 @@ void AT91F_CDC_Enumerate() {
                 }
             }
             AT91F_USB_SendData((void *)&desc, MIN(sizeof(StringDescriptor), wLength));
-        } else
+        }
+#if USE_HID
+        else if (ctrlOutCache.buf[3] == 0x21) {
+            AT91F_USB_SendData((void *)hidCfgDescriptor, MIN(sizeof(hidCfgDescriptor), wLength));
+        } else if (ctrlOutCache.buf[3] == 0x22) {
+            AT91F_USB_SendData((void *)hidDescriptor, MIN(sizeof(hidDescriptor), wLength));
+        }
+#endif
+        else {
             /* Stall the request */
             stall_ep(0);
+        }
         break;
     case STD_SET_ADDRESS:
         /* Send ZLP */
@@ -591,6 +679,7 @@ void AT91F_CDC_Enumerate() {
         /* Send ZLP */
         AT91F_USB_SendZlp();
 
+#if USE_CDC
         configureInOut(USB_EP_IN);
 
         /* Configure INTERRUPT IN endpoint for CDC COMM interface*/
@@ -598,8 +687,26 @@ void AT91F_CDC_Enumerate() {
         /* Set maximum packet size as 64 bytes */
         usb_endpoint_table[USB_EP_COMM].DeviceDescBank[1].PCKSIZE.bit.SIZE = 0;
         USB->DEVICE.DeviceEndpoint[USB_EP_COMM].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+#endif
 
         configureInOut(USB_EP_MSC_IN);
+
+#if USE_HID
+        /* Configure INTERRUPT IN/OUT endpoint for HID interface*/
+        USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPCFG.reg =
+            USB_DEVICE_EPCFG_EPTYPE0(4) | USB_DEVICE_EPCFG_EPTYPE1(4);
+
+        USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+        USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+        /* Configure control OUT Packet size to 64 bytes */
+        usb_endpoint_table[USB_EP_HID].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
+        /* Configure control IN Packet size to 64 bytes */
+        usb_endpoint_table[USB_EP_HID].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
+        /* Configure the data buffer address for control OUT */
+        usb_endpoint_table[USB_EP_HID].DeviceDescBank[0].ADDR.reg = (uint32_t)&hidOutCache.buf;
+        /* Configure the data buffer address for control IN */
+        usb_endpoint_table[USB_EP_HID].DeviceDescBank[1].ADDR.reg = (uint32_t)&endpointCache[0].buf;
+#endif
 
         break;
     case STD_GET_CONFIGURATION:
@@ -730,15 +837,30 @@ void AT91F_CDC_Enumerate() {
 
     // MSC
     case MSC_RESET:
-        logmsg("MSC reset");
+        DBG_MSC(logmsg("MSC reset"));
         msc_reset();
         break;
 
     case MSC_GET_MAX_LUN:
-        logmsg("MSC maxlun");
+        DBG_MSC(logmsg("MSC maxlun"));
         wStatus = MAX_LUN;
         AT91F_USB_SendData((char *)&wStatus, 1);
         break;
+
+#if USE_HID
+    case HID_REQUEST_GET_PROTOCOL:
+    case HID_REQUEST_GET_IDLE:
+    case HID_REQUEST_GET_REPORT: {
+        uint8_t buf[64] = {0};
+        AT91F_USB_SendData((char *)buf, MIN(64, wLength));
+    } break;
+
+    case HID_REQUEST_SET_IDLE:
+    case HID_REQUEST_SET_REPORT:
+    case HID_REQUEST_SET_PROTOCOL:
+        AT91F_USB_SendZlp();
+        break;
+#endif
 
     default:
         logval("Invalid CTRL command", reqId);

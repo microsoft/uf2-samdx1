@@ -37,8 +37,12 @@
 #define USE_CDC 0
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
+// Support Human Interface Device (HID) - serial, flashing and debug
+#define USE_HID 1
 
-#define USE_HANDOVER 1
+#define USE_DBG_MSC 0
+
+#define USE_HANDOVER 0
 
 #if USE_CDC
 #define CDC_VERSION "S"
@@ -98,6 +102,12 @@ void logreset(void);
 #define logreset() NOOP
 #endif
 
+#if USE_DBG_MSC
+#define DBG_MSC(x) x
+#else
+#define DBG_MSC(x) NOOP
+#endif
+
 void panic(void);
 
 #if USE_ASSERT
@@ -118,6 +128,8 @@ void flash_erase_row(uint32_t *dst);
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
 
 int writeNum(char *buf, uint32_t n, bool full);
+
+void process_hid(void);
 
 // index of highest LUN
 #define MAX_LUN 0

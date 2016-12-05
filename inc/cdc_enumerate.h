@@ -39,7 +39,9 @@
 #define USB_EP_MSC_IN 4
 #define USB_EP_MSC_OUT 5
 
-#define MAX_EP 6
+#define USB_EP_HID 6
+
+#define MAX_EP 7
 
 #define NVM_USB_PAD_TRANSN_POS 45
 #define NVM_USB_PAD_TRANSN_SIZE 5

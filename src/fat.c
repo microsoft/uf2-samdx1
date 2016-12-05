@@ -131,7 +131,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
         memcpy(data, &BootBlock, sizeof(BootBlock));
         data[510] = 0x55;
         data[511] = 0xaa;
-        logval("data[0]", data[0]);
+        // logval("data[0]", data[0]);
     } else if (block_no < START_ROOTDIR) {
         sectionIdx -= START_FAT0;
         // logval("sidx", sectionIdx);
@@ -199,14 +199,18 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state
         return;
     }
     if (bl->payloadSize != 256) {
+#if USE_DBG_MSC
         if (!quiet)
             logval("bad payload size", bl->payloadSize);
+#endif
         return;
     }
     if ((bl->targetAddr & 0xff) || bl->targetAddr < APP_START_ADDRESS ||
         bl->targetAddr >= FLASH_SIZE) {
+#if USE_DBG_MSC
         if (!quiet)
             logval("invalid target addr", bl->targetAddr);
+#endif
         return;
     }
 

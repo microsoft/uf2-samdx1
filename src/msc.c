@@ -33,6 +33,13 @@
 #include "services/usb/class/msc/spc_protocol.h"
 #include "services/usb/class/msc/usb_protocol_msc.h"
 
+#if !USE_DBG_MSC
+#undef logmsg
+#undef logval
+#define logmsg(...) NOOP
+#define logval(...) NOOP
+#endif
+
 bool mscReset = false;
 
 void msc_reset(void) {
@@ -272,6 +279,10 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCac
 }
 
 void process_msc(void) {
+#if USE_HID
+    process_hid();
+#endif
+
     if (!try_read_cbw(&udi_msc_cbw, USB_EP_MSC_OUT, false))
         return; // no data
 
@@ -677,7 +688,7 @@ static void udi_msc_sbc_trans(bool b_read) {
     if (!udi_msc_cbw_validate(trans_size, (b_read) ? USB_CBW_DIRECTION_IN : USB_CBW_DIRECTION_OUT))
         return;
 
-#if 1
+#if USE_DBG_MSC
     logwrite(b_read ? "read @" : "write @");
     logwritenum(udi_msc_addr);
     logwrite(" sz:");

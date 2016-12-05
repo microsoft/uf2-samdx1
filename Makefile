@@ -45,6 +45,7 @@ SOURCES = $(COMMON_SRC) \
 	src/msc.c \
 	src/sam_ba_monitor.c \
 	src/uart_driver.c \
+	src/hid.c \
 
 SELF_SOURCES = $(COMMON_SRC) \
 	src/selfmain.c
