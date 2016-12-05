@@ -59,7 +59,7 @@ const char infoUf2File[] = //
     "UF2 Bootloader " UF2_VERSION "\r\n"
     "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
     "Board-ID: " BOARD_ID "\r\n"
-    "Size: " STR(FLASH_NUM_ROWS) "*" STR(FLASH_ROW_SIZE) "\r\n";
+    "Flash-Size: " STR(FLASH_NUM_ROWS) "*" STR(FLASH_ROW_SIZE) "\r\n";
 #endif
 
 #if USE_FAT

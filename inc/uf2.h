@@ -6,6 +6,7 @@
 #include "samd21.h"
 #define UF2_DEFINE_HANDOVER 1 // for testing
 #include "uf2format.h"
+#include "uf2hid.h"
 #include "main.h"
 #include "cdc_enumerate.h"
 #include "sam_ba_monitor.h"
@@ -68,7 +69,13 @@
 #define ASSERT_VERSION ""
 #endif
 
-#define UF2_VERSION UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION
+#if USE_HID
+#define HID_VERSION "H"
+#else
+#define HID_VERSION ""
+#endif
+
+#define UF2_VERSION UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION
 
 // End of config
 
