@@ -82,7 +82,11 @@ From CPU config:
 #define FLASH_NB_OF_PAGES     512
 */
 
-#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
+// These two need to be defined as plain decimal numbers, as we're using # on them
+#define FLASH_ROW_SIZE 256
+#ifndef FLASH_NUM_ROWS
+#define FLASH_NUM_ROWS 1024
+#endif
 
 #define NOOP                                                                                       \
     do {                                                                                           \
@@ -108,15 +112,12 @@ void logreset(void);
 #define DBG_MSC(x) NOOP
 #endif
 
-void panic(void);
+void panic(int code);
 
 #if USE_ASSERT
 #define assert(cond)                                                                               \
     if (!(cond)) {                                                                                 \
-        logwrite("Assertion failed: ");                                                            \
-        logwrite(#cond);                                                                           \
-        logwrite("\n");                                                                            \
-        panic();                                                                                   \
+        panic(__LINE__);                                                                           \
     }
 #else
 #define assert(cond) NOOP
@@ -179,5 +180,11 @@ void delay(uint32_t ms);
 #define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)
 #define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }
+
+STATIC_ASSERT(FLASH_ROW_SIZE == FLASH_PAGE_SIZE * 4);
+STATIC_ASSERT(FLASH_ROW_SIZE == NVMCTRL_ROW_SIZE);
+STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
+
+extern const char infoUf2File[];
 
 #endif

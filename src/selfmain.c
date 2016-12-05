@@ -32,7 +32,7 @@ int main(void) {
         }
         if (bootloader_crcs[i] != crc) {
             logmsg("Invalid checksum. Aborting.");
-            panic();
+            panic(1);
         }
     }
 

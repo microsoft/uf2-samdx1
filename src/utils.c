@@ -21,7 +21,8 @@ void timerTick(void) {
     }
 }
 
-void panic(void) {
+void panic(int code) {
+    logval("PANIC", code);
     while (1) {
     }
 }

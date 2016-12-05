@@ -33,9 +33,6 @@
 
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
-#if USE_HID
-PacketBuffer hidOutCache;
-#endif
 
 COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
 
@@ -54,8 +51,8 @@ const char devDescriptor[] = {
     USB_VID >> 8,   //
     USB_PID & 0xff, // product ID
     USB_PID >> 8,   //
-    0x10,           // bcdDeviceL
-    0x01,           //
+    0x01,           // bcdDeviceL
+    0x42,           //
     0x01,           // iManufacturer    // 0x01
     0x02,           // iProduct
     0x00,           // SerialNumber
@@ -286,6 +283,7 @@ static USB_CDC pCdc;
 
 #define STD_SET_ADDRESS 0x0500
 #define STD_GET_DESCRIPTOR 0x0680
+#define STD_GET_DESCRIPTOR1 0x0681
 #define STD_SET_DESCRIPTOR 0x0700
 #define STD_GET_CONFIGURATION 0x0880
 #define STD_SET_CONFIGURATION 0x0900
@@ -444,8 +442,7 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
     if (!cache) {
         cache = &endpointCache[ep];
 #if USE_HID
-        if (ep == USB_EP_HID)
-            cache = &hidOutCache;
+        assert(ep != USB_EP_HID);
 #endif
         timerTick();
     }
@@ -520,9 +517,11 @@ uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool 
 
     UsbDeviceDescriptor *epdesc = (UsbDeviceDescriptor *)USB->HOST.DESCADD.reg + ep_num;
 
+    if (handoverMode) {
+        data_address = (uint32_t)pData;
+    }
     /* Check for requirement for multi-packet or auto zlp */
-    if (length >= (1 << (epdesc->DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
-        assert(!handoverMode);
+    else if (length >= (1 << (epdesc->DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {
         /* Update the EP data address */
         data_address = (uint32_t)pData;
         // data must be in RAM!
@@ -530,8 +529,6 @@ uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool 
 
         // always disable AUTO_ZLP on MSC channel, otherwise enable
         epdesc->DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = ep_num == USB_EP_MSC_IN ? false : true;
-    } else if (handoverMode) {
-        data_address = (uint32_t)pData;
     } else {
         /* Copy to local buffer */
         memcpy(endpointCache[ep_num].buf, pData, length);
@@ -630,6 +627,7 @@ void AT91F_CDC_Enumerate() {
     /* Handle supported standard device request Cf Table 9-3 in USB
      * specification Rev 1.1 */
     switch (reqId) {
+    case STD_GET_DESCRIPTOR1:
     case STD_GET_DESCRIPTOR:
         if (wValue == 0x100)
             /* Return Device Descriptor */
@@ -696,16 +694,10 @@ void AT91F_CDC_Enumerate() {
         USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPCFG.reg =
             USB_DEVICE_EPCFG_EPTYPE0(4) | USB_DEVICE_EPCFG_EPTYPE1(4);
 
-        USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSSET.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+        USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
         USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
-        /* Configure control OUT Packet size to 64 bytes */
         usb_endpoint_table[USB_EP_HID].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
-        /* Configure control IN Packet size to 64 bytes */
         usb_endpoint_table[USB_EP_HID].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
-        /* Configure the data buffer address for control OUT */
-        usb_endpoint_table[USB_EP_HID].DeviceDescBank[0].ADDR.reg = (uint32_t)&hidOutCache.buf;
-        /* Configure the data buffer address for control IN */
-        usb_endpoint_table[USB_EP_HID].DeviceDescBank[1].ADDR.reg = (uint32_t)&endpointCache[0].buf;
 #endif
 
         break;

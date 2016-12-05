@@ -826,7 +826,6 @@ static void handover(UF2_HandoverArgs *args) {
     }
 }
 
-extern const char infoUf2File[];
 __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
     .handover = handover, .info_uf2 = infoUf2File,
 };
