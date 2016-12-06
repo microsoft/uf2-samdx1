@@ -23,7 +23,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.1.3"
+#define UF2_VERSION_BASE "v1.2.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -43,7 +43,7 @@
 // Expose HID via WebUSB 
 #define USE_WEBUSB 1
 // Doesn't yet disable code, just enumeration
-#define USE_MSC 0
+#define USE_MSC 1
 
 #define USE_DBG_MSC 0
 #define USE_HANDOVER 0
