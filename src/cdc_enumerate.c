@@ -108,10 +108,10 @@ char cfgDescriptor[] = {
     CFG_DESC_SIZE, // CwTotalLength 2 EP + Control
     0x00,
     1 + 2 * USE_CDC + USE_HID + USE_WEBUSB, // CbNumInterfaces
-    0x01,                      // CbConfigurationValue
-    0x00,                      // CiConfiguration
-    0xC0,                      // CbmAttributes 0xA0
-    0x00,                      // CMaxPower
+    0x01,                                   // CbConfigurationValue
+    0x00,                                   // CiConfiguration
+    0xC0,                                   // CbmAttributes 0xA0
+    0x00,                                   // CMaxPower
 
 #if USE_CDC
     /* Communication Class Interface Descriptor Requirement */
@@ -199,7 +199,7 @@ char cfgDescriptor[] = {
     USE_CDC ? 2 : 0, /// interface number
     0,               /// alternate setting number
     2,               /// number of endpoints
-    8,               /// class code - mass storage
+    USE_MSC * 8,     /// class code - mass storage
     6,               /// subclass code - SCSI transparent command set
     80,              /// protocol code - bulk only transport
     0,               /// interface string index
@@ -252,7 +252,7 @@ char cfgDescriptor[] = {
     0,          // alternate
     2,          // num. endpoints
     0xFF,       // Vendor
-    42,          // sub
+    42,         // sub
     1,          // sub
     3,          // stringID
 
@@ -351,12 +351,9 @@ typedef struct {
     uint8_t data[70];
 } StringDescriptor;
 
-static const char *string_descriptors[] = {
-    0,
-    VENDOR_NAME,
-    PRODUCT_NAME,
+static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME,
 #if USE_HID || USE_WEBUSB
-    "UF2-HID"
+                                           "UF2-HID"
 #endif
 };
 
@@ -692,9 +689,7 @@ static void configureInOut(uint8_t in_ep) {
 
 static uint16_t wLength;
 
-static void sendCtrl(const void *data, uint32_t len) {
-    USB_Write(data, MIN(len, wLength), 0);
-}
+static void sendCtrl(const void *data, uint32_t len) { USB_Write(data, MIN(len, wLength), 0); }
 
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_CDC_Enumerate

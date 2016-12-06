@@ -42,6 +42,8 @@
 #define USE_HID 1
 // Expose HID via WebUSB 
 #define USE_WEBUSB 1
+// Doesn't yet disable code, just enumeration
+#define USE_MSC 0
 
 #define USE_DBG_MSC 0
 #define USE_HANDOVER 0
