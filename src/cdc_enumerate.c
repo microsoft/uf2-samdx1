@@ -649,19 +649,12 @@ uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool 
 }
 
 //*----------------------------------------------------------------------------
-//* \fn    AT91F_USB_SendData
-//* \brief Send Data through the control endpoint
-//*----------------------------------------------------------------------------
-
-static void AT91F_USB_SendData(const char *pData, uint32_t length) { USB_Write(pData, length, 0); }
-
-//*----------------------------------------------------------------------------
 //* \fn    AT91F_USB_SendZlp
 //* \brief Send zero length packet through the control endpoint
 //*----------------------------------------------------------------------------
 void AT91F_USB_SendZlp(void) {
-    char c = 0;
-    AT91F_USB_SendData(&c, 0);
+    uint8_t c;
+    USB_Write(&c, 0, 0);
 }
 
 static void configureInOut(uint8_t in_ep) {
@@ -686,7 +679,7 @@ static void configureInOut(uint8_t in_ep) {
 static uint16_t wLength;
 
 static void sendCtrl(const void *data, uint32_t len) {
-    AT91F_USB_SendData(data, MIN(len, wLength));
+    USB_Write(data, MIN(len, wLength), 0);
 }
 
 //*----------------------------------------------------------------------------
@@ -728,10 +721,10 @@ void AT91F_CDC_Enumerate() {
     case STD_GET_DESCRIPTOR:
         if (wValue == 0x100)
             /* Return Device Descriptor */
-            AT91F_USB_SendData(devDescriptor, MIN(sizeof(devDescriptor), wLength));
+            sendCtrl(devDescriptor, sizeof(devDescriptor));
         else if (wValue == 0x200)
             /* Return Configuration Descriptor */
-            AT91F_USB_SendData(cfgDescriptor, MIN(sizeof(cfgDescriptor), wLength));
+            sendCtrl(cfgDescriptor, sizeof(cfgDescriptor));
         else if (ctrlOutCache.buf[3] == 3) {
             if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
                 stall_ep(0);
@@ -748,17 +741,17 @@ void AT91F_CDC_Enumerate() {
                     desc.data[i * 2] = ptr[i];
                 }
             }
-            AT91F_USB_SendData((void *)&desc, MIN(sizeof(StringDescriptor), wLength));
+            sendCtrl(&desc, sizeof(StringDescriptor));
         }
 #if USE_HID
         else if (ctrlOutCache.buf[3] == 0x21) {
-            AT91F_USB_SendData((void *)hidCfgDescriptor, MIN(sizeof(hidCfgDescriptor), wLength));
+            sendCtrl(hidCfgDescriptor, sizeof(hidCfgDescriptor));
         } else if (ctrlOutCache.buf[3] == 0x22) {
-            AT91F_USB_SendData((void *)hidDescriptor, MIN(sizeof(hidDescriptor), wLength));
+            sendCtrl(hidDescriptor, sizeof(hidDescriptor));
         }
 #if USE_WEBUSB
         else if (ctrlOutCache.buf[3] == 0x15) {
-            AT91F_USB_SendData((void *)bosDescriptor, MIN(sizeof(bosDescriptor), wLength));
+            sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
 #endif
 #endif
@@ -770,8 +763,7 @@ void AT91F_CDC_Enumerate() {
 #if USE_WEBUSB
     case STD_VENDOR_CTRL1:
         if (wIndex == 0x01)
-            AT91F_USB_SendData((void *)allowedOriginsDesc,
-                               MIN(sizeof(allowedOriginsDesc), wLength));
+            sendCtrl(allowedOriginsDesc, sizeof(allowedOriginsDesc));
         else if (wIndex == 0x02) {
             WebUSB_URL url;
             uint32_t idx = (uint32_t)ctrlOutCache.buf[2] - 1;
@@ -782,14 +774,14 @@ void AT91F_CDC_Enumerate() {
             // first URL is http, rest is https
             url.scheme = idx == 0 ? 0 : 1;
             memcpy(url.buf, allowed_origins[idx], url.len - 3);
-            AT91F_USB_SendData((void *)&url, MIN(url.len, wLength));
+            sendCtrl(&url, url.len);
         } else {
             stall_ep(0);
         }
         break;
     case STD_VENDOR_CTRL2:
         if (wIndex == 0x07)
-            AT91F_USB_SendData((void *)msOS20Descriptor, MIN(sizeof(msOS20Descriptor), wLength));
+            sendCtrl(msOS20Descriptor, sizeof(msOS20Descriptor));
         else
             stall_ep(0);
         break;
@@ -832,15 +824,15 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_GET_CONFIGURATION:
         /* Return current configuration value */
-        AT91F_USB_SendData((char *)&(pCdc.currentConfiguration), sizeof(pCdc.currentConfiguration));
+        sendCtrl(&(pCdc.currentConfiguration), sizeof(pCdc.currentConfiguration));
         break;
     case STD_GET_STATUS_ZERO:
         wStatus = 0;
-        AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
+        sendCtrl(&wStatus, sizeof(wStatus));
         break;
     case STD_GET_STATUS_INTERFACE:
         wStatus = 0;
-        AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
+        sendCtrl(&wStatus, sizeof(wStatus));
         break;
     case STD_GET_STATUS_ENDPOINT:
         wStatus = 0;
@@ -859,7 +851,7 @@ void AT91F_CDC_Enumerate() {
                               : 0;
             }
             /* Return current status of endpoint */
-            AT91F_USB_SendData((char *)&wStatus, sizeof(wStatus));
+            sendCtrl(&wStatus, sizeof(wStatus));
         } else
             /* Stall the request */
             stall_ep(0);
@@ -947,7 +939,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case GET_LINE_CODING:
         /* Send current line coding */
-        AT91F_USB_SendData((char *)&line_coding, MIN(sizeof(usb_cdc_line_coding_t), wLength));
+        sendCtrl(&line_coding, sizeof(usb_cdc_line_coding_t));
         break;
     case SET_CONTROL_LINE_STATE:
         /* Store the current connection */
@@ -965,7 +957,7 @@ void AT91F_CDC_Enumerate() {
     case MSC_GET_MAX_LUN:
         DBG_MSC(logmsg("MSC maxlun"));
         wStatus = MAX_LUN;
-        AT91F_USB_SendData((char *)&wStatus, 1);
+        sendCtrl(&wStatus, 1);
         break;
 
 #if USE_HID
@@ -973,7 +965,7 @@ void AT91F_CDC_Enumerate() {
     case HID_REQUEST_GET_IDLE:
     case HID_REQUEST_GET_REPORT: {
         uint8_t buf[64] = {0};
-        AT91F_USB_SendData((char *)buf, MIN(64, wLength));
+        sendCtrl(buf, 64);
     } break;
 
     case HID_REQUEST_SET_IDLE:
