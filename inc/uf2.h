@@ -135,6 +135,7 @@ extern volatile bool b_sam_ba_interface_usart;
 void flash_write_row(uint32_t *dst, uint32_t *src);
 void flash_erase_row(uint32_t *dst);
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
+void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
 
 int writeNum(char *buf, uint32_t n, bool full);
 

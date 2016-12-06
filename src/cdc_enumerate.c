@@ -336,8 +336,8 @@ typedef struct {
 
 static const char *string_descriptors[] = {
     0,
-    PRODUCT_NAME,
     VENDOR_NAME,
+    PRODUCT_NAME,
 #if USE_HID
     "UF2-HID"
 #endif

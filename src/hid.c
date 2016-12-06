@@ -29,7 +29,6 @@ int recv_hid(HID_InBuffer *pkt) {
         int sz = pkt->size;
         pkt->serial = (tag & HF2_FLAG_MASK) == HF2_FLAG_SERIAL;
         pkt->size = 0;
-        logval("recv", sz);
         return sz;
     }
     return 0;
@@ -61,9 +60,9 @@ HID_InBuffer hidbuf;
 
 void send_hid_response(const void *data, int size) {
     logval("sendresp", size);
-    memcpy(hidbuf.buf32 + 2, data, size);
-    hidbuf.buf32[1] = 0;
-    send_hid(hidbuf.buf, 8 + size);
+    if (data)
+        memcpy(hidbuf.buf32 + 1, data, size);
+    send_hid(hidbuf.buf, 4 + size);
 }
 
 static void checksum_pages(int start, int num) {
@@ -73,10 +72,9 @@ static void checksum_pages(int start, int num) {
         for (int j = 0; j < FLASH_ROW_SIZE; ++j) {
             crc = add_crc(*data++, crc);
         }
-        hidbuf.buf16[i + 4] = crc;
+        hidbuf.buf16[i + 2] = crc;
     }
-    hidbuf.buf32[1] = 0;
-    send_hid_response(hidbuf.buf32 + 2, num * 2);
+    send_hid_response(0, num * 2);
 }
 
 void process_hid(void) {
@@ -94,8 +92,9 @@ void process_hid(void) {
         return;
     }
 
-    logval("HID", hidbuf.buf32[0]);
-    uint32_t resp[] = {hidbuf.buf32[0], HF2_STATUS_OK};
+    logwrite("HID sz=");
+    logwritenum(sz);
+    logval(" CMD", hidbuf.buf32[0]);
 
     switch (hidbuf.buf16[0]) {
     case HF2_CMD_INFO:
@@ -103,9 +102,9 @@ void process_hid(void) {
         return;
 
     case HF2_CMD_BININFO:
-        hidbuf.buf32[2] = HF2_MODE_BOOTLOADER; // bootloader
-        hidbuf.buf32[3] = FLASH_ROW_SIZE;
-        send_hid_response(hidbuf.buf32 + 2, 8);
+        hidbuf.buf32[1] = HF2_MODE_BOOTLOADER; // bootloader
+        hidbuf.buf32[2] = FLASH_ROW_SIZE;
+        send_hid_response(0, 8);
         return;
 
     case HF2_CMD_RESET_INTO_APP:
@@ -119,29 +118,34 @@ void process_hid(void) {
         break;
     case HF2_CMD_WRITE_FLASH_PAGE:
         assert(sz == 8 + FLASH_ROW_SIZE);
-        send_hid(resp, 8); // first send ACK and then start writing, while getting the next packet
+        // first send ACK and then start writing, while getting the next packet
+        send_hid_response(0, 0);
         if (hidbuf.buf32[1] >= APP_START_ADDRESS) {
             flash_write_row((void *)hidbuf.buf32[1], hidbuf.buf32 + 2);
         }
         return;
-    case HF2_CMD_MEM_WRITE_PAGE:
+    case HF2_CMD_MEM_WRITE_WORDS:
         assert(sz == 8 + FLASH_ROW_SIZE);
-        memcpy((void *)hidbuf.buf32[1], hidbuf.buf + 8, FLASH_ROW_SIZE);
+        copy_words((void *)hidbuf.buf32[1], hidbuf.buf32 + 3, hidbuf.buf32[2]);
         break;
-    case HF2_CMD_MEM_READ_PAGE:
-        assert(sz == 8);
-        send_hid_response((void *)hidbuf.buf32[1], FLASH_ROW_SIZE);
+    case HF2_CMD_MEM_READ_WORDS:
+        assert(sz == 12);
+        sz = hidbuf.buf32[2] << 2;
+        copy_words(hidbuf.buf32 + 1, (void *)hidbuf.buf32[1], hidbuf.buf32[2]);
+        send_hid_response(0, sz);
         return;
     case HF2_CMD_CHKSUM_PAGES:
+        assert(sz == 12);
         checksum_pages(hidbuf.buf32[1], hidbuf.buf32[2]);
         return;
 
     default:
-        resp[1] = HF2_STATUS_INVALID_CMD;
+        // command not understood
+        hidbuf.buf16[0] |= 0x8000;
         break;
     }
 
-    send_hid(resp, 8);
+    send_hid_response(0, 0);
 }
 
 #endif

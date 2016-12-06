@@ -1,6 +1,6 @@
 #include "uf2.h"
 
-static void wait_ready(void) {
+static inline void wait_ready(void) {
     while (NVMCTRL->INTFLAG.bit.READY == 0) {
     }
 }
@@ -15,17 +15,25 @@ void flash_erase_row(uint32_t *dst) {
     wait_ready();
 }
 
+void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
+    while (n_words--)
+        *dst++ = *src++;
+}
+
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     // Set automatic page write
     NVMCTRL->CTRLB.bit.MANW = 0;
 
     while (n_words > 0) {
+        uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
+        n_words -= len;
+     
         // Execute "PBC" Page Buffer Clear
         NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
         wait_ready();
 
-        uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
-        n_words -= len;
+        // make sure there are no other memory writes here
+        // otherwise we get lock-ups
 
         while (len--)
             *dst++ = *src++;
