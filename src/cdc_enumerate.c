@@ -41,7 +41,7 @@ const char devDescriptor[] = {
     /* Device descriptor */
     0x12,           // bLength
     0x01,           // bDescriptorType
-    0x00,           // bcdUSBL
+    0x10,           // bcdUSBL
     0x02,           //
     0xEF,           // bDeviceClass:    Misc
     0x02,           // bDeviceSubclass:
@@ -262,7 +262,7 @@ static char bosDescriptor[] = {
     0x8B, 0xFD, 0xA0, 0x76, 0x88, 0x15, 0xB6, 0x65, // WebUSB GUID
     0x00, 0x01,                                     // Version 1.0
     0x01,                                           // Vendor request code
-    0x04,                                           // landing page
+    0x02,                                           // landing page
 
     0x1C,                                           // Length
     0x10,                                           // Device Capability descriptor
@@ -339,10 +339,7 @@ static const char *string_descriptors[] = {
     PRODUCT_NAME,
     VENDOR_NAME,
 #if USE_HID
-    "UF2-HID",
-#if USE_WEBUSB
-    "https://www.pxt.io/webusb",
-#endif
+    "UF2-HID"
 #endif
 };
 
@@ -712,6 +709,8 @@ void AT91F_CDC_Enumerate() {
     logwritenum(reqId);
     logwrite(" wValue: ");
     logwritenum(wValue);
+    logwrite(" wIndex: ");
+    logwritenum(wIndex);
     logval(" wLen", wLength);
 
     /* Handle supported standard device request Cf Table 9-3 in USB
@@ -750,7 +749,7 @@ void AT91F_CDC_Enumerate() {
             sendCtrl(hidDescriptor, sizeof(hidDescriptor));
         }
 #if USE_WEBUSB
-        else if (ctrlOutCache.buf[3] == 0x15) {
+        else if (ctrlOutCache.buf[3] == 0x0F) {
             sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
 #endif
