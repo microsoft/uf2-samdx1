@@ -59,8 +59,9 @@ const char devDescriptor[] = {
     0x01            // bNumConfigs
 };
 
-#define CFG_DESC_SIZE ((USE_CDC ? 0x5A : 0x20) + USE_HID * 32)
+#define CFG_DESC_SIZE ((USE_CDC ? 0x5A : 0x20) + USE_HID * 32 + USE_WEBUSB * 23)
 #define HID_IF_NUM (USE_CDC ? 3 : 1)
+#define WEB_IF_NUM (HID_IF_NUM + 1)
 
 #if USE_HID
 // can be requested separately from the entire config desc
@@ -106,7 +107,7 @@ char cfgDescriptor[] = {
     0x02,          // CbDescriptorType
     CFG_DESC_SIZE, // CwTotalLength 2 EP + Control
     0x00,
-    1 + 2 * USE_CDC + USE_HID, // CbNumInterfaces
+    1 + 2 * USE_CDC + USE_HID + USE_WEBUSB, // CbNumInterfaces
     0x01,                      // CbConfigurationValue
     0x00,                      // CiConfiguration
     0xC0,                      // CbmAttributes 0xA0
@@ -243,6 +244,22 @@ char cfgDescriptor[] = {
     7, 5, 0x80 | USB_EP_HID, 3, PKT_SIZE, 0, 1, // in
     7, 5, USB_EP_HID, 3, PKT_SIZE, 0, 1,        // out
 #endif
+
+#if USE_WEBUSB
+    9,          // size
+    4,          // interface
+    WEB_IF_NUM, // interface number
+    0,          // alternate
+    2,          // num. endpoints
+    0xFF,       // Vendor
+    42,          // sub
+    1,          // sub
+    3,          // stringID
+
+    // interrupt endpoints with interval=1
+    7, 5, 0x80 | USB_EP_WEB, 3, PKT_SIZE, 0, 1, // in
+    7, 5, USB_EP_WEB, 3, PKT_SIZE, 0, 1,        // out
+#endif
 };
 
 #if USE_WEBUSB
@@ -294,7 +311,7 @@ static char msOS20Descriptor[] = {
     // Microsoft OS 2.0 function subset header
     0x08, 0x00, // Descriptor size (8 bytes)
     0x02, 0x00, // MS OS 2.0 function subset header
-    HID_IF_NUM, // first interface no
+    WEB_IF_NUM, // first interface no
     0x00,       // Reserved
     0x1c, 0x00, // Size, MS OS 2.0 function subset
 
@@ -315,7 +332,7 @@ static const uint8_t allowedOriginsDesc[] = {
     // Configuration Subset Header, bNumFunctions = 1
     0x04, 0x01, 0x01, 0x01,
     // Function Subset Header, bFirstInterface = pluggedInterface
-    0x03 + NUM_ALLOWED_ORIGINS, 0x02, HID_IF_NUM, ALLOWED_ORIGINS_SEQ,
+    0x03 + NUM_ALLOWED_ORIGINS, 0x02, WEB_IF_NUM, ALLOWED_ORIGINS_SEQ,
 };
 
 typedef struct {
@@ -338,7 +355,7 @@ static const char *string_descriptors[] = {
     0,
     VENDOR_NAME,
     PRODUCT_NAME,
-#if USE_HID
+#if USE_HID || USE_WEBUSB
     "UF2-HID"
 #endif
 };
@@ -529,8 +546,8 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
 
     if (!cache) {
         cache = &endpointCache[ep];
-#if USE_HID
-        assert(ep != USB_EP_HID);
+#if USE_HID || USE_WEBUSB
+        assert(ep != USB_EP_HID && ep != USB_EP_WEB);
 #endif
         timerTick();
     }
@@ -748,11 +765,11 @@ void AT91F_CDC_Enumerate() {
         } else if (ctrlOutCache.buf[3] == 0x22) {
             sendCtrl(hidDescriptor, sizeof(hidDescriptor));
         }
+#endif
 #if USE_WEBUSB
         else if (ctrlOutCache.buf[3] == 0x0F) {
             sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
-#endif
 #endif
         else {
             /* Stall the request */
@@ -818,6 +835,17 @@ void AT91F_CDC_Enumerate() {
         USB->DEVICE.DeviceEndpoint[USB_EP_HID].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
         usb_endpoint_table[USB_EP_HID].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
         usb_endpoint_table[USB_EP_HID].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
+#endif
+
+#if USE_WEBUSB
+        /* Configure INTERRUPT IN/OUT endpoint for HID interface*/
+        USB->DEVICE.DeviceEndpoint[USB_EP_WEB].EPCFG.reg =
+            USB_DEVICE_EPCFG_EPTYPE0(4) | USB_DEVICE_EPCFG_EPTYPE1(4);
+
+        USB->DEVICE.DeviceEndpoint[USB_EP_WEB].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSSET_BK0RDY;
+        USB->DEVICE.DeviceEndpoint[USB_EP_WEB].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK1RDY;
+        usb_endpoint_table[USB_EP_WEB].DeviceDescBank[0].PCKSIZE.bit.SIZE = 3;
+        usb_endpoint_table[USB_EP_WEB].DeviceDescBank[1].PCKSIZE.bit.SIZE = 3;
 #endif
 
         break;

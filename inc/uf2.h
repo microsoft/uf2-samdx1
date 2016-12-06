@@ -33,14 +33,14 @@
 // Check various conditions; best leave on
 #define USE_ASSERT 1
 // Enable reading flash via FAT files; otherwise drive will appear empty
-#define USE_FAT 0
+#define USE_FAT 1
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
 #define USE_CDC 0
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1
-// Expose HID via WebUSB (requires USE_HID)
+// Expose HID via WebUSB 
 #define USE_WEBUSB 1
 
 #define USE_DBG_MSC 0
@@ -76,7 +76,13 @@
 #define HID_VERSION ""
 #endif
 
-#define UF2_VERSION UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION
+#if USE_WEBUSB
+#define WEB_VERSION "W"
+#else
+#define WEB_VERSION ""
+#endif
+
+#define UF2_VERSION UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION WEB_VERSION
 
 // End of config
 
@@ -193,8 +199,6 @@ void delay(uint32_t ms);
 STATIC_ASSERT(FLASH_ROW_SIZE == FLASH_PAGE_SIZE * 4);
 STATIC_ASSERT(FLASH_ROW_SIZE == NVMCTRL_ROW_SIZE);
 STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
-// WebUSB requires HID
-STATIC_ASSERT(!USE_WEBUSB || USE_HID);
 
 extern const char infoUf2File[];
 

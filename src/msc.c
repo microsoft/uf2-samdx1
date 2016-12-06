@@ -279,7 +279,7 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCac
 }
 
 void process_msc(void) {
-#if USE_HID
+#if USE_HID || USE_WEBUSB
     process_hid();
 #endif
 

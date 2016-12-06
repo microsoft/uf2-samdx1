@@ -52,7 +52,7 @@ struct TextFile {
     const char *content;
 };
 
-#if USE_FAT || USE_HANDOVER || USE_HID
+#if USE_FAT || USE_HANDOVER || USE_HID || USE_WEBUSB
 #define STR0(x) #x
 #define STR(x) STR0(x)
 const char infoUf2File[] = //
