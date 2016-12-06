@@ -245,19 +245,108 @@ char cfgDescriptor[] = {
 #endif
 };
 
+#if USE_WEBUSB
+COMPILER_WORD_ALIGNED
+static char bosDescriptor[] = {
+    0x05,       // Length
+    0x0F,       // Binary Object Store descriptor
+    0x39, 0x00, // Total length
+    0x02,       // Number of device capabilities
+
+    // WebUSB Platform Capability descriptor (bVendorCode == 0x01).
+    0x18,                                           // Length
+    0x10,                                           // Device Capability descriptor
+    0x05,                                           // Platform Capability descriptor
+    0x00,                                           // Reserved
+    0x38, 0xB6, 0x08, 0x34, 0xA9, 0x09, 0xA0, 0x47, // WebUSB GUID
+    0x8B, 0xFD, 0xA0, 0x76, 0x88, 0x15, 0xB6, 0x65, // WebUSB GUID
+    0x00, 0x01,                                     // Version 1.0
+    0x01,                                           // Vendor request code
+    0x04,                                           // landing page
+
+    0x1C,                                           // Length
+    0x10,                                           // Device Capability descriptor
+    0x05,                                           // Platform Capability descriptor
+    0x00,                                           // Reserved
+    0xDF, 0x60, 0xDD, 0xD8, 0x89, 0x45, 0xC7, 0x4C, // MS OS 2.0 GUID
+    0x9C, 0xD2, 0x65, 0x9D, 0x9E, 0x64, 0x8A, 0x9F, // MS OS 2.0 GUID
+    0x00, 0x00, 0x03, 0x06,                         // Windows version
+    0x2e, 0x00,                                     // Descriptor set length
+    0x02,                                           // Vendor request code
+    0x00                                            // Alternate enumeration code
+};
+
+COMPILER_WORD_ALIGNED
+static char msOS20Descriptor[] = {
+    // Microsoft OS 2.0 descriptor set header (table 10)
+    0x0A, 0x00,             // Descriptor size (10 bytes)
+    0x00, 0x00,             // MS OS 2.0 descriptor set header
+    0x00, 0x00, 0x03, 0x06, // Windows version (8.1) (0x06030000)
+    0x2e, 0x00,             // Size, MS OS 2.0 descriptor set
+
+    // Microsoft OS 2.0 configuration subset header
+    0x08, 0x00, // Descriptor size (8 bytes)
+    0x01, 0x00, // MS OS 2.0 configuration subset header
+    0x00,       // bConfigurationValue
+    0x00,       // Reserved
+    0x24, 0x00, // Size, MS OS 2.0 configuration subset
+
+    // Microsoft OS 2.0 function subset header
+    0x08, 0x00, // Descriptor size (8 bytes)
+    0x02, 0x00, // MS OS 2.0 function subset header
+    HID_IF_NUM, // first interface no
+    0x00,       // Reserved
+    0x1c, 0x00, // Size, MS OS 2.0 function subset
+
+    // Microsoft OS 2.0 compatible ID descriptor (table 13)
+    0x14, 0x00,                   // wLength
+    0x03, 0x00,                   // MS_OS_20_FEATURE_COMPATIBLE_ID
+    'W', 'I', 'N', 'U', 'S', 'B', //
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+#define ALLOWED_ORIGINS_SEQ 1, 2
+static const char *allowed_origins[] = {"localhost:3232", "samd.pxt.io"};
+
+#define NUM_ALLOWED_ORIGINS 2
+static const uint8_t allowedOriginsDesc[] = {
+    // Allowed Origins Header, bNumConfigurations = 1
+    0x05, 0x00, 0x0c + NUM_ALLOWED_ORIGINS, 0x00, 0x01,
+    // Configuration Subset Header, bNumFunctions = 1
+    0x04, 0x01, 0x01, 0x01,
+    // Function Subset Header, bFirstInterface = pluggedInterface
+    0x03 + NUM_ALLOWED_ORIGINS, 0x02, HID_IF_NUM, ALLOWED_ORIGINS_SEQ,
+};
+
+typedef struct {
+    uint8_t len, tp, scheme;
+    uint8_t buf[64];
+} __attribute__((packed)) WebUSB_URL;
+
+STATIC_ASSERT((sizeof(allowed_origins) / sizeof(allowed_origins[0])) == NUM_ALLOWED_ORIGINS);
+STATIC_ASSERT(sizeof(allowedOriginsDesc) == 0x0c + NUM_ALLOWED_ORIGINS);
+
+#endif
+
 typedef struct {
     uint8_t len;
     uint8_t type;
     uint8_t data[70];
 } StringDescriptor;
 
-#define STRING_DESCRIPTOR_COUNT 4
-
-static const char *string_descriptors[STRING_DESCRIPTOR_COUNT] = {0, PRODUCT_NAME, VENDOR_NAME,
+static const char *string_descriptors[] = {
+    0,
+    PRODUCT_NAME,
+    VENDOR_NAME,
 #if USE_HID
-                                                                  "UF2-HID"
+    "UF2-HID",
+#if USE_WEBUSB
+    "https://www.pxt.io/webusb",
+#endif
 #endif
 };
+
+#define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
 
 static usb_cdc_line_coding_t line_coding = {
     115200, // baudrate
@@ -276,6 +365,8 @@ static USB_CDC pCdc;
 #define STD_CLEAR_FEATURE_ZERO 0x0100
 #define STD_CLEAR_FEATURE_INTERFACE 0x0101
 #define STD_CLEAR_FEATURE_ENDPOINT 0x0102
+#define STD_VENDOR_CTRL1 0x01C0
+#define STD_VENDOR_CTRL2 0x02C0
 
 #define STD_SET_FEATURE_ZERO 0x0300
 #define STD_SET_FEATURE_INTERFACE 0x0301
@@ -592,13 +683,19 @@ static void configureInOut(uint8_t in_ep) {
     usb_endpoint_table[in_ep].DeviceDescBank[1].ADDR.reg = (uint32_t)&endpointCache[in_ep].buf;
 }
 
+static uint16_t wLength;
+
+static void sendCtrl(const void *data, uint32_t len) {
+    AT91F_USB_SendData(data, MIN(len, wLength));
+}
+
 //*----------------------------------------------------------------------------
 //* \fn    AT91F_CDC_Enumerate
 //* \brief This function is a callback invoked when a SETUP packet is received
 //*----------------------------------------------------------------------------
 void AT91F_CDC_Enumerate() {
-    static volatile uint8_t bmRequestType, bRequest, dir;
-    static volatile uint16_t wValue, wIndex, wLength, wStatus;
+    uint8_t bmRequestType, bRequest, dir;
+    uint16_t wValue, wIndex, wStatus;
 
     /* Clear the Received Setup flag */
     USB->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_RXSTP;
@@ -659,12 +756,44 @@ void AT91F_CDC_Enumerate() {
         } else if (ctrlOutCache.buf[3] == 0x22) {
             AT91F_USB_SendData((void *)hidDescriptor, MIN(sizeof(hidDescriptor), wLength));
         }
+#if USE_WEBUSB
+        else if (ctrlOutCache.buf[3] == 0x15) {
+            AT91F_USB_SendData((void *)bosDescriptor, MIN(sizeof(bosDescriptor), wLength));
+        }
+#endif
 #endif
         else {
             /* Stall the request */
             stall_ep(0);
         }
         break;
+#if USE_WEBUSB
+    case STD_VENDOR_CTRL1:
+        if (wIndex == 0x01)
+            AT91F_USB_SendData((void *)allowedOriginsDesc,
+                               MIN(sizeof(allowedOriginsDesc), wLength));
+        else if (wIndex == 0x02) {
+            WebUSB_URL url;
+            uint32_t idx = (uint32_t)ctrlOutCache.buf[2] - 1;
+            if (idx >= NUM_ALLOWED_ORIGINS)
+                stall_ep(0);
+            url.len = strlen(allowed_origins[idx]) + 3;
+            url.tp = 3;
+            // first URL is http, rest is https
+            url.scheme = idx == 0 ? 0 : 1;
+            memcpy(url.buf, allowed_origins[idx], url.len - 3);
+            AT91F_USB_SendData((void *)&url, MIN(url.len, wLength));
+        } else {
+            stall_ep(0);
+        }
+        break;
+    case STD_VENDOR_CTRL2:
+        if (wIndex == 0x07)
+            AT91F_USB_SendData((void *)msOS20Descriptor, MIN(sizeof(msOS20Descriptor), wLength));
+        else
+            stall_ep(0);
+        break;
+#endif
     case STD_SET_ADDRESS:
         /* Send ZLP */
         AT91F_USB_SendZlp();
