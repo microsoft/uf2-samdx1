@@ -22,6 +22,8 @@ a UF2 file is written and immediately write it to flash.
 
 In `uf2conv.c` you can find a small converter from `.bin` to `.uf2`.
 
+* **UF2 specification repo:** https://github.com/Microsoft/uf2
+
 ## Features
 
 * USB CDC (Serial emulation) monitor mode compatible with Arduino 
