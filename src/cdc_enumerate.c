@@ -345,6 +345,8 @@ STATIC_ASSERT(sizeof(allowedOriginsDesc) == 0x0c + NUM_ALLOWED_ORIGINS);
 
 #endif
 
+static uint8_t currentConfiguration;
+
 typedef struct {
     uint8_t len;
     uint8_t type;
@@ -359,6 +361,7 @@ static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME,
 
 #define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
 
+#if USE_CDC
 static usb_cdc_line_coding_t line_coding = {
     115200, // baudrate
     0,      // 1 Stop Bit
@@ -367,6 +370,7 @@ static usb_cdc_line_coding_t line_coding = {
 };
 
 static USB_CDC pCdc;
+#endif
 
 /* USB standard request code */
 #define STD_GET_STATUS_ZERO 0x0080
@@ -525,12 +529,12 @@ bool USB_Ok() {
         USB->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.reg = USB_DEVICE_EPSTATUSCLR_BK0RDY;
 
         // Reset current configuration value to 0
-        pCdc.currentConfiguration = 0;
+        currentConfiguration = 0;
     } else if (USB->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_RXSTP) {
         AT91F_CDC_Enumerate();
     }
 
-    return pCdc.currentConfiguration != 0;
+    return currentConfiguration != 0;
 }
 
 //*----------------------------------------------------------------------------
@@ -805,7 +809,7 @@ void AT91F_CDC_Enumerate() {
         break;
     case STD_SET_CONFIGURATION:
         /* Store configuration */
-        pCdc.currentConfiguration = (uint8_t)wValue;
+        currentConfiguration = (uint8_t)wValue;
         /* Send ZLP */
         AT91F_USB_SendZlp();
 
@@ -844,10 +848,12 @@ void AT91F_CDC_Enumerate() {
 #endif
 
         break;
+
     case STD_GET_CONFIGURATION:
         /* Return current configuration value */
-        sendCtrl(&(pCdc.currentConfiguration), sizeof(pCdc.currentConfiguration));
+        sendCtrl(&(currentConfiguration), sizeof(currentConfiguration));
         break;
+
     case STD_GET_STATUS_ZERO:
         wStatus = 0;
         sendCtrl(&wStatus, sizeof(wStatus));
@@ -954,6 +960,7 @@ void AT91F_CDC_Enumerate() {
         }
         break;
 
+#if USE_CDC
     // handle CDC class requests
     case SET_LINE_CODING:
         /* Send ZLP */
@@ -969,6 +976,7 @@ void AT91F_CDC_Enumerate() {
         /* Send ZLP */
         AT91F_USB_SendZlp();
         break;
+#endif
 
     // MSC
     case MSC_RESET:
@@ -1037,8 +1045,10 @@ void stall_ep(uint8_t ep) {
 void usb_init(void) {
     /* Initialize USB */
     AT91F_InitUSB();
-    pCdc.currentConfiguration = 0;
+    currentConfiguration = 0;
+#if USE_CDC
     pCdc.currentConnection = 0;
+#endif
     USB->HOST.CTRLA.bit.ENABLE = true;
 }
 
