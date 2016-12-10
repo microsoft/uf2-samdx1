@@ -86,12 +86,12 @@ void process_core(HID_InBuffer *pkt) {
 
     if (pkt->serial) {
 #if USE_LOGS
-        if (pkt->pbuf.buf[0] == 'L') {
+        if (pkt->buf[0] == 'L') {
             send_hid(logStoreUF2.buffer, logStoreUF2.ptr, pkt->ep, HF2_FLAG_SERIAL_OUT);
         } else
 #endif
         {
-            send_hid(pkt->pbuf.buf, pkt->pbuf.size, pkt->ep, HF2_FLAG_SERIAL_ERR);
+            send_hid("OK\n", 3, pkt->ep, HF2_FLAG_SERIAL_ERR);
         }
         return;
     }
