@@ -16,7 +16,10 @@ typedef struct {
     };
 } HID_InBuffer;
 
-int recv_hid(HID_InBuffer *pkt) {
+// Recieve HF2 message
+// Does not block. Will store intermediate data in pkt.
+// `serial` flag is cleared if we got a command message.
+int recv_hf2(HID_InBuffer *pkt) {
     if (!USB_ReadCore(NULL, 64, pkt->ep, &pkt->pbuf))
         return 0; // no data
 
@@ -38,7 +41,10 @@ int recv_hid(HID_InBuffer *pkt) {
     return 0;
 }
 
-void send_hid(const void *data, int size, int ep, int flag) {
+// Send HF2 message.
+// Use command message when flag == HF2_FLAG_CMDPKT_BODY
+// Use serial stdout for HF2_FLAG_SERIAL_OUT and stderr for HF2_FLAG_SERIAL_ERR.
+void send_hf2(const void *data, int size, int ep, int flag) {
     uint8_t buf[64];
     const uint8_t *ptr = data;
 
@@ -59,11 +65,11 @@ void send_hid(const void *data, int size, int ep, int flag) {
     }
 }
 
-void send_hid_response(HID_InBuffer *pkt, const void *data, int size) {
+void send_hf2_response(HID_InBuffer *pkt, const void *data, int size) {
     logval("sendresp", size);
     if (data)
         memcpy(pkt->resp.data8, data, size);
-    send_hid(pkt->buf, 4 + size, pkt->ep, HF2_FLAG_CMDPKT_BODY);
+    send_hf2(pkt->buf, 4 + size, pkt->ep, HF2_FLAG_CMDPKT_BODY);
 }
 
 static void checksum_pages(HID_InBuffer *pkt, int start, int num) {
@@ -75,11 +81,11 @@ static void checksum_pages(HID_InBuffer *pkt, int start, int num) {
         }
         pkt->resp.data16[i] = crc;
     }
-    send_hid_response(pkt, 0, num * 2);
+    send_hf2_response(pkt, 0, num * 2);
 }
 
 void process_core(HID_InBuffer *pkt) {
-    int sz = recv_hid(pkt);
+    int sz = recv_hf2(pkt);
 
     if (!sz)
         return;
@@ -87,11 +93,11 @@ void process_core(HID_InBuffer *pkt) {
     if (pkt->serial) {
 #if USE_LOGS
         if (pkt->buf[0] == 'L') {
-            send_hid(logStoreUF2.buffer, logStoreUF2.ptr, pkt->ep, HF2_FLAG_SERIAL_OUT);
+            send_hf2(logStoreUF2.buffer, logStoreUF2.ptr, pkt->ep, HF2_FLAG_SERIAL_OUT);
         } else
 #endif
         {
-            send_hid("OK\n", 3, pkt->ep, HF2_FLAG_SERIAL_ERR);
+            send_hf2("OK\n", 3, pkt->ep, HF2_FLAG_SERIAL_ERR);
         }
         return;
     }
@@ -113,7 +119,7 @@ void process_core(HID_InBuffer *pkt) {
 
     switch (cmdId) {
     case HF2_CMD_INFO:
-        send_hid_response(pkt, infoUf2File, strlen(infoUf2File));
+        send_hf2_response(pkt, infoUf2File, strlen(infoUf2File));
         return;
 
     case HF2_CMD_BININFO:
@@ -121,7 +127,7 @@ void process_core(HID_InBuffer *pkt) {
         resp->bininfo.flash_page_size = FLASH_ROW_SIZE;
         resp->bininfo.flash_num_pages = FLASH_SIZE / FLASH_ROW_SIZE;
         resp->bininfo.max_message_size = sizeof(pkt->buf);
-        send_hid_response(pkt, 0, sizeof(resp->bininfo));
+        send_hf2_response(pkt, 0, sizeof(resp->bininfo));
         return;
 
     case HF2_CMD_RESET_INTO_APP:
@@ -136,7 +142,7 @@ void process_core(HID_InBuffer *pkt) {
     case HF2_CMD_WRITE_FLASH_PAGE:
         checkDataSize(write_flash_page, FLASH_ROW_SIZE);
         // first send ACK and then start writing, while getting the next packet
-        send_hid_response(pkt, 0, 0);
+        send_hf2_response(pkt, 0, 0);
         if (cmd->write_flash_page.target_addr >= APP_START_ADDRESS) {
             flash_write_row((void *)cmd->write_flash_page.target_addr, cmd->write_flash_page.data);
         }
@@ -150,7 +156,7 @@ void process_core(HID_InBuffer *pkt) {
         checkDataSize(read_words, 0);
         tmp = cmd->read_words.num_words;
         copy_words(resp->data32, (void *)cmd->read_words.target_addr, tmp);
-        send_hid_response(pkt, 0, tmp << 2);
+        send_hf2_response(pkt, 0, tmp << 2);
         return;
     case HF2_CMD_CHKSUM_PAGES:
         checkDataSize(chksum_pages, 0);
@@ -163,7 +169,7 @@ void process_core(HID_InBuffer *pkt) {
         break;
     }
 
-    send_hid_response(pkt, 0, 0);
+    send_hf2_response(pkt, 0, 0);
 }
 
 static HID_InBuffer hidbufData;
