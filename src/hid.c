@@ -38,19 +38,18 @@ int recv_hid(HID_InBuffer *pkt) {
     return 0;
 }
 
-void send_hid(const void *data, int size, int ep) {
+void send_hid(const void *data, int size, int ep, int flag) {
     uint8_t buf[64];
     const uint8_t *ptr = data;
 
     for (;;) {
-        int s;
+        int s = 63;
         if (size <= 63) {
             s = size;
-            buf[0] = HF2_FLAG_CMDPKT_LAST | size;
-        } else {
-            s = 63;
-            buf[0] = HF2_FLAG_CMDPKT_BODY | 63;
+            if (flag == HF2_FLAG_CMDPKT_BODY)
+                flag = HF2_FLAG_CMDPKT_LAST;
         }
+        buf[0] = flag | s;
         memcpy(buf + 1, ptr, s);
         USB_WriteCore(buf, sizeof(buf), ep, true);
         ptr += s;
@@ -64,7 +63,7 @@ void send_hid_response(HID_InBuffer *pkt, const void *data, int size) {
     logval("sendresp", size);
     if (data)
         memcpy(pkt->resp.data8, data, size);
-    send_hid(pkt->buf, 4 + size, pkt->ep);
+    send_hid(pkt->buf, 4 + size, pkt->ep, HF2_FLAG_CMDPKT_BODY);
 }
 
 static void checksum_pages(HID_InBuffer *pkt, int start, int num) {
@@ -86,11 +85,14 @@ void process_core(HID_InBuffer *pkt) {
         return;
 
     if (pkt->serial) {
-        // echo back serial input - just for testing
-        pkt->pbuf.buf[1] ^= 'a' - 'A';
-        pkt->pbuf.buf[2] ^= 'a' - 'A';
-        pkt->pbuf.buf[3] ^= 'a' - 'A';
-        USB_WriteCore(pkt->pbuf.buf, 64, pkt->ep, true);
+#if USE_LOGS
+        if (pkt->pbuf.buf[0] == 'L') {
+            send_hid(logStoreUF2.buffer, logStoreUF2.ptr, pkt->ep, HF2_FLAG_SERIAL_OUT);
+        } else
+#endif
+        {
+            send_hid(pkt->pbuf.buf, pkt->pbuf.size, pkt->ep, HF2_FLAG_SERIAL_ERR);
+        }
         return;
     }
 

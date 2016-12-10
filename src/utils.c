@@ -53,10 +53,7 @@ void resetIntoBootloader() {
 }
 
 #if USE_LOGS
-static struct {
-    int ptr;
-    char buffer[4096];
-} logStoreUF2;
+struct LogStore logStoreUF2;
 
 void logreset() {
     logStoreUF2.ptr = 0;

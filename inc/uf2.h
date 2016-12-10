@@ -109,6 +109,11 @@ From CPU config:
     } while (0)
 
 #if USE_LOGS
+struct LogStore {
+    int ptr;
+    char buffer[4096];
+};
+extern struct LogStore logStoreUF2;
 void logmsg(const char *msg);
 void logval(const char *lbl, uint32_t v);
 void logwritenum(uint32_t n);
