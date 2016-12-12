@@ -625,6 +625,7 @@ uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool 
 
     if (handoverMode) {
         data_address = (uint32_t)pData;
+        epdesc->DeviceDescBank[1].PCKSIZE.bit.AUTO_ZLP = false;
     }
     /* Check for requirement for multi-packet or auto zlp */
     else if (length >= (1 << (epdesc->DeviceDescBank[1].PCKSIZE.bit.SIZE + 3))) {

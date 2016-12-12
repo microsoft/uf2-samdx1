@@ -22,7 +22,8 @@ typedef struct {
 int recv_hf2(HID_InBuffer *pkt) {
     if (!USB_ReadCore(NULL, 64, pkt->ep, &pkt->pbuf))
         return 0; // no data
-
+    
+    //logval("rhf2", pkt->pbuf.size);
     assert(pkt->pbuf.ptr == 0 && pkt->pbuf.size > 0);
     pkt->pbuf.size = 0;
     uint8_t tag = pkt->pbuf.buf[0];
