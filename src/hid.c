@@ -173,8 +173,13 @@ void process_core(HID_InBuffer *pkt) {
     send_hf2_response(pkt, 0, 0);
 }
 
+#if USE_HID
 static HID_InBuffer hidbufData;
+#endif
+
+#if USE_WEBUSB
 static HID_InBuffer webbufData;
+#endif
 
 void process_hid() {
 #if USE_HID

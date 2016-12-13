@@ -262,14 +262,19 @@ char cfgDescriptor[] = {
 #endif
 };
 
-#if USE_WEBUSB
 COMPILER_WORD_ALIGNED
 static char bosDescriptor[] = {
     0x05,       // Length
     0x0F,       // Binary Object Store descriptor
+#if USE_WEBUSB
     0x39, 0x00, // Total length
     0x02,       // Number of device capabilities
+#else
+    0x05, 0x00,
+    0x00
+#endif
 
+#if USE_WEBUSB
     // WebUSB Platform Capability descriptor (bVendorCode == 0x01).
     0x18,                                           // Length
     0x10,                                           // Device Capability descriptor
@@ -291,8 +296,10 @@ static char bosDescriptor[] = {
     0x2e, 0x00,                                     // Descriptor set length
     0x02,                                           // Vendor request code
     0x00                                            // Alternate enumeration code
+#endif
 };
 
+#if USE_WEBUSB
 COMPILER_WORD_ALIGNED
 static char msOS20Descriptor[] = {
     // Microsoft OS 2.0 descriptor set header (table 10)
@@ -759,16 +766,14 @@ void AT91F_CDC_Enumerate() {
             }
             sendCtrl(&desc, sizeof(StringDescriptor));
         }
+        else if (ctrlOutCache.buf[3] == 0x0F) {
+            sendCtrl(bosDescriptor, sizeof(bosDescriptor));
+        }
 #if USE_HID
         else if (ctrlOutCache.buf[3] == 0x21) {
             sendCtrl(hidCfgDescriptor, sizeof(hidCfgDescriptor));
         } else if (ctrlOutCache.buf[3] == 0x22) {
             sendCtrl(hidDescriptor, sizeof(hidDescriptor));
-        }
-#endif
-#if USE_WEBUSB
-        else if (ctrlOutCache.buf[3] == 0x0F) {
-            sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
 #endif
         else {
