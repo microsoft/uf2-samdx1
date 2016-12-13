@@ -59,7 +59,7 @@ const char devDescriptor[] = {
     0x01            // bNumConfigs
 };
 
-#define CFG_DESC_SIZE ((USE_CDC ? 0x5A : 0x20) + USE_HID * 32 + USE_WEBUSB * 23)
+#define CFG_DESC_SIZE (32 + USE_CDC * (58 + 8) + USE_HID * 32 + USE_WEBUSB * 23)
 #define HID_IF_NUM (USE_CDC ? 3 : 1)
 #define WEB_IF_NUM (HID_IF_NUM + 1)
 
@@ -114,6 +114,16 @@ char cfgDescriptor[] = {
     0x00,                                   // CMaxPower
 
 #if USE_CDC
+    // IAD for CDC
+    0x08, // bLength;
+    0x0B, // bDescriptorType;
+    0x00, // bFirstInterface;
+    0x02, // bInterfaceCount;
+    0x02, // bFunctionClass;
+    0x02, // bFunctionSubclass;
+    0x01, // bFunctionProtocol;
+    0x00, // iFunction; string
+
     /* Communication Class Interface Descriptor Requirement */
     0x09, // bLength
     0x04, // bDescriptorType
@@ -122,7 +132,7 @@ char cfgDescriptor[] = {
     0x01, // bNumEndpoints
     0x02, // bInterfaceClass
     0x02, // bInterfaceSubclass
-    0x00, // bInterfaceProtocol
+    0x01, // bInterfaceProtocol
     0x00, // iInterface
 
     /* Header Functional Descriptor */
@@ -136,7 +146,7 @@ char cfgDescriptor[] = {
     0x04, // bFunctionLength
     0x24, // bDescriptor Type: CS_INTERFACE
     0x02, // bDescriptor Subtype: ACM Func Desc
-    0x00, // bmCapabilities
+    0x06, // bmCapabilities
 
     /* Union Functional Descriptor */
     0x05, // bFunctionLength
@@ -149,7 +159,7 @@ char cfgDescriptor[] = {
     0x05, // bFunctionLength
     0x24, // bDescriptor Type: CS_INTERFACE
     0x01, // bDescriptor Subtype: Call Management Func Desc
-    0x00, // bmCapabilities: D1 + D0
+    0x03, // bmCapabilities: D1 + D0
     0x01, // bDataInterface: Data Class Interface 1
 
     /* Endpoint 1 descriptor */
@@ -264,14 +274,14 @@ char cfgDescriptor[] = {
 
 COMPILER_WORD_ALIGNED
 static char bosDescriptor[] = {
-    0x05,       // Length
-    0x0F,       // Binary Object Store descriptor
+    0x05, // Length
+    0x0F, // Binary Object Store descriptor
 #if USE_WEBUSB
     0x39, 0x00, // Total length
     0x02,       // Number of device capabilities
 #else
-    0x05, 0x00,
-    0x00
+    0x05, 0x00, // Length
+    0x00        // num caps
 #endif
 
 #if USE_WEBUSB
@@ -765,8 +775,7 @@ void AT91F_CDC_Enumerate() {
                 }
             }
             sendCtrl(&desc, sizeof(StringDescriptor));
-        }
-        else if (ctrlOutCache.buf[3] == 0x0F) {
+        } else if (ctrlOutCache.buf[3] == 0x0F) {
             sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
 #if USE_HID
