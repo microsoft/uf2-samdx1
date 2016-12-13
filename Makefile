@@ -88,7 +88,7 @@ $(EXECUTABLE): $(OBJECTS)
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@echo
-	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " (8192-s) }'
+	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1; print } END { print ""; print "Space left: " (8192-s) }'
 	@echo
 
 
