@@ -3,3 +3,4 @@ build/
 uf2-bootloader.elf
 tmp
 *.sw?
+Makefile.user
