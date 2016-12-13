@@ -12,7 +12,7 @@ WFLAGS = \
 -Wformat -Wmissing-format-attribute \
 -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs \
 -Wlong-long -Wunreachable-code -Wcast-align \
--Wno-overflow -Wno-shadow -Wno-attributes -Wno-packed -Wno-pointer-sign -Werror
+-Wno-missing-braces -Wno-overflow -Wno-shadow -Wno-attributes -Wno-packed -Wno-pointer-sign -Werror
 CFLAGS = $(COMMON_FLAGS) \
 -x c -c -pipe -nostdlib \
 --param max-inline-insns-single=500 \
@@ -81,7 +81,7 @@ selflogs:
 dirs:
 	@echo "Building $(BOARD)"
 	-@mkdir -p $(BUILD_PATH)
-	
+
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
 		 -T./asf/sam0/utils/linker_scripts/samd21/gcc/samd21j18a_flash.ld \

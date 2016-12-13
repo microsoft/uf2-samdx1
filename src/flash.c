@@ -27,7 +27,7 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     while (n_words > 0) {
         uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
         n_words -= len;
-     
+
         // Execute "PBC" Page Buffer Clear
         NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
         wait_ready();
@@ -44,17 +44,23 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     }
 }
 
+// Skip writing blocks that are identical to the existing block.
 // only disable for debugging/timing
 #define QUICK_FLASH 1
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {
 #if QUICK_FLASH
-    for (int i = 0; i < FLASH_ROW_SIZE / 4; ++i)
-        if (src[i] != dst[i])
-            goto doflash;
-    return;
+    bool src_different = false;
+    for (int i = 0; i < FLASH_ROW_SIZE / 4; ++i) {
+        if (src[i] != dst[i]) {
+            src_different = true;
+            break;
+        }
+    }
 
-doflash:
+    if (!src_different) {
+        return;
+    }
 #endif
 
     flash_erase_row(dst);
