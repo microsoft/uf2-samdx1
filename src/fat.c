@@ -235,8 +235,14 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state
                 state->writtenMask[pos] |= mask;
                 state->numWritten++;
             }
-            if (state->numWritten >= state->numBlocks)
-                resetIntoApp();
+            // We're done writing so reset everything so we can write another file.
+            if (state->numWritten >= state->numBlocks) {
+                state->numWritten = 0;
+                for (int i = 0; i < state->numBlocks / 8 + 1; i++) {
+                    state->writtenMask[i] = 0;
+                }
+                state->numBlocks = 0;
+            }
         }
     } else {
         resetHorizon = timerHigh + 300;
