@@ -59,7 +59,7 @@ const char devDescriptor[] = {
     0x01            // bNumConfigs
 };
 
-#define CFG_DESC_SIZE (32 + USE_CDC * (58 + 8) + USE_HID * 32 + USE_WEBUSB * 23)
+#define CFG_DESC_SIZE (32 + USE_CDC * (58 + 8) + USE_HID * 32 + USE_WEBUSB * 23 + 1)
 #define HID_IF_NUM (USE_CDC ? 3 : 1)
 #define WEB_IF_NUM (HID_IF_NUM + 1)
 
@@ -270,6 +270,8 @@ char cfgDescriptor[] = {
     7, 5, 0x80 | USB_EP_WEB, 3, PKT_SIZE, 0, 1, // in
     7, 5, USB_EP_WEB, 3, PKT_SIZE, 0, 1,        // out
 #endif
+
+    0 // terminator
 };
 
 COMPILER_WORD_ALIGNED
