@@ -520,11 +520,14 @@ static void udi_msc_spc_inquiry(void) {
         .flags1 = SCSI_INQ_RMB,
         .flags3 = SCSI_INQ_RSP_SPC2,
         .addl_len = 36 - 4, // SCSI_INQ_ADDL_LEN(sizeof(struct scsi_inquiry_data)),
-        // Linux seems to display this
-        .vendor_id = {'A', 'T', 'M', 'E', 'L', ' ', ' ', ' '},
-        .product_id = "UF2 MSC Boot    ",
+        // Linux displays this; Windows shows it in Dev Mgr
+        .vendor_id = "",
+        .product_id = "",
         .product_rev = {'1', '.', '0', '0'},
     };
+
+    // we use both product_id and vendor_id fields and hope for the best
+    padded_memcpy(udi_msc_inquiry_data.vendor_id, PRODUCT_NAME, 8 + 16);
 
     length = udi_msc_cbw.CDB[4];
 
