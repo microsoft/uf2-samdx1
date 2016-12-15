@@ -3,14 +3,14 @@
 
 #define __SAMD21G18A__ 1
 
-#define VENDOR_NAME "Arduino"
-#define PRODUCT_NAME "Zero"
+#define VENDOR_NAME "Arduino LLC"
+#define PRODUCT_NAME "Arduino Zero"
 #define VOLUME_LABEL "ARDUINO-M0"
 
 #define BOARD_ID "SAMD21G18A-Zero-v0"
 
-#define USB_VID 0x2341
-#define USB_PID 0x024D
+//#define USB_VID 0x2341
+//#define USB_PID 0x024D
 
 #define LED_PIN PIN_PA17
 #define LED_TX_PIN PIN_PA27

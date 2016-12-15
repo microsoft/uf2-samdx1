@@ -19,6 +19,11 @@
 #undef DISABLE
 #undef ENABLE
 
+#ifndef USB_PID
+#define USB_VID 0x03EB   // Atmel
+#define USB_PID 0x2402   // Generic HID device
+#endif
+
 #ifndef INDEX_URL
 #define INDEX_URL "https://www.pxt.io/"
 #endif
@@ -41,9 +46,9 @@
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1
 // Expose HID via WebUSB 
-#define USE_WEBUSB 1
+#define USE_WEBUSB 0
 // Doesn't yet disable code, just enumeration
-#define USE_MSC 1
+#define USE_MSC 0
 
 #define USE_DBG_MSC 0
 #define USE_HANDOVER 0
