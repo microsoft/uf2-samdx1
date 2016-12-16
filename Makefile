@@ -57,7 +57,7 @@ NAME=uf2-bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 SELF_EXECUTABLE=$(BUILD_PATH)/self-$(NAME).uf2
 
-all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE) build/uf2conv
+all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE)
 
 r: run
 b: burn
@@ -91,12 +91,12 @@ $(EXECUTABLE): $(OBJECTS)
 	@echo
 
 
-$(SELF_EXECUTABLE): $(SELF_OBJECTS)  build/uf2conv
+$(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
 		 -T./scripts/samd21j18a_self.ld \
 		 -Wl,-Map,$(BUILD_PATH)/self-$(NAME).map -o $(BUILD_PATH)/self-$(NAME).elf $(SELF_OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/self-$(NAME).elf $(BUILD_PATH)/self-$(NAME).bin
-	./build/uf2conv $(BUILD_PATH)/self-$(NAME).bin $@
+	node scripts/bin2uf2.js $(BUILD_PATH)/self-$(NAME).bin $@
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h)
 	@echo "$<"
@@ -111,9 +111,6 @@ $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
 
 $(BUILD_PATH)/selfdata.c: $(EXECUTABLE)
 	node scripts/gendata.js $< > $@
-
-build/uf2conv: utils/uf2conv.c inc/uf2format.h
-	cc -Iinc -W -Wall -o $@ utils/uf2conv.c
 
 clean:
 	rm -rf build
