@@ -64,8 +64,7 @@ b: burn
 l: logs
 
 burn: all
-	sh scripts/openocd.sh \
-	-c "telnet_port disabled; init; halt; at91samd bootloader 0; program {{$(BUILD_PATH)/$(NAME).bin}} verify reset; shutdown "
+	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).bin
 
 run: burn wait logs
 
@@ -73,10 +72,10 @@ wait:
 	sleep 5
 
 logs:
-	sh scripts/getlogs.sh $(BUILD_PATH)/$(NAME).map
+	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).map
 
 selflogs:
-	sh scripts/getlogs.sh $(BUILD_PATH)/self-$(NAME).map
+	node scripts/dbgtool.js $(BUILD_PATH)/self-$(NAME).map
 
 dirs:
 	@echo "Building $(BOARD)"
@@ -88,7 +87,7 @@ $(EXECUTABLE): $(OBJECTS)
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@echo
-	@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1; print } END { print ""; print "Space left: " (8192-s) }'
+	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1; print } END { print ""; print "Space left: " (8192-s) }'
 	@echo
 
 
