@@ -90,6 +90,7 @@ This fuse is currently not utilized by this bootloader. It needs to be investiga
 ### Requirements
 
 * `make` and an Unix environment
+* `node`.js in path
 * `arm-none-eabi-gcc` in the path (the one coming with Yotta will do just fine)
 * `openocd` - you can use the one coming with Arduino (after your install the M0 board support)
 
@@ -102,7 +103,8 @@ port. You need to connect both USB ports to your machine to debug - one is for
 flashing and getting logs, the other is for the exposed MSC interface.
 
 Otherwise, you can use other SAMD21 board and an external `openocd` compatible
-debugger.
+debugger. IBDAP is cheap and seems to work just fine. Another option is to use
+Raspberry Pi and native bit-banging.
 
 `openocd` will flash 16k, meaning the beginning of user program (if any) will
 be overwritten with `0xff`. This also means that after fresh flashing of bootloader
@@ -117,19 +119,20 @@ The default board is `zero`. You can build a different one using:
 make BOARD=metro
 ```
 
-You can also create `Makefile.local` with `BOARD=metro` to change the default.
+If you're working on different board, it's best to create `Makefile.local` 
+with say `BOARD=metro` to change the default.
 The names `zero` and `metro` refer to subdirectories of `boards/`.
 
 There are various targets:
 * `all` - just compile the board
 * `burn` or `b` - compile and deploy to the board using openocd
 * `logs` or `l` - shows logs
-* `run` or `r` - burn and show logs
+* `run` or `r` - burn, wait, and show logs
 
 Typically, you will do:
 
 ```
-make BOARD=mkr1000 burn
+make r
 ```
 
 ### Configuration
@@ -141,10 +144,21 @@ By default, you cannot enable all the features, as the bootloader would exceed
 the 8k allocated to it by Arduino etc. It will assert on startup that it's not bigger
 than 8k. Also, the linker script will not allow it.
 
-Two typical configurations are:
+Three typical configurations are:
 
-* USB CDC and MSC, plus flash reading via FAT; UART disabled; logging optional; **recommended**
-* USB CDC and MSC, no flash reading via FAT; UART enabled; logging disabled; only this one if you need the UART support in bootloader for whatever reason
+* HID, WebUSB, MSC, plus flash reading via FAT; UART and CDC disabled; 
+  logging optional; **recommended**
+* USB CDC and MSC, plus flash reading via FAT; UART disabled; 
+  logging optional; this may have Windows driver problems
+* USB CDC and MSC, no flash reading via FAT; UART enabled; 
+  logging disabled; 
+  only this one if you need the UART support in bootloader for whatever reason
+
+CDC and MSC together will work on Linux and Mac with no drivers.
+On Windows, if you have drivers installed for the USB ID chosen, 
+then CDC might work and MSC will not work;
+otherwise, if you have no drivers, MSC will work, and CDC will work on Windows 10 only.
+Thus, it's best to set the USB ID to one for which there are no drivers.
 
 The bootloader sits at 0x00000000, and the application starts at 0x00002000.
 
