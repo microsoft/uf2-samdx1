@@ -98,11 +98,7 @@ $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/self-$(NAME).elf $(BUILD_PATH)/self-$(NAME).bin
 	node scripts/bin2uf2.js $(BUILD_PATH)/self-$(NAME).bin $@
 
-$(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h)
-	@echo "$<"
-	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
-
-$(BUILD_PATH)/%.o: selfflash/%.c $(wildcard inc/*.h)
+$(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h)
 	@echo "$<"
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
