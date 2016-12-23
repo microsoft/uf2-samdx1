@@ -22,11 +22,16 @@ typedef struct {
 int recv_hf2(HID_InBuffer *pkt) {
     if (!USB_ReadCore(NULL, 64, pkt->ep, &pkt->pbuf))
         return 0; // no data
-    
-    //logval("rhf2", pkt->pbuf.size);
+
+    // logval("rhf2", pkt->pbuf.size);
     assert(pkt->pbuf.ptr == 0 && pkt->pbuf.size > 0);
     pkt->pbuf.size = 0;
     uint8_t tag = pkt->pbuf.buf[0];
+#if !USE_HID_SERIAL
+    if (tag & 0x80) {
+        return 0;
+    }
+#endif
     // serial packets not allowed when in middle of command packet
     assert(pkt->size == 0 || !(tag & HF2_FLAG_SERIAL_OUT));
     memcpy(pkt->buf + pkt->size, pkt->pbuf.buf + 1, tag & HF2_SIZE_MASK);
@@ -34,7 +39,9 @@ int recv_hf2(HID_InBuffer *pkt) {
     assert(pkt->size <= sizeof(pkt->buf));
     tag &= HF2_FLAG_MASK;
     if (tag != HF2_FLAG_CMDPKT_BODY) {
+#if USE_HID_SERIAL
         pkt->serial = tag - 0x40;
+#endif
         int sz = pkt->size;
         pkt->size = 0;
         return sz;
@@ -91,6 +98,8 @@ void process_core(HID_InBuffer *pkt) {
     if (!sz)
         return;
 
+#if USE_HID_SERIAL
+    uint32_t tmp;
     if (pkt->serial) {
 #if USE_LOGS
         if (pkt->buf[0] == 'L') {
@@ -102,6 +111,7 @@ void process_core(HID_InBuffer *pkt) {
         }
         return;
     }
+#endif
 
     logwrite("HID sz=");
     logwritenum(sz);
@@ -112,7 +122,6 @@ void process_core(HID_InBuffer *pkt) {
     HF2_Response *resp = &pkt->resp;
 
     uint32_t cmdId = cmd->command_id;
-    uint32_t tmp;
     resp->tag = cmd->tag;
     resp->status16 = HF2_STATUS_OK;
 
@@ -148,6 +157,7 @@ void process_core(HID_InBuffer *pkt) {
             flash_write_row((void *)cmd->write_flash_page.target_addr, cmd->write_flash_page.data);
         }
         return;
+#if USE_HID_SERIAL
     case HF2_CMD_WRITE_WORDS:
         checkDataSize(write_words, cmd->write_words.num_words << 2);
         copy_words((void *)cmd->write_words.target_addr, cmd->write_words.words,
@@ -163,6 +173,7 @@ void process_core(HID_InBuffer *pkt) {
         checkDataSize(chksum_pages, 0);
         checksum_pages(pkt, cmd->chksum_pages.target_addr, cmd->chksum_pages.num_pages);
         return;
+#endif
 
     default:
         // command not understood

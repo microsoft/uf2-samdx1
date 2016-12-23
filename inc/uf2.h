@@ -28,19 +28,19 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.3.0"
+#define UF2_VERSION_BASE "v1.3.1"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
 
 // Logging to help debugging
-#define USE_LOGS 1
+#define USE_LOGS 0
 // Check various conditions; best leave on
-#define USE_ASSERT 1
+#define USE_ASSERT 0
 // Enable reading flash via FAT files; otherwise drive will appear empty
 #define USE_FAT 1
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
-#define USE_CDC 0
+#define USE_CDC 1
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 // Support Human Interface Device (HID) - serial, flashing and debug
@@ -52,6 +52,7 @@
 
 #define USE_DBG_MSC 0
 #define USE_HANDOVER 0
+#define USE_HID_SERIAL 0
 
 #if USE_CDC
 #define CDC_VERSION "S"
