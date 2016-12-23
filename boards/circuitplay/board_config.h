@@ -8,7 +8,7 @@
 #define PRODUCT_NAME "Circuit Playground Express"
 #define VOLUME_LABEL "CPLAYBOOT"
 
-#define BOARD_ID "SAMD21G18A-Metro-v0 " __DATE__ " @ " __TIME__
+#define BOARD_ID "SAMD21G18A-CPlay-v0"
 
 #define USB_VID 0x239A
 #define USB_PID 0x0019

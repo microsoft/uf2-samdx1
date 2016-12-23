@@ -4,7 +4,7 @@
 #define __SAMD21E18A__ 1
 #define CRYSTALLESS    1
 
-#define VENDOR_NAME "Adafruit"
+#define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Trinket M0"
 #define VOLUME_LABEL "TRINKETBOOT"
 
