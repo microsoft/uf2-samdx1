@@ -1,6 +1,11 @@
 let fs = require("fs")
 let buf = fs.readFileSync(process.argv[2])
 let tail = new Buffer(8192 - buf.length)
+if (buf.length > 8192) {
+  console.error("Bootloader too big!")
+  console.log("Bootloader too big!") // make sure it ends up in the file
+  process.exit(1)
+}
 tail.fill(0)
 buf = Buffer.concat([buf, tail]) // pad with zeros
 
