@@ -34,7 +34,7 @@
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
 
-COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP] = {0};
+COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
 
 COMPILER_WORD_ALIGNED
 const char devDescriptor[] = {

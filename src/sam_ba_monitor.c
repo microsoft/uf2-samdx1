@@ -29,8 +29,7 @@
 
 #include "uf2.h"
 
-const char RomBOOT_Version[] = SAM_BA_VERSION;
-const char RomBOOT_ExtendedCapabilities[] = "[Arduino:XYZ]";
+static const char fullVersion[] = "v" SAM_BA_VERSION " [Arduino:XYZ] " __DATE__ " " __TIME__ "\n\r";
 
 /* b_terminal_mode mode (ascii) or hex mode */
 volatile bool b_terminal_mode = false;
@@ -199,18 +198,7 @@ void sam_ba_monitor_run(void) {
                         }
                         b_terminal_mode = 0;
                     } else if (command == 'V') {
-                        cdc_write_buf("v", 1);
-                        cdc_write_buf((uint8_t *)RomBOOT_Version, strlen(RomBOOT_Version));
-                        cdc_write_buf(" ", 1);
-                        cdc_write_buf((uint8_t *)RomBOOT_ExtendedCapabilities,
-                                      strlen(RomBOOT_ExtendedCapabilities));
-                        cdc_write_buf(" ", 1);
-                        ptr = (uint8_t *)&(__DATE__);
-                        cdc_write_buf(ptr, strlen((char *)ptr));
-                        cdc_write_buf(" ", 1);
-                        ptr = (uint8_t *)&(__TIME__);
-                        cdc_write_buf(ptr, strlen((char *)ptr));
-                        cdc_write_buf("\n\r", 2);
+                        cdc_write_buf(fullVersion, sizeof(fullVersion));
                     } else if (command == 'X') {
                         // Syntax: X[ADDR]#
                         // Erase the flash memory starting from ADDR to the end
