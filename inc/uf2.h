@@ -19,6 +19,11 @@
 #undef DISABLE
 #undef ENABLE
 
+// always go for crystalless - smaller and more compatiable
+#ifndef CRYSTALLESS
+#define CRYSTALLESS 1
+#endif
+
 #ifndef USB_PID
 #define USB_VID 0x03EB   // Atmel
 #define USB_PID 0x2402   // Generic HID device
