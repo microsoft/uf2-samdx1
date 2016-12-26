@@ -56,9 +56,8 @@ struct TextFile {
 #define STR(x) STR0(x)
 const char infoUf2File[] = //
     "UF2 Bootloader " UF2_VERSION "\r\n"
-    "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
-    "Board-ID: " BOARD_ID "\r\n"
-    "Flash-Size: " STR(FLASH_NUM_ROWS) "*" STR(FLASH_ROW_SIZE) "\r\n";
+    "Model: " PRODUCT_NAME "\r\n"
+    "Board-ID: " BOARD_ID "\r\n";
 
 #if USE_FAT
 const char indexFile[] = //
