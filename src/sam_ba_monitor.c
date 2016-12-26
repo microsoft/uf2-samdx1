@@ -32,7 +32,9 @@
 static const char fullVersion[] = "v" SAM_BA_VERSION " [Arduino:XYZ] " __DATE__ " " __TIME__ "\n\r";
 
 /* b_terminal_mode mode (ascii) or hex mode */
+#if USE_CDC_TERMINAL
 volatile bool b_terminal_mode = false;
+#endif
 volatile bool b_sam_ba_interface_usart = false;
 
 void sam_ba_monitor_init(uint8_t com_interface) {
@@ -51,6 +53,7 @@ void sam_ba_monitor_init(uint8_t com_interface) {
  * \param length Length of the data
  */
 void sam_ba_putdata_term(uint8_t *data, uint32_t length) {
+#if USE_CDC_TERMINAL
     uint8_t temp, buf[12], *data_ascii;
     uint32_t i, int_value;
 
@@ -82,6 +85,7 @@ void sam_ba_putdata_term(uint8_t *data, uint32_t length) {
         buf[length * 2 + 3] = '\r';
         cdc_write_buf(buf, length * 2 + 4);
     } else
+#endif
         cdc_write_buf(data, length);
     return;
 }
@@ -138,9 +142,11 @@ void sam_ba_monitor_run(void) {
         for (i = 0; i < length; i++) {
             if (*ptr != 0xff) {
                 if (*ptr == '#') {
+#if USE_CDC_TERMINAL
                     if (b_terminal_mode) {
                         cdc_write_buf("\n\r", 2);
                     }
+#endif
                     if (command == 'S') {
                         // Check if some data are remaining in the "data" buffer
                         if (length > i) {
@@ -190,13 +196,17 @@ void sam_ba_monitor_run(void) {
                             cdc_write_buf("\x06", 1);
                         }
                     } else if (command == 'T') {
+#if USE_CDC_TERMINAL
                         b_terminal_mode = 1;
                         cdc_write_buf("\n\r", 2);
+#endif
                     } else if (command == 'N') {
+#if USE_CDC_TERMINAL
                         if (b_terminal_mode == 0) {
                             cdc_write_buf("\n\r", 2);
                         }
                         b_terminal_mode = 0;
+#endif
                     } else if (command == 'V') {
                         cdc_write_buf(fullVersion, sizeof(fullVersion));
                     } else if (command == 'X') {
@@ -268,10 +278,11 @@ void sam_ba_monitor_run(void) {
 
                     command = 'z';
                     current_number = 0;
-
+#if USE_CDC_TERMINAL
                     if (b_terminal_mode) {
                         cdc_write_buf(">", 1);
                     }
+#endif
                 } else {
                     if (('0' <= *ptr) && (*ptr <= '9')) {
                         current_number = (current_number << 4) | (*ptr - '0');
