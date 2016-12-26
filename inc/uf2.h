@@ -216,6 +216,7 @@ extern uint32_t timerHigh, resetHorizon;
 void timerTick(void);
 void delay(uint32_t ms);
 void hidHandoverLoop(int ep);
+void handoverPrep(void);
 
 #define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)

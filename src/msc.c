@@ -807,6 +807,15 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
 
 #include "system_interrupt.h"
 
+void handoverPrep() {
+    cpu_irq_disable();
+
+    USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
+    USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;
+
+    SCB->VTOR = 0;
+}
+
 static void handover(UF2_HandoverArgs *args) {
     // reset interrupt vectors, so that we're not disturbed by
     // interrupt handlers from user space
@@ -815,12 +824,7 @@ static void handover(UF2_HandoverArgs *args) {
     //    system_interrupt_disable(i);
     //}
 
-    cpu_irq_disable();
-
-    USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
-    USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;
-
-    SCB->VTOR = 0;
+    handoverPrep();
 
     PacketBuffer cache = {0};
     WriteState writeState = {0};
