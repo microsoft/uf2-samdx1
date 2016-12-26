@@ -175,7 +175,6 @@ int main(void) {
         // And com port was opened
         if (main_b_cdc_enable) {
             logmsg("entering monitor loop");
-            sam_ba_monitor_init(SAM_BA_INTERFACE_USBCDC);
             // SAM-BA on USB loop
             while (1) {
                 sam_ba_monitor_run();
