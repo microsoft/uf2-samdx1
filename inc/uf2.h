@@ -41,25 +41,27 @@
 // Logging to help debugging
 #define USE_LOGS 0
 // Check various conditions; best leave on
-#define USE_ASSERT 0
+#define USE_ASSERT 0 // 188 bytes
 // Enable reading flash via FAT files; otherwise drive will appear empty
-#define USE_FAT 1
+#define USE_FAT 1 // 424 bytes
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
-#define USE_CDC 1
+#define USE_CDC 1 // 1264 bytes (plus 228 for terminal)
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 // Support Human Interface Device (HID) - serial, flashing and debug
-#define USE_HID 1
+#define USE_HID 1 // 788 bytes
 // Expose HID via WebUSB
-#define USE_WEBUSB 0
+#define USE_WEBUSB 0 // 400 bytes
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
-#define USE_HID_HANDOVER 1
+#define USE_HID_HANDOVER 1 // 56 bytes
+#define USE_MSC_HANDOVER 1 // 348 bytes
+#define USE_HID_SERIAL 0 // 92 bytes
+#define USE_MSC_CHECKS 0 // 460 bytes
+#define USE_CDC_TERMINAL 1 // 228 bytes
+
 #define USE_DBG_MSC 0
-#define USE_HANDOVER 1
-#define USE_HID_SERIAL 0
-#define USE_MSC_CHECKS 0
 
 #if USE_CDC
 #define CDC_VERSION "S"

@@ -739,7 +739,7 @@ static void udi_msc_sbc_trans(bool b_read) {
     udi_msc_csw_process();
 }
 
-#if USE_HANDOVER
+#if USE_MSC_HANDOVER
 static void handover_flash(UF2_HandoverArgs *handover, PacketBuffer *handoverCache,
                            WriteState *state) {
     for (uint32_t i = 0; i < handover->blocks_remaining; ++i) {
@@ -841,7 +841,7 @@ static void handover(UF2_HandoverArgs *args) {
 #endif
 
 __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
-#if USE_HANDOVER
+#if USE_MSC_HANDOVER
     .handoverMSC = handover,
 #endif
 #if USE_HID_HANDOVER

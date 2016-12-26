@@ -52,7 +52,6 @@ struct TextFile {
     const char *content;
 };
 
-#if USE_FAT || USE_HANDOVER || USE_HID || USE_WEBUSB
 #define STR0(x) #x
 #define STR(x) STR0(x)
 const char infoUf2File[] = //
@@ -60,7 +59,6 @@ const char infoUf2File[] = //
     "Model: " VENDOR_NAME " " PRODUCT_NAME "\r\n"
     "Board-ID: " BOARD_ID "\r\n"
     "Flash-Size: " STR(FLASH_NUM_ROWS) "*" STR(FLASH_ROW_SIZE) "\r\n";
-#endif
 
 #if USE_FAT
 const char indexFile[] = //
