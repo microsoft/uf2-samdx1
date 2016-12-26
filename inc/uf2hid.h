@@ -58,6 +58,10 @@ struct HF2_WRITE_WORDS_Command {
 };
 // no result
 
+#define HF2_CMD_DMESG 0x0010
+// no arguments
+// results is utf8 character array
+
 typedef struct {
     uint32_t command_id;
     uint16_t tag;
