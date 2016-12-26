@@ -54,8 +54,8 @@ static struct usb_msc_cbw udi_msc_cbw;
 static struct usb_msc_csw udi_msc_csw = {.dCSWSignature = CPU_TO_BE32(USB_CSW_SIGNATURE)};
 //! Structure with current SCSI sense data
 static struct scsi_request_sense_data udi_msc_sense;
-static bool udi_msc_b_cbw_invalid = false;
 
+#if USE_MSC_CHECKS
 /**
  * \brief Stall CBW request
  */
@@ -65,6 +65,7 @@ static void udi_msc_cbw_invalid(void);
  * \brief Stall CSW request
  */
 static void udi_msc_csw_invalid(void);
+#endif
 
 /**
  * \brief Function to check the CBW length and direction
@@ -141,10 +142,12 @@ static void udi_msc_sense_pass(void);
  */
 static void udi_msc_sense_fail_hardware(void);
 
+#if USE_MSC_CHECKS
 /**
  * \brief Update sense data to signal that CDB fields are not valid
  */
 static void udi_msc_sense_fail_cdb_invalid(void);
+#endif
 
 /**
  * \brief Update sense data to signal that command is not supported
@@ -220,10 +223,8 @@ void udd_ep_set_halt(uint8_t ep) {
     reset_ep(ep);
 }
 
+#if USE_MSC_CHECKS
 static void udi_msc_cbw_invalid(void) {
-    if (!udi_msc_b_cbw_invalid)
-        return; // Don't re-stall endpoint if error reseted by setup
-
     logmsg("MSC CBW Invalid; halt");
     udd_ep_set_halt(USB_EP_MSC_OUT);
 
@@ -231,14 +232,12 @@ static void udi_msc_cbw_invalid(void) {
 }
 
 static void udi_msc_csw_invalid(void) {
-    if (!udi_msc_b_cbw_invalid)
-        return; // Don't re-stall endpoint if error reseted by setup
-
     logmsg("MSC CSW Invalid; halt");
     udd_ep_set_halt(USB_EP_MSC_IN);
 
     // TODO If stall cleared then re-stall it. Only Setup MSC Reset can clear it
 }
+#endif
 
 bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCache) {
     if (!USB_ReadCore(NULL, 1, ep, handoverCache))
@@ -246,6 +245,7 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCac
 
     uint32_t nb_received = USB_ReadCore((void *)cbw, sizeof(*cbw), ep, handoverCache);
 
+#if USE_MSC_CHECKS
     // Check CBW integrity:
     // transfer status/CBW length/CBW signature
     if ((sizeof(*cbw) != nb_received) || (cbw->dCBWSignature != CPU_TO_BE32(USB_CBW_SIGNATURE))) {
@@ -256,7 +256,6 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCac
         // further traffic on the Bulk In pipe, and either stall further traffic
         // or accept and discard further traffic on the Bulk Out pipe, until
         // reset recovery.
-        udi_msc_b_cbw_invalid = true;
         udi_msc_cbw_invalid();
         udi_msc_csw_invalid();
         return false;
@@ -274,6 +273,9 @@ bool try_read_cbw(struct usb_msc_cbw *cbw, uint8_t ep, PacketBuffer *handoverCac
         udi_msc_csw_process();
         return false;
     }
+#else
+    (void)nb_received;
+#endif
 
     return true;
 }
@@ -353,21 +355,23 @@ void process_msc(void) {
 }
 
 static bool udi_msc_cbw_validate(uint32_t alloc_len, uint8_t dir_flag) {
-    /*
-     * The following cases should result in a phase error:
-     *  - Case  2: Hn < Di
-     *  - Case  3: Hn < Do
-     *  - Case  7: Hi < Di
-     *  - Case  8: Hi <> Do
-     *  - Case 10: Ho <> Di
-     *  - Case 13: Ho < Do
-     */
+/*
+ * The following cases should result in a phase error:
+ *  - Case  2: Hn < Di
+ *  - Case  3: Hn < Do
+ *  - Case  7: Hi < Di
+ *  - Case  8: Hi <> Do
+ *  - Case 10: Ho <> Di
+ *  - Case 13: Ho < Do
+ */
+#if USE_MSC_CHECKS
     if (((udi_msc_cbw.bmCBWFlags ^ dir_flag) & USB_CBW_DIRECTION_IN) ||
         (udi_msc_csw.dCSWDataResidue < alloc_len)) {
         udi_msc_sense_fail_cdb_invalid();
         udi_msc_csw_process();
         return false;
     }
+#endif
 
     /*
      * The following cases should result in a stall and nonzero
@@ -462,9 +466,11 @@ static void udi_msc_sense_fail_hardware(void) {
     udi_msc_sense_fail(SCSI_SK_HARDWARE_ERROR, SCSI_ASC_NO_ADDITIONAL_SENSE_INFO, 0);
 }
 
+#if USE_MSC_CHECKS
 static void udi_msc_sense_fail_cdb_invalid(void) {
     udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST, SCSI_ASC_INVALID_FIELD_IN_CDB, 0);
 }
+#endif
 
 static void udi_msc_sense_command_invalid(void) {
     udi_msc_sense_fail(SCSI_SK_ILLEGAL_REQUEST, SCSI_ASC_INVALID_COMMAND_OPERATION_CODE, 0);
@@ -631,12 +637,16 @@ static void udi_msc_spc_mode_sense(bool b_sense10) {
 }
 
 static void udi_msc_spc_prevent_allow_medium_removal(void) {
+#if USE_MSC_CHECKS
     uint8_t prevent = udi_msc_cbw.CDB[4];
     if (0 == prevent) {
         udi_msc_sense_pass();
     } else {
         udi_msc_sense_fail_cdb_invalid(); // Command is unsupported
     }
+#else
+    udi_msc_sense_pass();
+#endif
     udi_msc_csw_process();
 }
 

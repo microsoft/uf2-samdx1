@@ -993,11 +993,13 @@ void AT91F_CDC_Enumerate() {
         break;
 #endif
 
+#if USE_MSC_CHECKS
     // MSC
     case MSC_RESET:
         DBG_MSC(logmsg("MSC reset"));
         msc_reset();
         break;
+#endif
 
     case MSC_GET_MAX_LUN:
         DBG_MSC(logmsg("MSC maxlun"));
