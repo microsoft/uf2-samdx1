@@ -1,9 +1,10 @@
 let fs = require("fs")
-let buf = fs.readFileSync(process.argv[2])
+let buildPath = process.argv[2]
+let binName = buildPath + "/" + process.argv[3]
+let buf = fs.readFileSync(binName)
 let tail = new Buffer(8192 - buf.length)
 if (buf.length > 8192) {
   console.error("Bootloader too big!")
-  console.log("Bootloader too big!") // make sure it ends up in the file
   process.exit(1)
 }
 tail.fill(0)
@@ -22,7 +23,7 @@ function addCrc(ptr, crc) {
 }
 
 let size = buf.length
-let s = "#include <stdint.h>\n"
+let s = ""
 s += "const uint8_t bootloader[" + size + "] __attribute__ ((aligned (4))) = {"
 function tohex(v) {
   return "0x" + ("00" + v.toString(16)).slice(-2) + ", "
@@ -41,5 +42,10 @@ for (let i = 0; i < size; ++i) {
   }
 }
 s += "\n};\n"
-s += "const uint16_t bootloader_crcs[] = {" + crcs + "};"
-console.log(s)
+s += "const uint16_t bootloader_crcs[] = {" + crcs + "};\n"
+
+let selfdata = "#include <stdint.h>\n" + s
+fs.writeFileSync(buildPath + "/selfdata.c", selfdata)
+
+let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
+fs.writeFileSync(buildPath + "/bootloader.ino", s + "\n" + sketch)
