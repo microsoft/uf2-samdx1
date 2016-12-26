@@ -833,4 +833,10 @@ __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo bin
     .handover = handover, .info_uf2 = infoUf2File,
 };
 
+#else
+
+__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
+    .info_uf2 = infoUf2File,
+};
+
 #endif
