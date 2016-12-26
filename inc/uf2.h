@@ -55,9 +55,9 @@
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
-#define USE_HID_HANDOVER 0
+#define USE_HID_HANDOVER 1
 #define USE_DBG_MSC 0
-#define USE_HANDOVER 0
+#define USE_HANDOVER 1
 #define USE_HID_SERIAL 0
 #define USE_MSC_CHECKS 0
 

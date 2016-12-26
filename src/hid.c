@@ -80,7 +80,6 @@ void send_hf2_response(HID_InBuffer *pkt, const void *data, int size) {
     send_hf2(pkt->buf, 4 + size, pkt->ep, HF2_FLAG_CMDPKT_BODY);
 }
 
-#if USE_HID_SERIAL
 static void checksum_pages(HID_InBuffer *pkt, int start, int num) {
     for (int i = 0; i < num; ++i) {
         uint8_t *data = (uint8_t *)start + i * FLASH_ROW_SIZE;
@@ -92,7 +91,6 @@ static void checksum_pages(HID_InBuffer *pkt, int start, int num) {
     }
     send_hf2_response(pkt, 0, num * 2);
 }
-#endif
 
 void process_core(HID_InBuffer *pkt) {
     int sz = recv_hf2(pkt);
@@ -171,11 +169,11 @@ void process_core(HID_InBuffer *pkt) {
         copy_words(resp->data32, (void *)cmd->read_words.target_addr, tmp);
         send_hf2_response(pkt, 0, tmp << 2);
         return;
+#endif
     case HF2_CMD_CHKSUM_PAGES:
         checkDataSize(chksum_pages, 0);
         checksum_pages(pkt, cmd->chksum_pages.target_addr, cmd->chksum_pages.num_pages);
         return;
-#endif
 
     default:
         // command not understood
