@@ -205,4 +205,15 @@ void process_hid() {
 #endif
 }
 
+#if USE_HID_HANDOVER
+void hidHandoverLoop(int ep) {
+    HID_InBuffer buf = {0};
+    buf.ep = ep;
+    cpu_irq_disable();
+    while (1) {
+        process_core(&buf);
+    }
+}
+#endif
+
 #endif

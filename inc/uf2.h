@@ -25,8 +25,8 @@
 #endif
 
 #ifndef USB_PID
-#define USB_VID 0x03EB   // Atmel
-#define USB_PID 0x2402   // Generic HID device
+#define USB_VID 0x03EB // Atmel
+#define USB_PID 0x2402 // Generic HID device
 #endif
 
 #ifndef INDEX_URL
@@ -50,11 +50,12 @@
 #define USE_UART 0
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1
-// Expose HID via WebUSB 
+// Expose HID via WebUSB
 #define USE_WEBUSB 0
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
+#define USE_HID_HANDOVER 0
 #define USE_DBG_MSC 0
 #define USE_HANDOVER 0
 #define USE_HID_SERIAL 0
@@ -95,7 +96,8 @@
 #define WEB_VERSION ""
 #endif
 
-#define UF2_VERSION UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION WEB_VERSION
+#define UF2_VERSION                                                                                \
+    UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION WEB_VERSION
 
 // End of config
 
@@ -209,6 +211,7 @@ void led_init(void);
 extern uint32_t timerHigh, resetHorizon;
 void timerTick(void);
 void delay(uint32_t ms);
+void hidHandoverLoop(int ep);
 
 #define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)

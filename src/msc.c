@@ -828,15 +828,14 @@ static void handover(UF2_HandoverArgs *args) {
         process_handover(args, &cache, &writeState);
     }
 }
+#endif
 
 __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
-    .handover = handover, .info_uf2 = infoUf2File,
-};
-
-#else
-
-__attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
+#if USE_HANDOVER
+    .handoverMSC = handover,
+#endif
+#if USE_HID_HANDOVER
+    .handoverHID = hidHandoverLoop,
+#endif
     .info_uf2 = infoUf2File,
 };
-
-#endif

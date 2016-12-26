@@ -44,13 +44,14 @@ typedef struct {
     uint8_t *buffer;
 } UF2_HandoverArgs;
 
-typedef void (*UF2_Handover_Handler)(UF2_HandoverArgs *handover);
+typedef void (*UF2_MSC_Handover_Handler)(UF2_HandoverArgs *handover);
+typedef void (*UF2_HID_Handover_Handler)(int ep);
 
 // this is required to be exactly 16 bytes long by the linker script
 typedef struct {
     void *reserved0;
-    void *reserved1;
-    UF2_Handover_Handler handover;
+    UF2_HID_Handover_Handler handoverHID;
+    UF2_MSC_Handover_Handler handoverMSC;
     const char *info_uf2;
 } UF2_BInfo;
 
@@ -73,7 +74,7 @@ static inline void check_uf2_handover(uint8_t *buffer, uint32_t blocks_remaining
         return;
 
     const char *board_info = UF2_BINFO->info_uf2;
-    UF2_Handover_Handler fn = UF2_BINFO->handover;
+    UF2_MSC_Handover_Handler fn = UF2_BINFO->handoverMSC;
 
     if (in_uf2_bootloader_space(board_info) &&
         in_uf2_bootloader_space(fn) && ((uint32_t)fn & 1)) {
