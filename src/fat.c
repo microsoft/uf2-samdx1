@@ -63,12 +63,10 @@ const char infoUf2File[] = //
 const char indexFile[] = //
     "<!doctype html>\n"
     "<html>"
-    "<head>"
-    "<script>\n"
-    "window.location.replace(\"" INDEX_URL "\");\n"
-    "</script>"
-    "</head>"
     "<body>"
+    "<script>\n"
+    "location.replace(\"" INDEX_URL "\");\n"
+    "</script>"
     "</body>"
     "</html>\n";
 
