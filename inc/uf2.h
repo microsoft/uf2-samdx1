@@ -57,9 +57,10 @@
 
 #define USE_HID_HANDOVER 1 // 56 bytes
 #define USE_MSC_HANDOVER 1 // 348 bytes
-#define USE_HID_SERIAL 0 // 92 bytes
+#define USE_HID_EXT 1 // 60 bytes
+#define USE_HID_SERIAL 0 // 36 bytes
 #define USE_MSC_CHECKS 0 // 460 bytes
-#define USE_CDC_TERMINAL 1 // 228 bytes
+#define USE_CDC_TERMINAL 0 // 228 bytes
 
 #define USE_DBG_MSC 0
 

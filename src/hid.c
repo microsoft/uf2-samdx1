@@ -158,7 +158,7 @@ void process_core(HID_InBuffer *pkt) {
             flash_write_row((void *)cmd->write_flash_page.target_addr, cmd->write_flash_page.data);
         }
         return;
-#if USE_HID_SERIAL
+#if USE_HID_EXT
     case HF2_CMD_WRITE_WORDS:
         checkDataSize(write_words, cmd->write_words.num_words << 2);
         copy_words((void *)cmd->write_words.target_addr, cmd->write_words.words,
