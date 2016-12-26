@@ -240,7 +240,7 @@ char cfgDescriptor[] = {
     0x03,       // HID
     0,          // sub
     0,          // sub
-    3,          // stringID
+    0,          // stringID
 
     9,
     0x21,                     // HID
@@ -264,7 +264,7 @@ char cfgDescriptor[] = {
     0xFF,       // Vendor
     42,         // sub
     1,          // sub
-    3,          // stringID
+    0,          // stringID
 
     // interrupt endpoints with interval=1
     7, 5, 0x80 | USB_EP_WEB, 3, PKT_SIZE, 0, 1, // in
@@ -370,11 +370,7 @@ typedef struct {
     uint8_t data[70];
 } StringDescriptor;
 
-static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME,
-#if USE_HID || USE_WEBUSB
-                                           "UF2-HID"
-#endif
-};
+static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, };
 
 #define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
 
