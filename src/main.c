@@ -132,6 +132,11 @@ extern char _end;
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
+    // if VTOR is set, we're not running in bootloader mode; halt
+    if (SCB->VTOR)
+        while (1) {
+        }
+
     led_init();
 
     logmsg("Start");
