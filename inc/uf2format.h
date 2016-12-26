@@ -68,6 +68,16 @@ static inline bool in_uf2_bootloader_space(const void *addr) {
 }
 
 #ifdef UF2_DEFINE_HANDOVER
+static inline void hf2_handover(uint8_t ep) {
+    const char *board_info = UF2_BINFO->info_uf2;
+    UF2_HID_Handover_Handler fn = UF2_BINFO->handoverHID;
+
+    if (in_uf2_bootloader_space(board_info) && in_uf2_bootloader_space(fn) && ((uint32_t)fn & 1)) {
+        // Pass control to bootloader; never returns
+        fn(ep & 0xf);
+    }
+}
+
 static inline void check_uf2_handover(uint8_t *buffer, uint32_t blocks_remaining, uint8_t ep_in,
                                       uint8_t ep_out, uint32_t cbw_tag) {
     if (!is_uf2_block(buffer))
@@ -76,8 +86,7 @@ static inline void check_uf2_handover(uint8_t *buffer, uint32_t blocks_remaining
     const char *board_info = UF2_BINFO->info_uf2;
     UF2_MSC_Handover_Handler fn = UF2_BINFO->handoverMSC;
 
-    if (in_uf2_bootloader_space(board_info) &&
-        in_uf2_bootloader_space(fn) && ((uint32_t)fn & 1)) {
+    if (in_uf2_bootloader_space(board_info) && in_uf2_bootloader_space(fn) && ((uint32_t)fn & 1)) {
         UF2_HandoverArgs hand = {
             .version = 1,
             .ep_in = ep_in,

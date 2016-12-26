@@ -149,6 +149,7 @@ void process_core(HID_InBuffer *pkt) {
         break;
     case HF2_CMD_START_FLASH:
         // userspace app should reboot into bootloader on this command; we just ignore it
+        // userspace can also call hf2_handover() here
         break;
     case HF2_CMD_WRITE_FLASH_PAGE:
         checkDataSize(write_flash_page, FLASH_ROW_SIZE);
