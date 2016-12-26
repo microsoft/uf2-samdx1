@@ -4,7 +4,7 @@ static uint16_t crcCache[256];
 
 #define CRC16POLY 0x1021
 
-#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE*4)
+#define FLASH_ROW_SIZE (FLASH_PAGE_SIZE * 4)
 
 uint16_t add_crc(uint8_t ch, unsigned short crc0) {
     if (!crcCache[1]) {
@@ -22,7 +22,6 @@ uint16_t add_crc(uint8_t ch, unsigned short crc0) {
 
     return ((crc0 << 8) ^ crcCache[((crc0 >> 8) ^ ch) & 0xff]) & 0xffff;
 }
-
 
 uint8_t pageBuf[FLASH_ROW_SIZE];
 
@@ -72,7 +71,6 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
     flash_write_words(dst, src, FLASH_ROW_SIZE / 4);
 }
 
-
 static inline void exec_cmd(uint32_t cmd) {
     NVMCTRL->ADDR.reg = (uint32_t)NVM_USER_MEMORY / 2;
     NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;
@@ -109,20 +107,21 @@ void setBootProt(int v) {
 }
 
 void mydelay(int ms) {
-  ms <<= 13;
-  while (ms--) {
-     asm("nop");
-  }
+    ms <<= 13;
+    while (ms--) {
+        asm("nop");
+    }
 }
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
     setBootProt(7);
 
     if (8 << NVMCTRL->PARAM.bit.PSZ != FLASH_PAGE_SIZE)
-      while(1) {}
-   
+        while (1) {
+        }
+
     __disable_irq();
 
     setBootProt(7); // 0k
@@ -136,31 +135,25 @@ void setup() {
             crc = add_crc(*ptr++, crc);
         }
         if (bootloader_crcs[i] != crc) {
-            while(1){}
+            while (1) {
+            }
         }
     }
 
     for (i = 0; i < BOOTLOADER_K * 1024; i += FLASH_ROW_SIZE) {
         memcpy(pageBuf, &bootloader[i], FLASH_ROW_SIZE);
-        flash_write_row((uint32_t*)(void *)i, (uint32_t*)(void *)pageBuf);
+        flash_write_row((uint32_t *)(void *)i, (uint32_t *)(void *)pageBuf);
     }
-
-
 
     while (1) {
         digitalWrite(LED_BUILTIN, HIGH);
         mydelay(100);
         digitalWrite(LED_BUILTIN, LOW);
         mydelay(200);
-
     }
-
-
 
     // erase first row of this updater app, so the bootloader doesn't start us again
     // flash_erase_row((void *)i); - this seems to cause trouble
-
 }
 
-void loop() {
-}
+void loop() {}
