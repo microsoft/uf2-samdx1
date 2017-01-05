@@ -113,3 +113,23 @@ clean:
 
 gdb:
 	arm-none-eabi-gdb $(BUILD_PATH)/$(NAME).elf
+
+drop-board: all
+	@echo "*** Copy files for $(BOARD)"
+	mkdir -p build/drop
+	rm -rf build/drop/$(BOARD)
+	mkdir -p build/drop/$(BOARD)
+	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/update-bootloader.uf2
+	cp $(EXECUTABLE) build/drop/$(BOARD)/bootloader.bin
+	cp $(BUILD_PATH)/bootloader.ino build/drop/$(BOARD)/bootloader.ino
+	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/board_config.h
+
+drop-pkg:
+	mv build/drop build/uf2-samd21-$(VERSION)
+	cd build; 7z a uf2-samd21-$(VERSION).zip uf2-samd21-$(VERSION)
+	rm -rf build/uf2-samd21-$(VERSION)
+
+drop:
+	for f in `cd boards; ls` ; do $(MAKE) BOARD=$$f drop-board ; done
+	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
+
