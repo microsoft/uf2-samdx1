@@ -11,7 +11,7 @@
 #define BOARD_ID "SAMD21G18A-CPlay-v0"
 
 #define USB_VID 0x239A
-#define USB_PID 0x0019
+#define USB_PID 0x8019
 
 #define LED_PIN PIN_PA17
 //#define LED_TX_PIN PIN_PA27
