@@ -1,3 +1,4 @@
+"use strict"
 let fs = require("fs")
 let buildPath = process.argv[2]
 let binName = buildPath + "/" + process.argv[3]
