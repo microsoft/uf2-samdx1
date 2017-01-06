@@ -5,7 +5,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Metro M0"
-#define VOLUME_LABEL "METRO-M0"
+#define VOLUME_LABEL "METROBOOT"
 
 #define BOARD_ID "SAMD21G18A-Metro-v0"
 
@@ -14,6 +14,6 @@
 
 #define LED_PIN PIN_PA17
 #define LED_TX_PIN PIN_PA27
-#define LED_RX_PIN PIN_PB03
+#define LED_RX_PIN PIN_PA31
 
 #endif
