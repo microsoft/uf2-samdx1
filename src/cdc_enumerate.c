@@ -41,7 +41,7 @@ const char devDescriptor[] = {
     /* Device descriptor */
     0x12,           // bLength
     0x01,           // bDescriptorType
-    0x10,           // bcdUSBL
+    0x00,           // bcdUSBL - v2.00; v2.10 is needed for WebUSB, but it breaks newer laptops running Win10
     0x02,           //
     0xEF,           // bDeviceClass:    Misc
     0x02,           // bDeviceSubclass:
