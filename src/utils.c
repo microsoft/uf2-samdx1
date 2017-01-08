@@ -140,6 +140,9 @@ void led_init() {
     PORT->Group[BOARD_RGBLED_CLOCK_PORT].DIRSET.reg = (1<<BOARD_RGBLED_CLOCK_PIN); 
     PORT->Group[BOARD_RGBLED_DATA_PORT].DIRSET.reg = (1<<BOARD_RGBLED_DATA_PIN); 
 #endif
+#if defined(BOARD_RGBLED_NEOPIX_PORT)
+    PORT->Group[BOARD_RGBLED_NEOPIX_PORT].DIRSET.reg = (1<<BOARD_RGBLED_NEOPIX_PIN); 
+#endif
     // and clock 0x00000 out!    
     RGBLED_set_color(0,0,0);
 }
@@ -186,4 +189,12 @@ void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
   // set clock port low for 100ms
   delay(100);
 #endif
+
+#if defined(BOARD_RGBLED_NEOPIX_PORT)
+  NeoPixel_show(88);
+
+  // set clock port low for 100ms
+  delay(100);
+#endif
 }
+

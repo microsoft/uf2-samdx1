@@ -32,6 +32,7 @@ INCLUDES += -I./asf/sam0/drivers/system/interrupt -I./asf/sam0/drivers/system/in
 INCLUDES += -I./boards/$(BOARD)
 
 COMMON_SRC = \
+        src/neopixel.c \
 	src/flash.c \
 	src/init.c \
 	src/startup_samd21.c \
