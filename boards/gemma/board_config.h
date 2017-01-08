@@ -7,11 +7,11 @@
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Gemma M0"
 #define VOLUME_LABEL "GEMMABOOT"
-
-#define BOARD_ID "SAMD21E18A-Trinket-v0"
+#define INDEX_URL "https://adafru.it/gemmam0"
+#define BOARD_ID "SAMD21E18A-Gemma-v0"
 
 #define USB_VID 0x239A
-#define USB_PID 0x801A
+#define USB_PID 0x001A
 
 #define LED_PIN PIN_PA23
 //#define LED_TX_PIN PIN_PA27
