@@ -192,28 +192,22 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state) {
     UF2_Block *bl = (void *)data;
-    if (!is_uf2_block(bl) || (bl->flags & UF2_FLAG_NOFLASH)) {
-        // logval("skip write @", block_no);
+    if (!is_uf2_block(bl)) {
         return;
     }
-    if (bl->payloadSize != 256) {
-#if USE_DBG_MSC
-        if (!quiet)
-            logval("bad payload size", bl->payloadSize);
-#endif
-        return;
-    }
-    if ((bl->targetAddr & 0xff) || bl->targetAddr < APP_START_ADDRESS ||
-        bl->targetAddr >= FLASH_SIZE) {
+
+    if ((bl->flags & UF2_FLAG_NOFLASH) || bl->payloadSize != 256 || (bl->targetAddr & 0xff) ||
+        bl->targetAddr < APP_START_ADDRESS || bl->targetAddr >= FLASH_SIZE) {
 #if USE_DBG_MSC
         if (!quiet)
             logval("invalid target addr", bl->targetAddr);
 #endif
-        return;
+        // this happens when we're trying to re-flash CURRENT.UF2 file previously
+        // copied from a device; we still want to count these blocks to reset properly
+    } else {
+        // logval("write block at", bl->targetAddr);
+        flash_write_row((void *)bl->targetAddr, (void *)bl->data);
     }
-
-    // logval("write block at", bl->targetAddr);
-    flash_write_row((void *)bl->targetAddr, (void *)bl->data);
 
     if (state && bl->numBlocks) {
         if (state->numBlocks != bl->numBlocks) {
