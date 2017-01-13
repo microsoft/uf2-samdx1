@@ -96,8 +96,11 @@ int main(void) {
         delay(1000);
     }
 
+    // re-base int vector back to bootloader, so that the flash erase below doesn't write over the vectors
+    SCB->VTOR = 0;
+
     // erase first row of this updater app, so the bootloader doesn't start us again
-    // flash_erase_row((void *)i); - this seems to cause trouble
+    flash_erase_row((void *)(BOOTLOADER_K * 1024)); 
 
     LED_MSC_OFF();
 
