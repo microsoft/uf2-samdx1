@@ -154,7 +154,7 @@ void setup() {
     // erase first row of this updater app, so the bootloader doesn't start us again
     flash_erase_row((uint32_t *)(void *)(BOOTLOADER_K * 1024));
 
-    for (i = 0; i < 20; ++i) {
+    for (i = 0; i < 5; ++i) {
         digitalWrite(LED_BUILTIN, HIGH);
         mydelay(100);
         digitalWrite(LED_BUILTIN, LOW);
