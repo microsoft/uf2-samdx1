@@ -29,7 +29,6 @@ while (buf[strend])
   strend++;
 let infostr = buf.slice(strpos, strend).toString("utf8").trim()
 infostr = infostr.split(/\r?\n/).map(l => "// " + l + "\n").join("")
-console.log(infostr)
 
 let size = buf.length
 let s = infostr + "\n"
