@@ -79,11 +79,19 @@ and `self-uf2-bootloader.uf2`.
 
 ## Fuses
 
-The SAMD21 supports a BOOTPROT fuse, which write-protects the flash area of
+The SAMD21 supports a `BOOTPROT` fuse, which write-protects the flash area of
 the bootloader. Changes to this fuse only take effect after device reset.
 
-This fuse is currently not utilized by this bootloader. It needs to be investigated.
+OpenOCD exposes `at91samd bootloader` command to set this fuse. **This command is buggy.**
+It seems to reset both fuse words to `0xffffffff`, which prevents the device
+from operating correctly (it seems to reboot very frequently). 
+In `scripts/fuses.tcl` there is an OpenOCD script
+which correctly sets the fuse. It's invoked by `dbgtool.js fuses`. It can be also
+used to reset the fuses to sane values - just look at the comment at the top.
 
+The bootloader update programs (both the `.uf2` file and the Arduino sketch)
+clear the `BOOTPROT` (i.e., set it to `0x7`) before trying to flash anything.
+After flashing is done, they set `BOOTPROT` to 8 kilobyte bootloader size (i.e, `0x2`).
 
 ## Build
 
