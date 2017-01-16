@@ -100,9 +100,10 @@ int main(void) {
     // erase first row of this updater app, so the bootloader doesn't start us again
     flash_erase_row((void *)(BOOTLOADER_K * 1024));
 
+    LED_MSC_OFF();
+
     setBootProt(2); // 8k
 
-    LED_MSC_OFF();
 
     resetIntoBootloader();
 
