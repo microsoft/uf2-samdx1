@@ -64,6 +64,7 @@ b: burn
 l: logs
 
 burn: all
+	node scripts/dbgtool.js fuses
 	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).bin
 
 run: burn wait logs
