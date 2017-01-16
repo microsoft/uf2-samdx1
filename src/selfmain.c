@@ -7,19 +7,23 @@ extern const uint16_t bootloader_crcs[];
 
 uint8_t pageBuf[FLASH_ROW_SIZE];
 
-#define NVM_USER_MEMORY ((volatile uint16_t *)NVMCTRL_USER)
-
-static inline void exec_cmd(uint32_t cmd) {
-    NVMCTRL->ADDR.reg = (uint32_t)NVM_USER_MEMORY / 2;
-    NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;
-    while (NVMCTRL->INTFLAG.bit.READY == 0) {
-    }
-}
+#define exec_cmd(cmd)                                                                              \
+    do {                                                                                           \
+        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;                                                \
+        NVMCTRL->ADDR.reg = (uint32_t)NVMCTRL_USER / 2;                                         \
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;                                        \
+        while (NVMCTRL->INTFLAG.bit.READY == 0)                                                    \
+            ;                                                                                      \
+    } while (0)
 
 void setBootProt(int v) {
     uint32_t fuses[2];
-    fuses[0] = NVM_USER_MEMORY[0] | (NVM_USER_MEMORY[1] << 16);
-    fuses[1] = NVM_USER_MEMORY[2] | (NVM_USER_MEMORY[3] << 16);
+
+    while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY))
+        ;
+
+    fuses[0] = *((uint32_t *)NVMCTRL_AUX0_ADDRESS);
+    fuses[1] = *(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1);
 
     uint32_t bootprot = (fuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
 
@@ -33,7 +37,7 @@ void setBootProt(int v) {
 
     fuses[0] = (fuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
-    NVMCTRL->CTRLB.bit.MANW = 1;
+    NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
 
     exec_cmd(NVMCTRL_CTRLA_CMD_EAR);
     exec_cmd(NVMCTRL_CTRLA_CMD_PBC);
@@ -42,12 +46,6 @@ void setBootProt(int v) {
     *(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1) = fuses[1];
 
     exec_cmd(NVMCTRL_CTRLA_CMD_WAP);
-
-    fuses[0] = NVM_USER_MEMORY[0] | (NVM_USER_MEMORY[1] << 16);
-    fuses[1] = NVM_USER_MEMORY[2] | (NVM_USER_MEMORY[3] << 16);
-
-    logval("after fuse0", fuses[0]);
-    logval("after fuse1", fuses[1]);
 
     resetIntoApp();
 }
@@ -67,7 +65,6 @@ int main(void) {
 
     logmsg("Before main loop");
 
-    // setBootProt(2); // 8k
     setBootProt(7); // 0k
 
     const uint8_t *ptr = bootloader;
@@ -96,11 +93,14 @@ int main(void) {
         delay(1000);
     }
 
-    // re-base int vector back to bootloader, so that the flash erase below doesn't write over the vectors
+    // re-base int vector back to bootloader, so that the flash erase below doesn't write over the
+    // vectors
     SCB->VTOR = 0;
 
     // erase first row of this updater app, so the bootloader doesn't start us again
-    flash_erase_row((void *)(BOOTLOADER_K * 1024)); 
+    flash_erase_row((void *)(BOOTLOADER_K * 1024));
+
+    setBootProt(2); // 8k
 
     LED_MSC_OFF();
 
