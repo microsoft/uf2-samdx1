@@ -21,6 +21,7 @@ function main() {
     if (/\.map$/.test(fileName)) mode = "map"
     else if (/\.bin$/.test(fileName)) mode = "bin"
     else if (/^server?$/.test(fileName)) mode = "server"
+    else if (/^fuses?$/.test(fileName)) mode = "fuses"
     else {
         console.log("usage: node " + process.argv[1] + " file.bin    # to burn")
         console.log("usage: node " + process.argv[1] + " file.map    # to dump logs")
@@ -76,7 +77,7 @@ function main() {
     if (mode == "map")
         cmd += `set M(0) 0; mem2array M 8 ${addr} ${logSize}; resume; parray M; shutdown`
     else
-        cmd += `at91samd bootloader 0; program ${fileName} verify reset; shutdown`
+        cmd += `program ${fileName} verify reset; shutdown`
 
     let args = ["-d2",
         "-s", openocdPath + "/share/openocd/scripts/",
@@ -88,7 +89,14 @@ function main() {
         args.pop()
     }
 
-    console.log("Starting " + openocdBin)
+    if (mode == "fuses") {
+        args.pop()
+        args.pop()
+        args.push("-f")
+        args.push("scripts/fuses.tcl")
+    }
+
+    console.log("Starting " + openocdBin + " " + args.join(" "))
     if (mode == "map")
         child_process.execFile(openocdBin, args, {
             maxBuffer: 1 * 1024 * 1024,

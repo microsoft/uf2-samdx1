@@ -23,8 +23,15 @@ function addCrc(ptr, crc) {
   return crc
 }
 
+let strpos = buf.readUInt32LE(buf.length - 4)
+let strend = strpos
+while (buf[strend])
+  strend++;
+let infostr = buf.slice(strpos, strend).toString("utf8").trim()
+infostr = infostr.split(/\r?\n/).map(l => "// " + l + "\n").join("")
+
 let size = buf.length
-let s = ""
+let s = infostr + "\n"
 s += "const uint8_t bootloader[" + size + "] __attribute__ ((aligned (4))) = {"
 function tohex(v) {
   return "0x" + ("00" + v.toString(16)).slice(-2) + ", "
@@ -49,4 +56,10 @@ let selfdata = "#include <stdint.h>\n" + s
 fs.writeFileSync(buildPath + "/selfdata.c", selfdata)
 
 let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
-fs.writeFileSync(buildPath + "/bootloader.ino", s + "\n" + sketch)
+let instr =`//
+// Bootloader update sketch. Paste into Arduino IDE and upload to the device
+// to update bootloader. It will blink a few times and then start pulsing.
+// Your OS will then detect a USB mass storage device.
+//
+`;
+fs.writeFileSync(buildPath + "/bootloader.ino", instr + s + "\n" + sketch)

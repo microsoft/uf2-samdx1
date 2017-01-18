@@ -64,6 +64,7 @@ b: burn
 l: logs
 
 burn: all
+	node scripts/dbgtool.js fuses
 	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).bin
 
 run: burn wait logs
@@ -105,7 +106,7 @@ $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h)
 $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
 	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.js
+$(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.js src/sketch.cpp
 	node scripts/gendata.js $(BUILD_PATH) $(NAME).bin
 
 clean:
