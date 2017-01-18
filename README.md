@@ -93,6 +93,10 @@ The bootloader update programs (both the `.uf2` file and the Arduino sketch)
 clear the `BOOTPROT` (i.e., set it to `0x7`) before trying to flash anything.
 After flashing is done, they set `BOOTPROT` to 8 kilobyte bootloader size (i.e, `0x2`).
 
+## Initial bootloader upload
+
+To install the bootloader on a vanilla board, open the ``bootloader.ino`` sketch and upload it to the board.
+
 ## Build
 
 ### Requirements
