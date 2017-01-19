@@ -4,6 +4,9 @@ This repository contains a bootloader, derived from Atmel's SAM-BA,
 which in addition to the USB CDC (serial) protocol, also supports
 the USB MSC (mass storage).
 
+For bootloader update instructions, see the `bin-README.md` file
+that we ship with the binary releases.
+
 ## UF2 
 
 UF2 (USB Flashing Format) is a name of a file format, that is particularly 
@@ -74,8 +77,12 @@ Thus, to update the bootloader, one can ship a user-space program,
 that contains the new version of the bootloader and copies it to the
 appropriate place in flash.
 
-Such a program is generated during build in files `self-uf2-bootloader.bin`
-and `self-uf2-bootloader.uf2`.
+Such a program is generated during build in files `update-bootloader.uf2`.
+If you're already running UF2 bootloader, the easiest way to update
+it, is to just copy this file to the exposed MSD drive.
+
+The build also generates `update-bootloader.ino` with an equivalent Arduino
+sketch. You can copy&paste it into Arduino IDE and upload it to the device.
 
 ## Fuses
 
@@ -92,10 +99,6 @@ used to reset the fuses to sane values - just look at the comment at the top.
 The bootloader update programs (both the `.uf2` file and the Arduino sketch)
 clear the `BOOTPROT` (i.e., set it to `0x7`) before trying to flash anything.
 After flashing is done, they set `BOOTPROT` to 8 kilobyte bootloader size (i.e, `0x2`).
-
-## Initial bootloader upload
-
-To install the bootloader on a vanilla board, open the ``bootloader.ino`` sketch and upload it to the board.
 
 ## Build
 
