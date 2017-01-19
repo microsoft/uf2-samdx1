@@ -143,7 +143,7 @@ void led_init() {
 #endif
 
     // and clock 0x00000 out!
-    RGBLED_set_color(0, 0, 0);
+    RGBLED_set_color(0);
 }
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
@@ -165,7 +165,7 @@ void write_apa_byte(uint8_t x) {
 }
 #endif
 
-void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
+void RGBLED_set_color(uint32_t color) {
 #if defined(BOARD_RGBLED_CLOCK_PIN)
     write_apa_byte(0x0);
     write_apa_byte(0x0);
@@ -173,9 +173,9 @@ void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
     write_apa_byte(0x0);
 
     write_apa_byte(0xFF);
-    write_apa_byte(blue);
-    write_apa_byte(green);
-    write_apa_byte(red);
+    write_apa_byte(color >> 16);
+    write_apa_byte(color >> 8);
+    write_apa_byte(color);
 
     write_apa_byte(0xFF);
     write_apa_byte(0xFF);
@@ -187,9 +187,9 @@ void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
 #elif defined(BOARD_NEOPIXEL_PIN)
     uint8_t buf[BOARD_NEOPIXEL_COUNT * 3];
     memset(buf, 0, sizeof(buf));
-    buf[0] = red;
-    buf[1] = green;
-    buf[2] = blue;
+    buf[0] = color >> 16;
+    buf[1] = color >> 8;
+    buf[2] = color;
     neopixel_send_buffer(buf, BOARD_NEOPIXEL_COUNT * 3);
 #endif
 }

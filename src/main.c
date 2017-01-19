@@ -166,7 +166,7 @@ int main(void) {
     usb_init();
 
     // not enumerated yet
-    RGBLED_set_color(10, 0, 0);
+    RGBLED_set_color(0x0A0000);
     led_tick_step = 0;
 
     /* Wait for a complete enum on usb or a '#' char on serial line */
@@ -175,7 +175,7 @@ int main(void) {
             main_b_cdc_enable = true;
             
             if (!main_b_cdc_enable) {
-                RGBLED_set_color(0, 10, 0);
+                RGBLED_set_color(0x000A00);
                 if (!led_tick_step)
                     led_tick_step = 1;
             }
@@ -194,7 +194,7 @@ int main(void) {
 #if USE_UART
         /* Check if a '#' has been received */
         if (!main_b_cdc_enable && usart_sharp_received()) {
-            RGBLED_set_color(10, 10, 0);
+            RGBLED_set_color(0x0A0A00);
             sam_ba_monitor_init(SAM_BA_INTERFACE_USART);
             /* SAM-BA on UART loop */
             while (1) {
