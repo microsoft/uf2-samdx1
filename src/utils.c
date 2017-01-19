@@ -1,4 +1,5 @@
 #include "uf2.h"
+#include "neopixel.h"
 
 static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
@@ -183,5 +184,12 @@ void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
 
     // set clock port low for ~10ms
     delay(10);
+#elif defined(BOARD_NEOPIXEL_PIN)
+    uint8_t buf[BOARD_NEOPIXEL_COUNT * 3];
+    memset(buf, 0, sizeof(buf));
+    buf[0] = red;
+    buf[1] = green;
+    buf[2] = blue;
+    neopixel_send_buffer(buf, BOARD_NEOPIXEL_COUNT * 3);
 #endif
 }
