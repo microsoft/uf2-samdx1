@@ -142,7 +142,7 @@ void led_init() {
     PINOP(BOARD_RGBLED_DATA_PIN, DIRSET);
 #endif
 
-    // and clock 0x00000 out!
+    // This won't work for neopixel, because we're running at 1MHz or thereabouts...
     RGBLED_set_color(0);
 }
 
