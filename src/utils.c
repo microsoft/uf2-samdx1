@@ -1,4 +1,5 @@
 #include "uf2.h"
+#include "neopixel.h"
 
 static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
@@ -135,55 +136,60 @@ void led_init() {
     PINOP(LED_PIN, DIRSET);
     LED_MSC_ON();
 
-#if defined(BOARD_RGBLED_CLOCK_PORT)
+#if defined(BOARD_RGBLED_CLOCK_PIN)
     // using APA102, set pins to outputs
-    PORT->Group[BOARD_RGBLED_CLOCK_PORT].DIRSET.reg = (1<<BOARD_RGBLED_CLOCK_PIN); 
-    PORT->Group[BOARD_RGBLED_DATA_PORT].DIRSET.reg = (1<<BOARD_RGBLED_DATA_PIN); 
+    PINOP(BOARD_RGBLED_CLOCK_PIN, DIRSET);
+    PINOP(BOARD_RGBLED_DATA_PIN, DIRSET);
 #endif
-    // and clock 0x00000 out!    
-    RGBLED_set_color(0,0,0);
+
+    // This won't work for neopixel, because we're running at 1MHz or thereabouts...
+    RGBLED_set_color(0);
 }
 
-
-
+#if defined(BOARD_RGBLED_CLOCK_PIN)
 void write_apa_byte(uint8_t x) {
-#if defined(BOARD_RGBLED_CLOCK_PORT)
-  for (uint8_t i=0x80; i!=0; i>>=1) {
-    if(x & i) 
-      PORT->Group[BOARD_RGBLED_DATA_PORT].OUTSET.reg = (1<<BOARD_RGBLED_DATA_PIN);
-    else
-      PORT->Group[BOARD_RGBLED_DATA_PORT].OUTCLR.reg = (1<<BOARD_RGBLED_DATA_PIN);
-    
-    PORT->Group[BOARD_RGBLED_CLOCK_PORT].OUTSET.reg = (1<<BOARD_RGBLED_CLOCK_PIN);
-    //for (uint8_t j=0; j<25; j++) /* 0.1ms */
-    //  __asm__ __volatile__("");
-    
-    PORT->Group[BOARD_RGBLED_CLOCK_PORT].OUTCLR.reg = (1<<BOARD_RGBLED_CLOCK_PIN);
-    //for (uint8_t j=0; j<25; j++) /* 0.1ms */
-    //  __asm__ __volatile__("");
+    for (uint8_t i = 0x80; i != 0; i >>= 1) {
+        if (x & i)
+            PINOP(BOARD_RGBLED_DATA_PIN, OUTSET);
+        else
+            PINOP(BOARD_RGBLED_DATA_PIN, OUTCLR);
 
-  }
-#endif
+        PINOP(BOARD_RGBLED_CLOCK_PIN, OUTSET);
+        // for (uint8_t j=0; j<25; j++) /* 0.1ms */
+        //  __asm__ __volatile__("");
+
+        PINOP(BOARD_RGBLED_CLOCK_PIN, OUTCLR);
+        // for (uint8_t j=0; j<25; j++) /* 0.1ms */
+        //  __asm__ __volatile__("");
+    }
 }
+#endif
 
-void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
-#if defined(BOARD_RGBLED_CLOCK_PORT)
-  write_apa_byte(0x0);
-  write_apa_byte(0x0);
-  write_apa_byte(0x0);
-  write_apa_byte(0x0);
+void RGBLED_set_color(uint32_t color) {
+#if defined(BOARD_RGBLED_CLOCK_PIN)
+    write_apa_byte(0x0);
+    write_apa_byte(0x0);
+    write_apa_byte(0x0);
+    write_apa_byte(0x0);
 
-  write_apa_byte(0xFF);
-  write_apa_byte(blue);
-  write_apa_byte(green);
-  write_apa_byte(red);
+    write_apa_byte(0xFF);
+    write_apa_byte(color >> 16);
+    write_apa_byte(color >> 8);
+    write_apa_byte(color);
 
-  write_apa_byte(0xFF);
-  write_apa_byte(0xFF);
-  write_apa_byte(0xFF);
-  write_apa_byte(0xFF);
+    write_apa_byte(0xFF);
+    write_apa_byte(0xFF);
+    write_apa_byte(0xFF);
+    write_apa_byte(0xFF);
 
-  // set clock port low for 100ms
-  delay(100);
+    // set clock port low for ~10ms
+    delay(10);
+#elif defined(BOARD_NEOPIXEL_PIN)
+    uint8_t buf[BOARD_NEOPIXEL_COUNT * 3];
+    memset(buf, 0, sizeof(buf));
+    buf[0] = color >> 8;
+    buf[1] = color >> 16;
+    buf[2] = color;
+    neopixel_send_buffer(buf, BOARD_NEOPIXEL_COUNT * 3);
 #endif
 }

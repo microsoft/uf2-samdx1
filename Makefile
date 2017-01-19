@@ -53,9 +53,9 @@ SELF_SOURCES = $(COMMON_SRC) \
 OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SOURCES))
 SELF_OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SELF_SOURCES)) $(BUILD_PATH)/selfdata.o
 
-NAME=uf2-bootloader
+NAME=bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
-SELF_EXECUTABLE=$(BUILD_PATH)/self-$(NAME).uf2
+SELF_EXECUTABLE=$(BUILD_PATH)/update-$(NAME).uf2
 
 all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE)
 
@@ -76,7 +76,7 @@ logs:
 	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).map
 
 selflogs:
-	node scripts/dbgtool.js $(BUILD_PATH)/self-$(NAME).map
+	node scripts/dbgtool.js $(BUILD_PATH)/update-$(NAME).map
 
 dirs:
 	@echo "Building $(BOARD)"
@@ -95,9 +95,9 @@ $(EXECUTABLE): $(OBJECTS)
 $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
 		 -T./scripts/samd21j18a_self.ld \
-		 -Wl,-Map,$(BUILD_PATH)/self-$(NAME).map -o $(BUILD_PATH)/self-$(NAME).elf $(SELF_OBJECTS)
-	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/self-$(NAME).elf $(BUILD_PATH)/self-$(NAME).bin
-	node scripts/bin2uf2.js $(BUILD_PATH)/self-$(NAME).bin $@
+		 -Wl,-Map,$(BUILD_PATH)/update-$(NAME).map -o $(BUILD_PATH)/update-$(NAME).elf $(SELF_OBJECTS)
+	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/update-$(NAME).elf $(BUILD_PATH)/update-$(NAME).bin
+	node scripts/bin2uf2.js $(BUILD_PATH)/update-$(NAME).bin $@
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h)
 	@echo "$<"
@@ -120,13 +120,14 @@ drop-board: all
 	mkdir -p build/drop
 	rm -rf build/drop/$(BOARD)
 	mkdir -p build/drop/$(BOARD)
-	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/update-bootloader.uf2
-	cp $(EXECUTABLE) build/drop/$(BOARD)/bootloader.bin
-	cp $(BUILD_PATH)/bootloader.ino build/drop/$(BOARD)/bootloader.ino
-	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/board_config.h
+	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/
+	cp $(EXECUTABLE) build/drop/$(BOARD)/
+	cp $(BUILD_PATH)/update-bootloader.ino build/drop/$(BOARD)/
+	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/
 
 drop-pkg:
 	mv build/drop build/uf2-samd21-$(VERSION)
+	cp bin-README.md build/uf2-samd21-$(VERSION)/README.md
 	cd build; 7z a uf2-samd21-$(VERSION).zip uf2-samd21-$(VERSION)
 	rm -rf build/uf2-samd21-$(VERSION)
 

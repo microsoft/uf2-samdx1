@@ -33,7 +33,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.11.0"
+#define UF2_VERSION_BASE "v1.13.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -207,7 +207,7 @@ void system_init(void);
 void led_tick(void);
 void led_signal(void);
 void led_init(void);
-void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue);
+void RGBLED_set_color(uint32_t color);
 
 #define LED_MSC_OFF() PINOP(LED_PIN, OUTCLR)
 #define LED_MSC_ON() PINOP(LED_PIN, OUTSET)
