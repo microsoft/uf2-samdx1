@@ -183,7 +183,7 @@ void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
   write_apa_byte(0xFF);
   write_apa_byte(0xFF);
 
-  // set clock port low for 100ms
-  delay(100);
+  // set clock port low for ~10ms
+  delay(10);
 #endif
 }
