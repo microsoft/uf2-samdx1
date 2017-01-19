@@ -172,13 +172,13 @@ int main(void) {
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
         if (USB_Ok()) {
-            main_b_cdc_enable = true;
-            
             if (!main_b_cdc_enable) {
                 RGBLED_set_color(0x000A00);
                 if (!led_tick_step)
                     led_tick_step = 1;
             }
+
+            main_b_cdc_enable = true;
         }
 
 #if USE_MONITOR
