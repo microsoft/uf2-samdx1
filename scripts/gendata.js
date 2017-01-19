@@ -62,4 +62,4 @@ let instr =`//
 // Your OS will then detect a USB mass storage device.
 //
 `;
-fs.writeFileSync(buildPath + "/bootloader.ino", instr + s + "\n" + sketch)
+fs.writeFileSync(buildPath + "/update-bootloader.ino", instr + s + "\n" + sketch)
