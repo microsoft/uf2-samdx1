@@ -135,36 +135,37 @@ void led_init() {
     PINOP(LED_PIN, DIRSET);
     LED_MSC_ON();
 
-#if defined(BOARD_RGBLED_CLOCK_PORT)
+#if defined(BOARD_RGBLED_CLOCK_PIN)
     // using APA102, set pins to outputs
-    PORT->Group[BOARD_RGBLED_CLOCK_PORT].DIRSET.reg = (1 << BOARD_RGBLED_CLOCK_PIN);
-    PORT->Group[BOARD_RGBLED_DATA_PORT].DIRSET.reg = (1 << BOARD_RGBLED_DATA_PIN);
+    PINOP(BOARD_RGBLED_CLOCK_PIN, DIRSET);
+    PINOP(BOARD_RGBLED_DATA_PIN, DIRSET);
 #endif
+
     // and clock 0x00000 out!
     RGBLED_set_color(0, 0, 0);
 }
 
+#if defined(BOARD_RGBLED_CLOCK_PIN)
 void write_apa_byte(uint8_t x) {
-#if defined(BOARD_RGBLED_CLOCK_PORT)
     for (uint8_t i = 0x80; i != 0; i >>= 1) {
         if (x & i)
-            PORT->Group[BOARD_RGBLED_DATA_PORT].OUTSET.reg = (1 << BOARD_RGBLED_DATA_PIN);
+            PINOP(BOARD_RGBLED_DATA_PIN, OUTSET);
         else
-            PORT->Group[BOARD_RGBLED_DATA_PORT].OUTCLR.reg = (1 << BOARD_RGBLED_DATA_PIN);
+            PINOP(BOARD_RGBLED_DATA_PIN, OUTCLR);
 
-        PORT->Group[BOARD_RGBLED_CLOCK_PORT].OUTSET.reg = (1 << BOARD_RGBLED_CLOCK_PIN);
+        PINOP(BOARD_RGBLED_CLOCK_PIN, OUTSET);
         // for (uint8_t j=0; j<25; j++) /* 0.1ms */
         //  __asm__ __volatile__("");
 
-        PORT->Group[BOARD_RGBLED_CLOCK_PORT].OUTCLR.reg = (1 << BOARD_RGBLED_CLOCK_PIN);
+        PINOP(BOARD_RGBLED_CLOCK_PIN, OUTCLR);
         // for (uint8_t j=0; j<25; j++) /* 0.1ms */
         //  __asm__ __volatile__("");
     }
-#endif
 }
+#endif
 
 void RGBLED_set_color(uint8_t red, uint8_t green, uint8_t blue) {
-#if defined(BOARD_RGBLED_CLOCK_PORT)
+#if defined(BOARD_RGBLED_CLOCK_PIN)
     write_apa_byte(0x0);
     write_apa_byte(0x0);
     write_apa_byte(0x0);
