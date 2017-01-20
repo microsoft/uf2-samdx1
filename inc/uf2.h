@@ -57,7 +57,8 @@
 
 // If enabled, bootloader will start on power-on and every reset. A second reset
 // will start the app. This only happens if the app says it wants that (see SINGLE_RESET() below).
-// If disabled here or by the app, the bootloader will only start with double-click of the reset button.
+// If disabled here or by the app, the bootloader will only start with double-click of the reset
+// button.
 #define USE_SINGLE_RESET 1
 
 // Fine-tuning of features
@@ -119,6 +120,16 @@
 
 #define USE_MONITOR (USE_CDC || USE_UART)
 #define TIMER_STEP 1500
+
+#ifdef BOARD_NEOPIXEL_PIN
+#define COLOR_START 0x040000
+#define COLOR_USB 0x000400
+#define COLOR_UART 0x040400
+#else
+#define COLOR_START 0x0A0000
+#define COLOR_USB 0x000A00
+#define COLOR_UART 0x0A0A00
+#endif
 
 /*
 From CPU config:

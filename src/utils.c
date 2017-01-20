@@ -186,10 +186,18 @@ void RGBLED_set_color(uint32_t color) {
     delay(10);
 #elif defined(BOARD_NEOPIXEL_PIN)
     uint8_t buf[BOARD_NEOPIXEL_COUNT * 3];
+#if 0
     memset(buf, 0, sizeof(buf));
     buf[0] = color >> 8;
     buf[1] = color >> 16;
     buf[2] = color;
+#else
+    for (int i = 0; i < BOARD_NEOPIXEL_COUNT * 3; i += 3) {
+        buf[i + 0] = color >> 8;
+        buf[i + 1] = color >> 16;
+        buf[i + 2] = color;
+    }
+#endif
     neopixel_send_buffer(buf, BOARD_NEOPIXEL_COUNT * 3);
 #endif
 }
