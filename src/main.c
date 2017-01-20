@@ -100,6 +100,19 @@ static void check_start_application(void) {
         return;
     }
 
+#if USE_SINGLE_RESET
+    if (SINGLE_RESET()) {
+        if (PM->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+            // the second tap on reset will go into app
+            *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
+            // this will be cleared after succesful USB enumeration
+            // this is around 1.5s
+            resetHorizon = timerHigh + 300;
+            return;
+        }
+    }
+#endif
+
     if (PM->RCAUSE.bit.POR) {
         *DBL_TAP_PTR = 0;
     } else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
@@ -173,6 +186,10 @@ int main(void) {
     while (1) {
         if (USB_Ok()) {
             if (!main_b_cdc_enable) {
+#if USE_SINGLE_RESET
+                // this might have been set
+                resetHorizon = 0;
+#endif
                 RGBLED_set_color(0x000A00);
                 if (!led_tick_step)
                     led_tick_step = 1;
