@@ -100,6 +100,19 @@ static void check_start_application(void) {
         return;
     }
 
+#if USE_SINGLE_RESET
+    if (SINGLE_RESET()) {
+        if (PM->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+            // the second tap on reset will go into app
+            *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
+            // this will be cleared after succesful USB enumeration
+            // this is around 1.5s
+            resetHorizon = timerHigh + 300;
+            return;
+        }
+    }
+#endif
+
     if (PM->RCAUSE.bit.POR) {
         *DBL_TAP_PTR = 0;
     } else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
@@ -166,14 +179,18 @@ int main(void) {
     usb_init();
 
     // not enumerated yet
-    RGBLED_set_color(0x0A0000);
+    RGBLED_set_color(COLOR_START);
     led_tick_step = 0;
 
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
         if (USB_Ok()) {
             if (!main_b_cdc_enable) {
-                RGBLED_set_color(0x000A00);
+#if USE_SINGLE_RESET
+                // this might have been set
+                resetHorizon = 0;
+#endif
+                RGBLED_set_color(COLOR_USB);
                 if (!led_tick_step)
                     led_tick_step = 1;
             }
@@ -194,7 +211,7 @@ int main(void) {
 #if USE_UART
         /* Check if a '#' has been received */
         if (!main_b_cdc_enable && usart_sharp_received()) {
-            RGBLED_set_color(0x0A0A00);
+            RGBLED_set_color(COLOR_UART);
             sam_ba_monitor_init(SAM_BA_INTERFACE_USART);
             /* SAM-BA on UART loop */
             while (1) {

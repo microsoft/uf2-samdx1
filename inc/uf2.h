@@ -33,7 +33,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.13.0"
+#define UF2_VERSION_BASE "v1.15.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -43,7 +43,9 @@
 // Check various conditions; best leave on
 #define USE_ASSERT 0 // 188 bytes
 // Enable reading flash via FAT files; otherwise drive will appear empty
-#define USE_FAT 1 // 424 bytes
+#define USE_FAT 1 // 272 bytes
+// Enable index.htm file on the drive
+#define USE_INDEX_HTM 1 // 132 bytes
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
 #define USE_CDC 1 // 1264 bytes (plus terminal, see below)
 // Support the UART (real serial port, not USB)
@@ -54,6 +56,12 @@
 #define USE_WEBUSB 0 // 400 bytes
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
+
+// If enabled, bootloader will start on power-on and every reset. A second reset
+// will start the app. This only happens if the app says it wants that (see SINGLE_RESET() below).
+// If disabled here or by the app, the bootloader will only start with double-click of the reset
+// button.
+#define USE_SINGLE_RESET 1
 
 // Fine-tuning of features
 #define USE_HID_SERIAL 0   // just an example, not really needed; 36 bytes
@@ -94,6 +102,12 @@
 #define HID_VERSION ""
 #endif
 
+#if USE_SINGLE_RESET
+#define RESET_VERSION "R"
+#else
+#define RESET_VERSION ""
+#endif
+
 #if USE_WEBUSB
 #define WEB_VERSION "W"
 #else
@@ -101,12 +115,23 @@
 #endif
 
 #define UF2_VERSION                                                                                \
-    UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION WEB_VERSION
+    UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
+        WEB_VERSION RESET_VERSION
 
 // End of config
 
 #define USE_MONITOR (USE_CDC || USE_UART)
 #define TIMER_STEP 1500
+
+#ifdef BOARD_NEOPIXEL_PIN
+#define COLOR_START 0x040000
+#define COLOR_USB 0x000400
+#define COLOR_UART 0x040400
+#else
+#define COLOR_START 0x0A0000
+#define COLOR_USB 0x000A00
+#define COLOR_UART 0x0A0A00
+#endif
 
 /*
 From CPU config:
@@ -195,6 +220,10 @@ void padded_memcpy(char *dst, const char *src, int len);
 #define DBL_TAP_PTR ((volatile uint32_t *)(HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4))
 #define DBL_TAP_MAGIC 0xf01669ef // Randomly selected, adjusted to have first and last bit set
 #define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
+
+#if USE_SINGLE_RESET
+#define SINGLE_RESET() (*((uint32_t *)0x20B0) == 0x87eeb07c)
+#endif
 
 void resetIntoApp(void);
 void resetIntoBootloader(void);
