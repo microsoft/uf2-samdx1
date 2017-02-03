@@ -43,7 +43,9 @@
 // Check various conditions; best leave on
 #define USE_ASSERT 0 // 188 bytes
 // Enable reading flash via FAT files; otherwise drive will appear empty
-#define USE_FAT 1 // 424 bytes
+#define USE_FAT 1 // 272 bytes
+// Enable index.htm file on the drive
+#define USE_INDEX_HTM 1 // 132 bytes
 // Enable USB CDC (Communication Device Class; i.e., USB serial) monitor for Arduino style flashing
 #define USE_CDC 1 // 1264 bytes (plus terminal, see below)
 // Support the UART (real serial port, not USB)

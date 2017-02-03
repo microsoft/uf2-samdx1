@@ -60,6 +60,7 @@ const char infoUf2File[] = //
     "Board-ID: " BOARD_ID "\r\n";
 
 #if USE_FAT
+#if USE_INDEX_HTM
 const char indexFile[] = //
     "<!doctype html>\n"
     "<html>"
@@ -69,10 +70,13 @@ const char indexFile[] = //
     "</script>"
     "</body>"
     "</html>\n";
+#endif
 
 static const struct TextFile info[] = {
     {.name = "INFO_UF2TXT", .content = infoUf2File},
+#if USE_INDEX_HTM
     {.name = "INDEX   HTM", .content = indexFile},
+#endif
     {.name = "CURRENT UF2"},
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
