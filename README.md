@@ -165,8 +165,8 @@ Three typical configurations are:
   logging optional; **recommended**
 * USB CDC and MSC, plus flash reading via FAT; UART disabled; 
   logging optional; this may have Windows driver problems
-* USB CDC and MSC, no flash reading via FAT; UART enabled; 
-  logging disabled; 
+* USB CDC and MSC, no flash reading via FAT (or at least `index.htm` disabled); UART enabled; 
+  logging disabled; no handover; no HID;
   only this one if you need the UART support in bootloader for whatever reason
 
 CDC and MSC together will work on Linux and Mac with no drivers.
