@@ -47,6 +47,10 @@ static inline void neopixel_send_buffer(const uint8_t *ptr, int numBytes) {
     uint32_t pinMask = 1ul << (BOARD_NEOPIXEL_PIN % 32);
 
     PINOP(BOARD_NEOPIXEL_PIN, DIRSET);
+
+    // turn off mux too, needed for metro m0 but no harm done!
+    PORT->Group[BOARD_NEOPIXEL_PIN / 32].PINCFG[BOARD_NEOPIXEL_PIN % 32].reg=(uint8_t)(PORT_PINCFG_INEN) ;
+
     PINOP(BOARD_NEOPIXEL_PIN, OUTCLR);
     delay(1);
 
