@@ -131,6 +131,19 @@ drop-pkg:
 	cd build; 7z a uf2-samd21-$(VERSION).zip uf2-samd21-$(VERSION)
 	rm -rf build/uf2-samd21-$(VERSION)
 
+tag:
+	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` do-tag
+
+do-tag:
+	git add inc/uf2.h
+	git diff --exit-code
+	git commit -m "v$(VERSION)"
+	git tag "v$(VERSION)"
+	git push
+	git push --tag
+	$(MAKE) drop
+
+
 drop:
 	for f in `cd boards; ls` ; do $(MAKE) BOARD=$$f drop-board ; done
 	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
