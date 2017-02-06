@@ -16,4 +16,7 @@
 #define LED_TX_PIN PIN_PA27
 #define LED_RX_PIN PIN_PA31
 
+#define BOARD_NEOPIXEL_PIN PIN_PA30
+#define BOARD_NEOPIXEL_COUNT 1
+
 #endif
