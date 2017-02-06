@@ -1007,8 +1007,8 @@ void AT91F_CDC_Enumerate() {
     case HID_REQUEST_GET_PROTOCOL:
     case HID_REQUEST_GET_IDLE:
     case HID_REQUEST_GET_REPORT: {
-        uint8_t buf[64] = {0};
-        sendCtrl(buf, 64);
+        uint8_t buf[8] = {0};
+        sendCtrl(buf, 8);
     } break;
 
     case HID_REQUEST_SET_IDLE:
