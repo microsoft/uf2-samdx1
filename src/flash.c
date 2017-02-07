@@ -44,13 +44,13 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     }
 }
 
-void flash_write() {
+void flash_write(void) {
     uint32_t *src = (void *)0x20006000;
     uint32_t *dst = (void *)*src++;
-    uint32_t n_pages = *src++;
+    uint32_t n_rows = *src++;
 
     NVMCTRL->CTRLB.bit.MANW = 1;
-    while (n_pages--) {
+    while (n_rows--) {
         wait_ready();
         NVMCTRL->STATUS.reg = NVMCTRL_STATUS_MASK;
 
@@ -59,17 +59,20 @@ void flash_write() {
         NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER;
         wait_ready();
 
-        // Execute "PBC" Page Buffer Clear
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
-        wait_ready();
+        // there are 4 pages to a row
+        for (int i = 0; i < 4; ++i) {
+            // Execute "PBC" Page Buffer Clear
+            NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
+            wait_ready();
 
-        uint32_t len = FLASH_ROW_SIZE >> 2;
-        while (len--)
-            *dst++ = *src++;
+            uint32_t len = FLASH_PAGE_SIZE >> 2;
+            while (len--)
+                *dst++ = *src++;
 
-        // Execute "WP" Write Page
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP;
-        wait_ready();
+            // Execute "WP" Write Page
+            NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP;
+            wait_ready();
+        }
     }
 }
 
