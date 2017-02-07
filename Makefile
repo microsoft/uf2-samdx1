@@ -118,11 +118,14 @@ gdb:
 tui:
 	arm-none-eabi-gdb -tui $(BUILD_PATH)/$(NAME).elf
 
-applet: $(EXECUTABLE)
-	rm -f flash.asm
-	arm-none-eabi-objdump -d $(BUILD_PATH)/flash.o > flash.asm
-	node scripts/genapplet.js flash.asm flash_write
-	@rm -f flash.asm
+%.asmdump: %.o
+	arm-none-eabi-objdump -d $< > $@
+
+applet0: $(BUILD_PATH)/flash.asmdump
+	node scripts/genapplet.js $< flash_write
+
+applet1: $(BUILD_PATH)/utils.asmdump
+	node scripts/genapplet.js $< resetIntoApp
 
 drop-board: all
 	@echo "*** Copy files for $(BOARD)"
