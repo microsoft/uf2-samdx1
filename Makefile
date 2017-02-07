@@ -115,6 +115,15 @@ clean:
 gdb:
 	arm-none-eabi-gdb $(BUILD_PATH)/$(NAME).elf
 
+tui:
+	arm-none-eabi-gdb -tui $(BUILD_PATH)/$(NAME).elf
+
+applet: $(EXECUTABLE)
+	rm -f flash.asm
+	arm-none-eabi-objdump -d $(BUILD_PATH)/flash.o > flash.asm
+	node scripts/genapplet.js flash.asm flash_write
+	@rm -f flash.asm
+
 drop-board: all
 	@echo "*** Copy files for $(BOARD)"
 	mkdir -p build/drop

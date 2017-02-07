@@ -1,9 +1,9 @@
 #include "uf2.h"
 
-static inline void wait_ready(void) {
-    while (NVMCTRL->INTFLAG.bit.READY == 0) {
-    }
-}
+// this actually generates less code than a function
+#define wait_ready()                                                                               \
+    while (NVMCTRL->INTFLAG.bit.READY == 0)                                                        \
+        ;
 
 void flash_erase_row(uint32_t *dst) {
     wait_ready();
@@ -35,6 +35,35 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
         // make sure there are no other memory writes here
         // otherwise we get lock-ups
 
+        while (len--)
+            *dst++ = *src++;
+
+        // Execute "WP" Write Page
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP;
+        wait_ready();
+    }
+}
+
+void flash_write() {
+    uint32_t *src = (void *)0x20006000;
+    uint32_t *dst = (void *)*src++;
+    uint32_t n_pages = *src++;
+
+    NVMCTRL->CTRLB.bit.MANW = 1;
+    while (n_pages--) {
+        wait_ready();
+        NVMCTRL->STATUS.reg = NVMCTRL_STATUS_MASK;
+
+        // Execute "ER" Erase Row
+        NVMCTRL->ADDR.reg = (uint32_t)dst / 2;
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER;
+        wait_ready();
+
+        // Execute "PBC" Page Buffer Clear
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
+        wait_ready();
+
+        uint32_t len = FLASH_ROW_SIZE >> 2;
         while (len--)
             *dst++ = *src++;
 
