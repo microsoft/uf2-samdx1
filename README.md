@@ -9,7 +9,7 @@ that we ship with the binary releases.
 
 ## UF2 
 
-UF2 (USB Flashing Format) is a name of a file format, that is particularly 
+**UF2 (USB Flashing Format)** is a name of a file format, developed by Microsoft, that is particularly 
 suitable for flashing devices over MSC devices. The file consists
 of 512 byte blocks, each of which is self-contained and independent
 of others.
@@ -175,6 +175,9 @@ Thus, it's best to set the USB ID to one for which there are no drivers.
 
 The bootloader sits at 0x00000000, and the application starts at 0x00002000.
 
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## License
 

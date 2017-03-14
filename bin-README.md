@@ -4,7 +4,7 @@ This archive contains binaries of a bootloader for various SAMD21 boards,
 which while derived from Atmel's SAM-BA, also supports USB MSC (mass storage) 
 and USB HID update protocols.
 
-UF2 (USB Flashing Format) is a name of a file format supported by the bootloader, 
+**UF2 (USB Flashing Format)** is a name of a file format supported by the bootloader, 
 that is particularly suitable for flashing devices over mass storage interfaces. The file 
 consists of 512 byte blocks, each of which is self-contained, easy to identify, and 
 independent of others. For more details, see [UF2 specification repo](https://github.com/Microsoft/uf2).
@@ -67,6 +67,10 @@ There is a script in the [source repository](https://github.com/Microsoft/uf2-sa
 to do it.
 
 Do not use `at91samd bootloader 0` command of OpenOCD - it's buggy.
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## License
 
