@@ -23,8 +23,6 @@ Each 512 byte block consist of (see `uf2format.h` for details):
 Thus, it's really easy for the microcontroller to recognize a block of
 a UF2 file is written and immediately write it to flash.
 
-In `uf2conv.c` you can find a small converter from `.bin` to `.uf2`.
-
 * **UF2 specification repo:** https://github.com/Microsoft/uf2
 
 ## Features
