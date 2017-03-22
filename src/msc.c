@@ -770,7 +770,7 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
     while (!try_read_cbw(&cbw, handover->ep_out, handoverCache)) {
         // TODO is this the right value?
         if (num++ > TIMER_STEP * 50) {
-            NVIC_SystemReset();
+            resetIntoApp();
         }
     }
 

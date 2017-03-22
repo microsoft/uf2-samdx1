@@ -43,6 +43,7 @@ int writeNum(char *buf, uint32_t n, bool full) {
 
 void resetIntoApp() {
     // reset without waiting for double tap (only works for one reset)
+    RGBLED_set_color(0);
     *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
     NVIC_SystemReset();
 }
