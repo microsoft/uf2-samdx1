@@ -1,8 +1,8 @@
 # UF2 Bootloader
 
-This archive contains binaries of a bootloader for various SAMD21 boards,
-which while derived from Atmel's SAM-BA, also supports USB MSC (mass storage) 
-and USB HID update protocols.
+This archive contains information about the binaries of the bootloader, built from this
+repo for various SAMD21 boards. These are derived from Atmel's SAM-BA, 
+also supports USB MSC (mass storage) and USB HID update protocols.
 
 **UF2 (USB Flashing Format)** is a name of a file format supported by the bootloader, 
 that is particularly suitable for flashing devices over mass storage interfaces. The file 
