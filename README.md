@@ -178,6 +178,6 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## License
 
-The original SAM-BA bootloader is licensed under BSD-like license from Atmel.
+See THIRD-PARTY-NOTICES.txt for the original SAM-BA bootloader license from Atmel.
 
 The new code is licensed under MIT.
