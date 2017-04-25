@@ -29,16 +29,14 @@ void system_init(void) {
   /* Configure OSC8M as source for GCLK_GEN 2 */
   GCLK->GENDIV.reg = GCLK_GENDIV_ID(2);  // Read GENERATOR_ID - GCLK_GEN_2
   gclk_sync();
-  
+
   GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_SRC_OSC8M_Val | GCLK_GENCTRL_GENEN;
   gclk_sync();
 
   // Turn on DFLL with USB correction and sync to internal 8 mhz oscillator
-
-  SYSCTRL->DFLLCTRL.bit.ONDEMAND = 0;
+  SYSCTRL->DFLLCTRL.reg = SYSCTRL_DFLLCTRL_ENABLE;
   dfll_sync();
 
-  SYSCTRL_DFLLCTRL_Type dfllctrl_conf = {0};
   SYSCTRL_DFLLVAL_Type dfllval_conf = {0};
   uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP4)
 		       + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32))
@@ -47,28 +45,28 @@ void system_init(void) {
   if (coarse == 0x3f) {
     coarse = 0x1f;
   }
-  uint32_t fine =( *((uint32_t *)(NVMCTRL_OTP4)
-		     + (NVM_SW_CALIB_DFLL48M_FINE_VAL / 32))
-		   >> (NVM_SW_CALIB_DFLL48M_FINE_VAL % 32))
-    & ((1 << 10) - 1);
-  if (fine == 0x3ff) {
-    fine = 0x1ff;
-  }
   dfllval_conf.bit.COARSE  = coarse;
-  dfllval_conf.bit.FINE    = fine;
-  dfllctrl_conf.bit.USBCRM = 1;  // usb correction
-  dfllctrl_conf.bit.BPLCKC = 0;
-  dfllctrl_conf.bit.QLDIS  = 0;
-  dfllctrl_conf.bit.CCDIS  = 1;
-  dfllctrl_conf.bit.ENABLE = 1;
+  // TODO(tannewt): Load this from a well known flash location so that it can be
+  // calibrated during testing.
+  dfllval_conf.bit.FINE    = 0x1ff;
 
-  SYSCTRL->DFLLMUL.reg = 48000;
+  SYSCTRL->DFLLMUL.reg = SYSCTRL_DFLLMUL_CSTEP( 0x1f / 4 ) | // Coarse step is 31, half of the max value
+                         SYSCTRL_DFLLMUL_FSTEP( 10 ) |
+                         48000;
   SYSCTRL->DFLLVAL.reg = dfllval_conf.reg;
-  SYSCTRL->DFLLCTRL.reg = dfllctrl_conf.reg;
-  
+  SYSCTRL->DFLLCTRL.reg = 0;
+  dfll_sync();
+  SYSCTRL->DFLLCTRL.reg = SYSCTRL_DFLLCTRL_MODE |
+                          SYSCTRL_DFLLCTRL_CCDIS |
+                          SYSCTRL_DFLLCTRL_USBCRM | /* USB correction */
+                          SYSCTRL_DFLLCTRL_BPLCKC;
+  dfll_sync();
+  SYSCTRL->DFLLCTRL.reg |= SYSCTRL_DFLLCTRL_ENABLE ;
+  dfll_sync();
+
   GCLK_CLKCTRL_Type clkctrl={0};
   uint16_t temp;
-  GCLK->CLKCTRL.bit.ID = 2; // GCLK_ID - DFLL48M Reference 
+  GCLK->CLKCTRL.bit.ID = 2; // GCLK_ID - DFLL48M Reference
   temp = GCLK->CLKCTRL.reg;
   clkctrl.bit.CLKEN = 1;
   clkctrl.bit.WRTLOCK = 0;
@@ -111,16 +109,22 @@ void system_init(void) {
     dfll_sync();
 
 #endif
-    
+
     // Configure DFLL48M as source for GCLK_GEN 0
     GCLK->GENDIV.reg = GCLK_GENDIV_ID(0);
     gclk_sync();
 
+    // Add GCLK_GENCTRL_OE below to output GCLK0 on the SWCLK pin.
     GCLK->GENCTRL.reg =
         GCLK_GENCTRL_ID(0) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
     gclk_sync();
 
     SysTick_Config(1000);
+
+    // Uncomment these two lines to output GCLK0 on the SWCLK pin.
+    // PORT->Group[0].PINCFG[30].bit.PMUXEN = 1;
+    // Set the port mux mask for odd processor pin numbers, PA30 = 30 is even number, PMUXE = PMUX Even
+    // PORT->Group[0].PMUX[30 / 2].reg |= PORT_PMUX_PMUXE_H;
 }
 
 void SysTick_Handler(void) { LED_TICK(); }
