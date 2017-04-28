@@ -6,7 +6,7 @@
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Metro M0"
 #define VOLUME_LABEL "METROBOOT"
-
+#define INDEX_URL "http://adafru.it/3505"
 #define BOARD_ID "SAMD21G18A-Metro-v0"
 
 #define USB_VID 0x239A
