@@ -10,10 +10,6 @@ script:
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+      - debian-sid
     packages:
-      - g++-4.8
-      - libusb-1.0-0-dev
-      - gcc-arm-none-eabi      
-env:
-  - CXX=g++-4.8
+      - gcc-arm-none-eabi
