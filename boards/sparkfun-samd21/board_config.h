@@ -8,7 +8,7 @@
 #define VOLUME_LABEL "SPARKFUN"
 // also https://www.sparkfun.com/products/13672
 #define INDEX_URL "https://www.sparkfun.com/products/13664"
-#define BOARD_ID "SAMD21-v0"
+#define BOARD_ID "SAMD21G18A-Sparkfun-v0"
 
 #define USB_VID 0x1B4F
 #define USB_PID 0x8D21
