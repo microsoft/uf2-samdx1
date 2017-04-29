@@ -1,0 +1,6 @@
+language: cpp
+notifications:
+  email:
+    - yelm-eng@microsoft.com
+script:
+    - make all
