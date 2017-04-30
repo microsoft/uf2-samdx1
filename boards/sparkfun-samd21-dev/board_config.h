@@ -4,11 +4,10 @@
 #define __SAMD21G18A__ 1
 
 #define VENDOR_NAME "Sparkfun"
-#define PRODUCT_NAME "SAMD21 Dev and Mini Breakout"
+#define PRODUCT_NAME "SAMD21 Dev Breakout"
 #define VOLUME_LABEL "SPARKFUN"
-// also https://www.sparkfun.com/products/13672
-#define INDEX_URL "https://www.sparkfun.com/products/13664"
-#define BOARD_ID "SAMD21G18A-Sparkfun-v0"
+#define INDEX_URL "https://www.sparkfun.com/products/13672"
+#define BOARD_ID "SAMD21G18A-Dev-Sparkfun-v0"
 
 #define USB_VID 0x1B4F
 #define USB_PID 0x0D21
