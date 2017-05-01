@@ -4,6 +4,8 @@ This repository contains a bootloader, derived from Atmel's SAM-BA,
 which in addition to the USB CDC (serial) protocol, also supports
 the USB MSC (mass storage).
 
+[![Build Status](https://travis-ci.org/Microsoft/uf2-samd21.svg?branch=master)](https://travis-ci.org/Microsoft/uf2-samd21)
+
 ## UF2 
 
 **UF2 (USB Flashing Format)** is a name of a file format, developed by Microsoft, that is particularly 
