@@ -155,8 +155,9 @@ do-tag:
 	git push --tag
 	$(MAKE) drop
 
-
-drop:
+all-boards:
 	for f in `cd boards; ls` ; do $(MAKE) BOARD=$$f drop-board ; done
+
+drop: all-boards
 	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
 

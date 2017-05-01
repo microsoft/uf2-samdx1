@@ -1,0 +1,28 @@
+language: node_js
+sudo: false
+node_js:
+  - "5.7.0"
+notifications:
+  email:
+    - yelm-eng@microsoft.com
+addons:
+  apt:
+    packages:
+      - libc6-i386
+
+node_js:
+  - "6"
+
+cache:
+  directories:
+    - $HOME/gcc-arm-none-eabi-6-2017-q1-update
+
+install:
+  - export GCC_DIR=$HOME/gcc-arm-none-eabi-6-2017-q1-update
+  - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2
+  - export GCC_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update
+  - if [ ! -e $GCC_DIR/bin/arm-none-eabi-g++ ]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
+  - export PATH=$PATH:$GCC_DIR/bin
+
+script:
+    - make all-boards
