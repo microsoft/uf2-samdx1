@@ -25,4 +25,4 @@ install:
   - export PATH=$PATH:$GCC_DIR/bin
 
 script:
-    - make all
+    - make drop
