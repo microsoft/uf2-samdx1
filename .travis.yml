@@ -10,6 +10,9 @@ addons:
     packages:
       - libc6-i386
 
+node_js:
+  - "6"
+
 cache:
   directories:
     - $HOME/gcc-arm-none-eabi-6-2017-q1-update
