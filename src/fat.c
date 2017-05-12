@@ -125,9 +125,25 @@ void padded_memcpy(char *dst, const char *src, int len) {
     }
 }
 
+struct CachedBlock {
+    uint32_t block_no;
+    uint8_t data[512];
+};
+
+#define NUM_CACHED_BLOCKS 8
+struct CachedBlock blockCache[NUM_CACHED_BLOCKS];
+
 void read_block(uint32_t block_no, uint8_t *data) {
     memset(data, 0, 512);
     uint32_t sectionIdx = block_no;
+
+    for (int i = 0; i < NUM_CACHED_BLOCKS; ++i) {
+        if (blockCache[i].block_no == block_no + 1) {
+            memcpy(data, blockCache[i].data, 512);
+            logval("cache hit", block_no);
+            return;
+        }
+    }
 
     if (block_no == 0) {
         memcpy(data, &BootBlock, sizeof(BootBlock));
@@ -196,7 +212,27 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state) {
     UF2_Block *bl = (void *)data;
+
     if (!is_uf2_block(bl)) {
+
+        if (block_no < 0x100) {
+            uint8_t tmp[512];
+            read_block(block_no, tmp);
+            if (memcmp(tmp, data, 512) != 0) {
+                for (int i = 0; i < NUM_CACHED_BLOCKS; ++i) {
+                    if (blockCache[i].block_no == block_no + 1 || blockCache[i].block_no == 0) {
+                        blockCache[i].block_no = block_no + 1;
+                        memcpy(blockCache[i].data, data, 512);
+                        logval("cache block", block_no);
+                        return;
+                    }
+                }
+                logval("can't cache block", block_no);
+            } else {
+                //logval("don't need to cache block", block_no);                
+            }
+        }
+        
         return;
     }
 

@@ -39,7 +39,7 @@
 #define NUM_FAT_BLOCKS 8000
 
 // Logging to help debugging
-#define USE_LOGS 0
+#define USE_LOGS 1
 // Check various conditions; best leave on
 #define USE_ASSERT 0 // 188 bytes
 // Enable reading flash via FAT files; otherwise drive will appear empty
@@ -51,7 +51,7 @@
 // Support the UART (real serial port, not USB)
 #define USE_UART 0
 // Support Human Interface Device (HID) - serial, flashing and debug
-#define USE_HID 1 // 788 bytes
+#define USE_HID 0 // 788 bytes
 // Expose HID via WebUSB
 #define USE_WEBUSB 0 // 400 bytes
 // Doesn't yet disable code, just enumeration
@@ -67,10 +67,10 @@
 #define USE_HID_SERIAL 0   // just an example, not really needed; 36 bytes
 #define USE_HID_EXT 1      // extended HID commands (read/write mem); 60 bytes
 #define USE_HID_HANDOVER 1 // allow HID application->bootloader seamless transition; 56 bytes
-#define USE_MSC_HANDOVER 1 // ditto for MSC; 348 bytes
+#define USE_MSC_HANDOVER 0 // ditto for MSC; 348 bytes
 #define USE_MSC_CHECKS 0   // check validity of MSC commands; 460 bytes
 #define USE_CDC_TERMINAL 0 // enable ASCII mode on CDC loop (not used by BOSSA); 228 bytes
-#define USE_DBG_MSC 0      // output debug info about MSC
+#define USE_DBG_MSC 1      // output debug info about MSC
 
 #if USE_CDC
 #define CDC_VERSION "S"
