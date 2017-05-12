@@ -88,7 +88,7 @@ static const struct TextFile info[] = {
 #endif
 
 #define RESERVED_SECTORS 1
-#define ROOT_DIR_SECTORS 1
+#define ROOT_DIR_SECTORS 4
 #define SECTORS_PER_FAT ((NUM_FAT_BLOCKS * 2 + 511) / 512)
 
 #define START_FAT0 RESERVED_SECTORS
@@ -110,7 +110,7 @@ static const FAT_BootBlock BootBlock = {
     .SectorsPerTrack = 1,
     .Heads = 1,
     .ExtendedBootSig = 0x29,
-    .VolumeSerialNumber = 0xdeadbeef,
+    .VolumeSerialNumber = 0x00420042,
     .VolumeLabel = VOLUME_LABEL,
     .FilesystemIdentifier = "FAT16   ",
 };
