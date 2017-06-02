@@ -80,7 +80,7 @@ char hidCfgDescriptor[] = {
 
 COMPILER_WORD_ALIGNED
 const char hidDescriptor[] = {
-    0x06, 0x00, 0xFF, // usage page vendor #0
+    0x06, 0x97, 0xFF, // usage page vendor 0x97 (usage 0xff97 0x0001)
     0x09, 0x01,       // usage 1
     0xA1, 0x01,       // collection - application
     0x15, 0x00,       // logical min 0
