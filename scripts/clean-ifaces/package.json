@@ -1,0 +1,11 @@
+{
+  "name": "clean-ifaces",
+  "version": "1.0.0",
+  "description": "Remove usbmodem interfaces",
+  "main": "clean.js",
+  "dependencies": {
+    "plist": "^2.1.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
