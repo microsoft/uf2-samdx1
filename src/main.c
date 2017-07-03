@@ -127,6 +127,9 @@ static void check_start_application(void) {
     }
 
     LED_MSC_OFF();
+#if defined(__SAMD21E18A__)
+    RGBLED_set_color(COLOR_LEAVE);
+#endif
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);

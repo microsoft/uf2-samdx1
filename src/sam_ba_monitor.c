@@ -180,7 +180,7 @@ void sam_ba_monitor_run(void) {
                     } else if (command == 'W') {
                         // detect BOSSA resetting us
                         if ((uint32_t)ptr_data == 0xE000ED0C)
-                            RGBLED_set_color(0);
+                            RGBLED_set_color(COLOR_LEAVE);
                         *((int *)(void *)ptr_data) = current_number;
                     } else if (command == 'o') {
                         sam_ba_putdata_term(ptr_data, 1);

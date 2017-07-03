@@ -43,7 +43,7 @@ int writeNum(char *buf, uint32_t n, bool full) {
 
 void resetIntoApp() {
     // reset without waiting for double tap (only works for one reset)
-    RGBLED_set_color(0);
+    RGBLED_set_color(COLOR_LEAVE);
     *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
     NVIC_SystemReset();
 }
@@ -144,7 +144,7 @@ void led_init() {
 #endif
 
     // This won't work for neopixel, because we're running at 1MHz or thereabouts...
-    RGBLED_set_color(0);
+    RGBLED_set_color(COLOR_LEAVE);
 }
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
@@ -184,7 +184,7 @@ void RGBLED_set_color(uint32_t color) {
     write_apa_byte(0xFF);
 
     // set clock port low for ~10ms
-    delay(10);
+    delay(50);
 #elif defined(BOARD_NEOPIXEL_PIN)
     uint8_t buf[BOARD_NEOPIXEL_COUNT * 3];
 #if 0
