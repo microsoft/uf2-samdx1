@@ -61,7 +61,8 @@ int main(void) {
     /* We have determined we should stay in the monitor. */
     /* System initialization */
     system_init();
-    cpu_irq_disable();
+    __disable_irq();
+    __DMB();
 
     logmsg("Before main loop");
 

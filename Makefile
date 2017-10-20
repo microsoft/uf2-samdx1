@@ -1,13 +1,19 @@
 BOARD=zero
 -include Makefile.user
+include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
+ifeq ($(CHIP_FAMILY), samd21)
 COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g
+endif
+ifeq ($(CHIP_FAMILY), samd51)
+COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -g
+endif
 WFLAGS = \
 -Wall -Wstrict-prototypes \
 -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 \
 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 \
 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch \
--Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef \
+-Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wno-undef \
 -Wbad-function-cast -Wwrite-strings -Waggregate-return \
 -Wformat -Wmissing-format-attribute \
 -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs \
@@ -17,24 +23,39 @@ CFLAGS = $(COMMON_FLAGS) \
 -x c -c -pipe -nostdlib \
 --param max-inline-insns-single=500 \
 -fno-strict-aliasing -fdata-sections -ffunction-sections -mlong-calls \
+-D__$(CHIP_VARIANT)__ \
 $(WFLAGS)
+
+ifeq ($(CHIP_FAMILY), samd21)
+LINKER_SCRIPT=./lib/samd21/samd21a/gcc/gcc/samd21j18a_flash.ld
+endif
+
+ifeq ($(CHIP_FAMILY), samd51)
+LINKER_SCRIPT=./lib/samd51/gcc/gcc/samd51j18a_flash.ld
+endif
 
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 -Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
 -save-temps  \
---specs=nano.specs --specs=nosys.specs 
+--specs=nano.specs --specs=nosys.specs
 BUILD_PATH=build/$(BOARD)
-INCLUDES = -I./inc -I./inc/preprocessor
-INCLUDES += -I./asf/sam0/utils/cmsis/samd21/include -I./asf/thirdparty/CMSIS/Include -I./asf/sam0/utils/cmsis/samd21/source
-INCLUDES += -I./asf/common -I./asf/common/utils -I./asf/sam0/utils/header_files -I./asf/sam0/utils -I./asf/common/utils/interrupt
-INCLUDES += -I./asf/sam0/drivers/system/interrupt -I./asf/sam0/drivers/system/interrupt/system_interrupt_samd21
-INCLUDES += -I./boards/$(BOARD)
+INCLUDES = -I. -I./inc -I./inc/preprocessor
+INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include -Ilib/usb_msc
+
+
+ifeq ($(CHIP_FAMILY), samd21)
+INCLUDES += -Ilib/samd21/samd21a/include/
+endif
+
+ifeq ($(CHIP_FAMILY), samd51)
+INCLUDES += -I
+endif
 
 COMMON_SRC = \
 	src/flash.c \
 	src/init.c \
-	src/startup_samd21.c \
+	src/startup_$(CHIP_FAMILY).c \
 	src/usart_sam_ba.c \
 	src/utils.c
 
@@ -82,9 +103,9 @@ dirs:
 	@echo "Building $(BOARD)"
 	-@mkdir -p $(BUILD_PATH)
 
-$(EXECUTABLE): $(OBJECTS) 
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
-		 -T./asf/sam0/utils/linker_scripts/samd21/gcc/samd21j18a_flash.ld \
+		 -T$(LINKER_SCRIPT) \
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@echo
@@ -100,11 +121,11 @@ $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	node scripts/bin2uf2.js $(BUILD_PATH)/update-$(NAME).bin $@
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h)
-	@echo "$<"
-	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+	echo "$<"
+	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
-	@$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.js src/sketch.cpp
 	node scripts/gendata.js $(BUILD_PATH) $(NAME).bin
@@ -160,4 +181,3 @@ all-boards:
 
 drop: all-boards
 	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
-

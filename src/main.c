@@ -170,7 +170,9 @@ int main(void) {
     /* We have determined we should stay in the monitor. */
     /* System initialization */
     system_init();
-    cpu_irq_enable();
+
+    __DMB();
+    __enable_irq();
 
 #if USE_UART
     /* UART is enabled in all cases */

@@ -94,7 +94,8 @@ volatile uint32_t sp;
 void call_applet(uint32_t address) {
     uint32_t app_start_address;
 
-    cpu_irq_disable();
+    __disable_irq();
+    __DMB();
 
     sp = __get_MSP();
 
@@ -157,7 +158,7 @@ void sam_ba_monitor_run(void) {
                             // We need to add first the remaining data of the
                             // current buffer already read from usb
                             // read a maximum of "current_number" bytes
-                            u32tmp = min((length - i), current_number);
+                            u32tmp = (length - i) < current_number ? (length - i) : current_number;
                             memcpy(ptr_data, ptr, u32tmp);
                             i += u32tmp;
                             ptr += u32tmp;
@@ -194,7 +195,8 @@ void sam_ba_monitor_run(void) {
                         call_applet(current_number);
                         /* Rebase the Stack Pointer */
                         __set_MSP(sp);
-                        cpu_irq_enable();
+                        __DMB();
+                        __enable_irq();
                         if (b_sam_ba_interface_usart) {
                             cdc_write_buf("\x06", 1);
                         }

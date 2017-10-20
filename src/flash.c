@@ -25,7 +25,7 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     NVMCTRL->CTRLB.bit.MANW = 0;
 
     while (n_words > 0) {
-        uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
+        uint32_t len = (FLASH_PAGE_SIZE >> 2) < n_words ? (FLASH_PAGE_SIZE >> 2) : n_words;
         n_words -= len;
 
         // Execute "PBC" Page Buffer Clear

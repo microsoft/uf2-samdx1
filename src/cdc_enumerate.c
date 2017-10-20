@@ -34,9 +34,9 @@
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
 
-COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
+__attribute__((__aligned__(4))) UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 const char devDescriptor[] = {
     /* Device descriptor */
     0x12,           // bLength
@@ -65,7 +65,7 @@ const char devDescriptor[] = {
 
 #if USE_HID
 // can be requested separately from the entire config desc
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 char hidCfgDescriptor[] = {
     9,          // size
     4,          // interface
@@ -78,7 +78,7 @@ char hidCfgDescriptor[] = {
     3,          // stringID
 };
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 const char hidDescriptor[] = {
     0x06, 0x97, 0xFF, // usage page vendor 0x97 (usage 0xff97 0x0001)
     0x09, 0x01,       // usage 1
@@ -99,7 +99,7 @@ const char hidDescriptor[] = {
 };
 #endif
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
@@ -272,7 +272,7 @@ char cfgDescriptor[] = {
 #endif
 };
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 static char bosDescriptor[] = {
     0x05, // Length
     0x0F, // Binary Object Store descriptor
@@ -310,7 +310,7 @@ static char bosDescriptor[] = {
 };
 
 #if USE_WEBUSB
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 static char msOS20Descriptor[] = {
     // Microsoft OS 2.0 descriptor set header (table 10)
     0x0A, 0x00,             // Descriptor size (10 bytes)

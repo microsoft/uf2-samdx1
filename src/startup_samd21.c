@@ -273,21 +273,17 @@ void Reset_Handler(void)
         while (1);
 }
 
-#include "system_interrupt.h"
-
 /**
  * \brief Default interrupt handler for unused IRQs.
  */
 void Dummy_Handler(void)
 {
-        volatile int act = system_interrupt_get_active();
-        (void)act;
         while (1) {
         }
 }
 
-void HardFault_Handler(void) 
+void HardFault_Handler(void)
 {
         while (1) {
-        }        
+        }
 }

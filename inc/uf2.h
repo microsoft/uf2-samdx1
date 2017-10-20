@@ -14,8 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <compiler.h>
-
 #undef DISABLE
 #undef ENABLE
 
