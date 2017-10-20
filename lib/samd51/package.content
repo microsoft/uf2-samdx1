@@ -1,0 +1,510 @@
+<?xml version='1.0' encoding='ASCII'?>
+<package schemaVersion="1.0">
+  <content>
+    <fileset id="moduleheaders">
+      <includes pattern="component/*"/>
+      <includes pattern="instance/*"/>
+    </fileset>
+    <resources target="ATSAMD51J19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51J19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51J19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51j19a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51j19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51J19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51j19a_flash.ld"/>
+        <includes pattern="gcc/samd51j19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51j19a_flash.icf"/>
+        <includes pattern="iar/samd51j19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51j19a/samd51j19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51j19a/samd51j19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51j19a/samd51j19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51J19A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51J18A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51J18A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51J18A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51j18a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51j18a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51J18A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51j18a_flash.ld"/>
+        <includes pattern="gcc/samd51j18a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51j18a_flash.icf"/>
+        <includes pattern="iar/samd51j18a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J18A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J18A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51j18a/samd51j18a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51j18a/samd51j18a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51j18a/samd51j18a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51J18A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51J20A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51J20A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51J20A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51j20a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51j20a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51J20A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51j20a_flash.ld"/>
+        <includes pattern="gcc/samd51j20a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51j20a_flash.icf"/>
+        <includes pattern="iar/samd51j20a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J20A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51J20A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51j20a/samd51j20a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51j20a/samd51j20a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51j20a/samd51j20a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51J20A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51P19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51P19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51P19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51p19a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51p19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51P19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51p19a_flash.ld"/>
+        <includes pattern="gcc/samd51p19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51p19a_flash.icf"/>
+        <includes pattern="iar/samd51p19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51P19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51P19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51p19a/samd51p19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51p19a/samd51p19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51p19a/samd51p19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51P19A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51G18A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51G18A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51G18A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51g18a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51g18a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51G18A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51g18a_flash.ld"/>
+        <includes pattern="gcc/samd51g18a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51g18a_flash.icf"/>
+        <includes pattern="iar/samd51g18a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51G18A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51G18A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51g18a/samd51g18a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51g18a/samd51g18a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51g18a/samd51g18a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51G18A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51P20A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51P20A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51P20A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51p20a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51p20a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51P20A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51p20a_flash.ld"/>
+        <includes pattern="gcc/samd51p20a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51p20a_flash.icf"/>
+        <includes pattern="iar/samd51p20a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51P20A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51P20A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51p20a/samd51p20a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51p20a/samd51p20a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51p20a/samd51p20a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51P20A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51G19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51G19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51G19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51g19a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51g19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51G19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51g19a_flash.ld"/>
+        <includes pattern="gcc/samd51g19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51g19a_flash.icf"/>
+        <includes pattern="iar/samd51g19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51G19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51G19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51g19a/samd51g19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51g19a/samd51g19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51g19a/samd51g19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51G19A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51N20A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51N20A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51N20A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51n20a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51n20a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51N20A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51n20a_flash.ld"/>
+        <includes pattern="gcc/samd51n20a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51n20a_flash.icf"/>
+        <includes pattern="iar/samd51n20a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51N20A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51N20A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51n20a/samd51n20a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51n20a/samd51n20a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51n20a/samd51n20a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51N20A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAMD51N19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAMD51N19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAMD51N19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="samd51.h"/>
+        <includes pattern="samd51n19a.h"/>
+        <includes pattern="system_samd51.h"/>
+        <includes pattern="pio/*samd51n19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAMD51N19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="gcc/startup_samd51.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/samd51n19a_flash.ld"/>
+        <includes pattern="gcc/samd51n19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_samd51.c"/>
+        <includes pattern="iar/startup_samd51.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/samd51n19a_flash.icf"/>
+        <includes pattern="iar/samd51n19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAMD51N19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAMD51N19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/samd51n19a/samd51n19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/samd51n19a/samd51n19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/samd51n19a/samd51n19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAMD51.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAMD51N19A.ddf"/>
+      </resource>
+    </resources>
+  </content>
+  <pdsc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<releases>
+			<release version="1.0.BUILDNUMBER">Aligned PTC signal description with other SAM DFPs.</release>
+			<release version="1.0.66">Initial version.</release>
+		</releases>
+	</pdsc>
+</package>
