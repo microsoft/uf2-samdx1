@@ -3,7 +3,7 @@
 
 #include "board_config.h"
 
-#include "samd21.h"
+#include "sam.h"
 #define UF2_DEFINE_HANDOVER 1 // for testing
 #include "uf2format.h"
 #include "uf2hid.h"
@@ -13,8 +13,6 @@
 #include "usart_sam_ba.h"
 #include <stdio.h>
 #include <string.h>
-
-#include <compiler.h>
 
 #undef DISABLE
 #undef ENABLE
@@ -33,7 +31,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.23.0"
+#include "uf2_version.h"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -53,7 +51,7 @@
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1 // 788 bytes
 // Expose HID via WebUSB
-#define USE_WEBUSB 0 // 400 bytes
+#define USE_WEBUSB 1
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
@@ -114,9 +112,15 @@
 #define WEB_VERSION ""
 #endif
 
+#if USE_MSC_HANDOVER
+#define MSC_HANDOVER_VERSION "O"
+#else
+#define MSC_HANDOVER_VERSION ""
+#endif
+
 #define UF2_VERSION                                                                                \
     UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
-        WEB_VERSION RESET_VERSION
+        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION
 
 // End of config
 
@@ -129,10 +133,10 @@
 #define COLOR_UART 0x040400
 #define COLOR_LEAVE 0x000000
 #else
-#define COLOR_START 0x00000A
-#define COLOR_USB 0x000A00
-#define COLOR_UART 0x0A0A00
-#define COLOR_LEAVE 0x0A000A
+#define COLOR_START 0x000040
+#define COLOR_USB 0x004000
+#define COLOR_UART 0x404000
+#define COLOR_LEAVE 0x400040
 #endif
 
 /*
@@ -190,7 +194,7 @@ void panic(int code);
 
 extern volatile bool b_sam_ba_interface_usart;
 void flash_write_row(uint32_t *dst, uint32_t *src);
-void flash_erase_row(uint32_t *dst);
+void flash_erase_to_end(uint32_t *start_address);
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
 void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words);
 
@@ -219,7 +223,12 @@ void padded_memcpy(char *dst, const char *src, int len);
 // Unlike for ordinary applications, our link script doesn't place the stack at the bottom
 // of the RAM, but instead after all allocated BSS.
 // In other words, this word should survive reset.
+#ifdef SAMD21
 #define DBL_TAP_PTR ((volatile uint32_t *)(HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4))
+#endif
+#ifdef SAMD51
+#define DBL_TAP_PTR ((volatile uint32_t *)(HSRAM_ADDR + HSRAM_SIZE - 4))
+#endif
 #define DBL_TAP_MAGIC 0xf01669ef // Randomly selected, adjusted to have first and last bit set
 #define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
 
@@ -254,9 +263,11 @@ void handoverPrep(void);
 #define CONCAT_0(a, b) CONCAT_1(a, b)
 #define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }
 
+#ifdef SAMD21
 STATIC_ASSERT(FLASH_ROW_SIZE == FLASH_PAGE_SIZE * 4);
 STATIC_ASSERT(FLASH_ROW_SIZE == NVMCTRL_ROW_SIZE);
 STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
+#endif
 
 extern const char infoUf2File[];
 

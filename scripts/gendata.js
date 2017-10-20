@@ -32,7 +32,9 @@ infostr = infostr.split(/\r?\n/).map(l => "// " + l + "\n").join("")
 
 let size = buf.length
 let s = infostr + "\n"
-s += "const uint8_t bootloader[" + size + "] __attribute__ ((aligned (4))) = {"
+s += "const uint8_t bootloader[" + size + "] "
+s += "__attribute__ ((section(\".vectors.needs.to.go.first\"))) "
+s += "__attribute__ ((aligned (4))) = {"
 function tohex(v) {
   return "0x" + ("00" + v.toString(16)).slice(-2) + ", "
 }
@@ -55,11 +57,11 @@ s += "const uint16_t bootloader_crcs[] = {" + crcs + "};\n"
 let selfdata = "#include <stdint.h>\n" + s
 fs.writeFileSync(buildPath + "/selfdata.c", selfdata)
 
-let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
-let instr =`//
-// Bootloader update sketch. Paste into Arduino IDE and upload to the device
-// to update bootloader. It will blink a few times and then start pulsing.
-// Your OS will then detect a USB mass storage device.
-//
-`;
-fs.writeFileSync(buildPath + "/update-bootloader.ino", instr + s + "\n" + sketch)
+// let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
+// let instr =`//
+// // Bootloader update sketch. Paste into Arduino IDE and upload to the device
+// // to update bootloader. It will blink a few times and then start pulsing.
+// // Your OS will then detect a USB mass storage device.
+// //
+// `;
+// fs.writeFileSync(buildPath + "/update-bootloader.ino", instr + s + "\n" + sketch)

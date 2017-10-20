@@ -7,7 +7,12 @@
 // All entries are little endian.
 
 // if you increase that, you will also need to update the linker script file
+#ifdef SAMD21
 #define APP_START_ADDRESS 0x00002000
+#endif
+#ifdef SAMD51
+#define APP_START_ADDRESS 0x00004000
+#endif
 
 #define UF2_MAGIC_START0 0x0A324655UL // "UF2\n"
 #define UF2_MAGIC_START1 0x9E5D5157UL // Randomly selected
@@ -85,6 +90,8 @@ static inline void hf2_handover(uint8_t ep) {
     }
 }
 
+// the ep_in/ep_out are without the 0x80 mask
+// cbw_tag is in the same bit format as it came
 static inline void check_uf2_handover(uint8_t *buffer, uint32_t blocks_remaining, uint8_t ep_in,
                                       uint8_t ep_out, uint32_t cbw_tag) {
     if (!is_uf2_block(buffer))

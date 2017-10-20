@@ -15,6 +15,21 @@ void flash_erase_row(uint32_t *dst) {
     wait_ready();
 }
 
+void flash_erase_to_end(uint32_t *start_address) {
+    // Note: the flash memory is erased in ROWS, that is in
+    // block of 4 pages.
+    //       Even if the starting address is the last byte
+    //       of a ROW the entire
+    //       ROW is erased anyway.
+
+    uint32_t dst_addr = (uint32_t) start_address; // starting address
+
+    while (dst_addr < FLASH_SIZE) {
+        flash_erase_row((void *)dst_addr);
+        dst_addr += FLASH_ROW_SIZE;
+    }
+}
+
 void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     while (n_words--)
         *dst++ = *src++;
@@ -25,7 +40,7 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     NVMCTRL->CTRLB.bit.MANW = 0;
 
     while (n_words > 0) {
-        uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
+        uint32_t len = (FLASH_PAGE_SIZE >> 2) < n_words ? (FLASH_PAGE_SIZE >> 2) : n_words;
         n_words -= len;
 
         // Execute "PBC" Page Buffer Clear

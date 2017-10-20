@@ -1,20 +1,18 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
-#define __SAMD21E18A__ 1
-//#define __SAMD21G18A__ 1
 #define CRYSTALLESS    1
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "Gemma M0"
-#define VOLUME_LABEL "GEMMABOOT"
-#define INDEX_URL "http://adafru.it/3501"
-#define BOARD_ID "SAMD21E18A-Gemma-v0"
+#define PRODUCT_NAME "pIRKey"
+#define VOLUME_LABEL "PIRKEYBOOT"
+#define INDEX_URL "http://adafru.it/"
+#define BOARD_ID "SAMD21E18A-pIRKey-v0"
 
 #define USB_VID 0x239A
-#define USB_PID 0x001C
+#define USB_PID 0x0027
 
-#define LED_PIN PIN_PA23
+#define LED_PIN PIN_PA02  // not actually connected
 //#define LED_TX_PIN PIN_PA27
 //#define LED_RX_PIN PIN_PB03
 
