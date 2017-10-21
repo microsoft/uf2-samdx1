@@ -219,18 +219,7 @@ void sam_ba_monitor_run(void) {
                         // Erase the flash memory starting from ADDR to the end
                         // of flash.
 
-                        // Note: the flash memory is erased in ROWS, that is in
-                        // block of 4 pages.
-                        //       Even if the starting address is the last byte
-                        //       of a ROW the entire
-                        //       ROW is erased anyway.
-
-                        uint32_t dst_addr = current_number; // starting address
-
-                        while (dst_addr < FLASH_SIZE) {
-                            flash_erase_row((void *)dst_addr);
-                            dst_addr += FLASH_ROW_SIZE;
-                        }
+                        flash_erase_to_end(current_number);
 
                         // Notify command completed
                         cdc_write_buf("X\n\r", 3);

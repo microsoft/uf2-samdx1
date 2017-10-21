@@ -102,8 +102,8 @@ void usart_open() {
                                                                << (4 * (pin & 0x01u));
     }
 
+    #ifdef SAMD21
     inst = uart_get_sercom_index(BOOT_USART_MODULE);
-
     /* Enable clock for BOOT_USART_MODULE */
     PM->APBCMASK.reg |= (1u << (inst + PM_APBCMASK_SERCOM0_Pos));
 
@@ -116,9 +116,17 @@ void usart_open() {
     clkctrl.bit.WRTLOCK = false;
     clkctrl.bit.GEN = GCLK_CLKCTRL_GEN_GCLK0_Val;
     GCLK->CLKCTRL.reg = (clkctrl.reg | temp);
+    #endif
+
+    #ifdef SAMD51
+    GCLK->PCHCTRL[BOOT_GCLK_ID_CORE].reg = GCLK_PCHCTRL_GEN_GCLK0_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
+    GCLK->PCHCTRL[BOOT_GCLK_ID_SLOW].reg = GCLK_PCHCTRL_GEN_GCLK3_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
+
+    MCLK->BOOT_USART_MASK.reg |= BOOT_USART_BUS_CLOCK_INDEX ;
+    #endif
 
     /* Baud rate 115200 - clock 8MHz -> BAUD value-50436 */
-    uart_basic_init(BOOT_USART_MODULE, 50436, BOOT_USART_MUX_SETTINGS);
+    uart_basic_init(BOOT_USART_MODULE, 50436, BOOT_USART_PAD_SETTINGS);
 
     // Initialize flag
     b_sharp_received = false;

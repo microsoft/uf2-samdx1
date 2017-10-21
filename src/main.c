@@ -81,6 +81,13 @@ static void check_start_application(void);
 static volatile bool main_b_cdc_enable = false;
 extern int8_t led_tick_step;
 
+#ifdef SAMD21
+#define RESET_CONTROLLER PM
+#endif
+#ifdef SAMD51
+#define RESET_CONTROLLER RSTC
+#endif
+
 /**
  * \brief Check the application startup condition
  *
@@ -102,7 +109,8 @@ static void check_start_application(void) {
 
 #if USE_SINGLE_RESET
     if (SINGLE_RESET()) {
-        if (PM->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+        if (RESET_CONTROLLER->RCAUSE.bit.POR ||
+                *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             // the second tap on reset will go into app
             *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
             // this will be cleared after succesful USB enumeration
@@ -113,7 +121,7 @@ static void check_start_application(void) {
     }
 #endif
 
-    if (PM->RCAUSE.bit.POR) {
+    if (RESET_CONTROLLER->RCAUSE.bit.POR) {
         *DBL_TAP_PTR = 0;
     } else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
         *DBL_TAP_PTR = 0;

@@ -3,10 +3,10 @@ BOARD=zero
 include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 ifeq ($(CHIP_FAMILY), samd21)
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -DSAMD21
 endif
 ifeq ($(CHIP_FAMILY), samd51)
-COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -g
+COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -g -DSAMD51
 endif
 WFLAGS = \
 -Wall -Wstrict-prototypes \
@@ -28,10 +28,12 @@ $(WFLAGS)
 
 ifeq ($(CHIP_FAMILY), samd21)
 LINKER_SCRIPT=./lib/samd21/samd21a/gcc/gcc/samd21j18a_flash.ld
+BOOTLOADER_SIZE=8192
 endif
 
 ifeq ($(CHIP_FAMILY), samd51)
 LINKER_SCRIPT=./lib/samd51/gcc/gcc/samd51j18a_flash.ld
+BOOTLOADER_SIZE=16384
 endif
 
 LDFLAGS= $(COMMON_FLAGS) \
@@ -49,12 +51,12 @@ INCLUDES += -Ilib/samd21/samd21a/include/
 endif
 
 ifeq ($(CHIP_FAMILY), samd51)
-INCLUDES += -I
+INCLUDES += -Ilib/samd51/include/
 endif
 
 COMMON_SRC = \
-	src/flash.c \
-	src/init.c \
+	src/flash_$(CHIP_FAMILY).c \
+	src/init_$(CHIP_FAMILY).c \
 	src/startup_$(CHIP_FAMILY).c \
 	src/usart_sam_ba.c \
 	src/utils.c
@@ -78,7 +80,7 @@ NAME=bootloader
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 SELF_EXECUTABLE=$(BUILD_PATH)/update-$(NAME).uf2
 
-all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE)
+all: dirs $(EXECUTABLE) #$(SELF_EXECUTABLE)
 
 r: run
 b: burn
@@ -109,7 +111,7 @@ $(EXECUTABLE): $(OBJECTS)
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
 	@echo
-	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " (8192-s) }'
+	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " ($(BOOTLOADER_SIZE)-s) }'
 	@echo
 
 
