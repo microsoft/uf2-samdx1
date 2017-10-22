@@ -517,11 +517,6 @@ void Reset_Handler(void)
                 *pDest++ = 0;
         }
 
-        // Wait a 0.1 sec in case the debugger wants to snag us.
-        for (uint32_t i = 0; i < 4800000; i++) {
-            asm("nop");
-        }
-
         /* Set the vector table base address */
         pSrc = (uint32_t *) & _sfixed;
         SCB->VTOR = ((uint32_t) pSrc & SCB_VTOR_TBLOFF_Msk);

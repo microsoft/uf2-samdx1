@@ -28,7 +28,7 @@ void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
 #define QUAD_WORD (4 * 4)
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     // Set automatic page write
-    NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_AQW;
+    NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
 
     // Execute "PBC" Page Buffer Clear
     wait_ready();
@@ -51,9 +51,9 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
             }
         }
 
-        // The last assignment should trigger an automatic write at quad word
-        // granularity. We don't wait here because the loop will wait at the
-        // start.
+        // Trigger the quad word write.
+        NVMCTRL->ADDR.reg = (uint32_t)dst;
+        NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | NVMCTRL_CTRLB_CMD_WQW;
 
         // Advance to quad word
         dst += len;
