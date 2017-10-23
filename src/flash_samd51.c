@@ -15,8 +15,8 @@ void flash_erase_block(uint32_t *dst) {
 }
 
 void flash_erase_to_end(uint32_t *dst) {
-    for (uint32_t i = ((uint32_t) dst) / NVMCTRL_BLOCK_SIZE; i < FLASH_SIZE; i += NVMCTRL_BLOCK_SIZE) {
-        flash_erase_block((uint32_t *) i);
+    for (uint32_t i = ((uint32_t) dst); i < FLASH_SIZE; i += NVMCTRL_BLOCK_SIZE) {
+        flash_erase_block((uint32_t *)i);
     }
 }
 
@@ -28,7 +28,7 @@ void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
 #define QUAD_WORD (4 * 4)
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     // Set automatic page write
-    NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
+      NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_WMODE(NVMCTRL_CTRLA_WMODE_AP);
 
     // Execute "PBC" Page Buffer Clear
     wait_ready();
