@@ -27,8 +27,8 @@ void copy_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
 
 #define QUAD_WORD (4 * 4)
 void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
-    // Set automatic page write
-      NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_WMODE(NVMCTRL_CTRLA_WMODE_AP);
+    // Set manual page write
+    NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
 
     // Execute "PBC" Page Buffer Clear
     wait_ready();
