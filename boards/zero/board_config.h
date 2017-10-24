@@ -5,7 +5,7 @@
 
 #define VENDOR_NAME "Arduino LLC"
 #define PRODUCT_NAME "Arduino Zero"
-#define VOLUME_LABEL "ARDUINO-M0"
+#define VOLUME_LABEL "ZEROBOOT"
 
 #define BOARD_ID "SAMD21G18A-Zero-v0"
 
