@@ -112,9 +112,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
         if (some_rows_same) {
             for (uint8_t i = 0; i < rows_per_block; i++) {
                 if(row_same[block][i]) {
-                    // dst is a uint32_t pointer so we add the number of words,
-                    // not bytes.
-                    memcpy(row_cache[i], block_address + i * (FLASH_ROW_SIZE / 4), FLASH_ROW_SIZE);
+                    memcpy(row_cache[i], block_address + i * FLASH_ROW_SIZE, FLASH_ROW_SIZE);
                 }
             }
         }
@@ -125,7 +123,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
                 if(row_same[block][i]) {
                     // dst is a uint32_t pointer so we add the number of words,
                     // not bytes.
-                    flash_write_words(block_address + i * (FLASH_ROW_SIZE / 4), row_cache[i], FLASH_ROW_SIZE / 4);
+                    flash_write_words(block_address + i * FLASH_ROW_SIZE, row_cache[i], FLASH_ROW_SIZE / 4);
                 }
             }
         }
