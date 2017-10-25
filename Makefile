@@ -46,6 +46,7 @@ LDFLAGS= $(COMMON_FLAGS) \
 BUILD_PATH=build/$(BOARD)
 INCLUDES = -I. -I./inc -I./inc/preprocessor
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include -Ilib/usb_msc
+INCLUDES += -I$(BUILD_PATH)
 
 
 ifeq ($(CHIP_FAMILY), samd21)
@@ -116,6 +117,8 @@ $(EXECUTABLE): $(OBJECTS)
 	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " ($(BOOTLOADER_SIZE)-s) }'
 	@echo
 
+$(BUILD_PATH)/uf2_version.h: Makefile
+	echo "#define UF2_VERSION_BASE \"$(shell git describe --tags)\""> $@
 
 $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
@@ -124,7 +127,7 @@ $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/update-$(NAME).elf $(BUILD_PATH)/update-$(NAME).bin
 	python lib/uf2/utils/uf2conv.py -b $(BOOTLOADER_SIZE) -c -o $@ $(BUILD_PATH)/update-$(NAME).bin
 
-$(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h)
+$(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h) $(BUILD_PATH)/uf2_version.h
 	echo "$<"
 	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
