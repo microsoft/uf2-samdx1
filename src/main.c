@@ -193,7 +193,7 @@ int main(void) {
 
     // not enumerated yet
     RGBLED_set_color(COLOR_START);
-    led_tick_step = 0;
+    led_tick_step = 10;
 
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
@@ -204,8 +204,7 @@ int main(void) {
                 resetHorizon = 0;
 #endif
                 RGBLED_set_color(COLOR_USB);
-                if (!led_tick_step)
-                    led_tick_step = 1;
+                led_tick_step = 1;
             }
 
             main_b_cdc_enable = true;

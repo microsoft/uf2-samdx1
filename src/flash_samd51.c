@@ -42,7 +42,6 @@ void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
         uint32_t len = 4 < n_words ? 4 : n_words;
 
         wait_ready();
-        // Fill a quad word so it triggers the auto-write.
         for (uint32_t i = 0; i < 4; i++) {
             if (i < len) {
                 dst[i] = src[i];
@@ -78,6 +77,10 @@ bool row_same[FLASH_SIZE / NVMCTRL_BLOCK_SIZE][NVMCTRL_BLOCK_SIZE / FLASH_ROW_SI
 #define QUICK_FLASH 1
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {
+    // The cache in Rev A isn't reliable when reading and writing to the NVM.
+    NVMCTRL->CTRLA.bit.CACHEDIS0 = true;
+    NVMCTRL->CTRLA.bit.CACHEDIS1 = true;
+
     uint32_t block = ((uint32_t) dst) / NVMCTRL_BLOCK_SIZE;
     uint8_t row = (((uint32_t) dst) % NVMCTRL_BLOCK_SIZE) / FLASH_ROW_SIZE;
 #if QUICK_FLASH
@@ -99,6 +102,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
 
     if (!block_erased[block]) {
         uint8_t rows_per_block = NVMCTRL_BLOCK_SIZE / FLASH_ROW_SIZE;
+        uint8_t* block_address = block * NVMCTRL_BLOCK_SIZE;
 
         bool some_rows_same = false;
         for (uint8_t i = 0; i < rows_per_block; i++) {
@@ -108,7 +112,9 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
         if (some_rows_same) {
             for (uint8_t i = 0; i < rows_per_block; i++) {
                 if(row_same[block][i]) {
-                    memcpy(row_cache[i], dst + i * FLASH_ROW_SIZE, FLASH_ROW_SIZE);
+                    // dst is a uint32_t pointer so we add the number of words,
+                    // not bytes.
+                    memcpy(row_cache[i], block_address + i * (FLASH_ROW_SIZE / 4), FLASH_ROW_SIZE);
                 }
             }
         }
@@ -117,11 +123,17 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
         if (some_rows_same) {
             for (uint8_t i = 0; i < rows_per_block; i++) {
                 if(row_same[block][i]) {
-                    flash_write_words(dst + i * FLASH_ROW_SIZE, row_cache[i], FLASH_ROW_SIZE / 4);
+                    // dst is a uint32_t pointer so we add the number of words,
+                    // not bytes.
+                    flash_write_words(block_address + i * (FLASH_ROW_SIZE / 4), row_cache[i], FLASH_ROW_SIZE / 4);
                 }
             }
         }
     }
 
     flash_write_words(dst, src, FLASH_ROW_SIZE / 4);
+
+    // Don't return until we're done writing in case something after us causes
+    // a reset.
+    wait_ready();
 }

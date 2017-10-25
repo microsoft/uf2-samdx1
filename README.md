@@ -6,9 +6,9 @@ the USB MSC (mass storage).
 
 [![Build Status](https://travis-ci.org/Microsoft/uf2-samd21.svg?branch=master)](https://travis-ci.org/Microsoft/uf2-samd21)
 
-## UF2 
+## UF2
 
-**UF2 (USB Flashing Format)** is a name of a file format, developed by Microsoft, that is particularly 
+**UF2 (USB Flashing Format)** is a name of a file format, developed by Microsoft, that is particularly
 suitable for flashing devices over MSC devices. The file consists
 of 512 byte blocks, each of which is self-contained and independent
 of others.
@@ -27,7 +27,7 @@ a UF2 file is written and immediately write it to flash.
 
 ## Features
 
-* USB CDC (Serial emulation) monitor mode compatible with Arduino 
+* USB CDC (Serial emulation) monitor mode compatible with Arduino
   (including XYZ commands) and BOSSA flashing tool
 * USB MSC interface for writing UF2 files
 * reading of the contests of the flash as an UF2 file via USB MSC
@@ -84,12 +84,14 @@ sketch. You can copy&paste it into Arduino IDE and upload it to the device.
 
 ## Fuses
 
+### SAMD21
+
 The SAMD21 supports a `BOOTPROT` fuse, which write-protects the flash area of
 the bootloader. Changes to this fuse only take effect after device reset.
 
 OpenOCD exposes `at91samd bootloader` command to set this fuse. **This command is buggy.**
 It seems to reset both fuse words to `0xffffffff`, which prevents the device
-from operating correctly (it seems to reboot very frequently). 
+from operating correctly (it seems to reboot very frequently).
 In `scripts/fuses.tcl` there is an OpenOCD script
 which correctly sets the fuse. It's invoked by `dbgtool.js fuses`. It can be also
 used to reset the fuses to sane values - just look at the comment at the top.
@@ -97,6 +99,17 @@ used to reset the fuses to sane values - just look at the comment at the top.
 The bootloader update programs (both the `.uf2` file and the Arduino sketch)
 clear the `BOOTPROT` (i.e., set it to `0x7`) before trying to flash anything.
 After flashing is done, they set `BOOTPROT` to 8 kilobyte bootloader size (i.e, `0x2`).
+
+### SAMD51
+
+The SAMD51s bootloader protection can be temporarily disabled through an NVM
+command rather than a full erase and write of the AUX page. The boot protection
+will be checked and set by the self updaters.
+
+So, if you've used self-updaters but want to load it directly, then you'll need
+to temporarily turn off the protection. In gdb the command is:
+
+`set ((Nvmctrl  *)0x41004000UL)->CTRLB.reg = (0xA5 << 8) | 0x1a`
 
 ## Build
 
@@ -132,7 +145,7 @@ The default board is `zero`. You can build a different one using:
 make BOARD=metro
 ```
 
-If you're working on different board, it's best to create `Makefile.local` 
+If you're working on different board, it's best to create `Makefile.local`
 with say `BOARD=metro` to change the default.
 The names `zero` and `metro` refer to subdirectories of `boards/`.
 
@@ -153,22 +166,22 @@ make r
 There is a number of configuration parameters at the top of `uf2.h` file.
 Adjust them to your liking.
 
-By default, you cannot enable all the features, as the bootloader would exceed 
+By default, you cannot enable all the features, as the bootloader would exceed
 the 8k allocated to it by Arduino etc. It will assert on startup that it's not bigger
 than 8k. Also, the linker script will not allow it.
 
 Three typical configurations are:
 
-* HID, WebUSB, MSC, plus flash reading via FAT; UART and CDC disabled; 
+* HID, WebUSB, MSC, plus flash reading via FAT; UART and CDC disabled;
   logging optional; **recommended**
-* USB CDC and MSC, plus flash reading via FAT; UART disabled; 
+* USB CDC and MSC, plus flash reading via FAT; UART disabled;
   logging optional; this may have Windows driver problems
-* USB CDC and MSC, no flash reading via FAT (or at least `index.htm` disabled); UART enabled; 
+* USB CDC and MSC, no flash reading via FAT (or at least `index.htm` disabled); UART enabled;
   logging disabled; no handover; no HID;
   only this one if you need the UART support in bootloader for whatever reason
 
 CDC and MSC together will work on Linux and Mac with no drivers.
-On Windows, if you have drivers installed for the USB ID chosen, 
+On Windows, if you have drivers installed for the USB ID chosen,
 then CDC might work and MSC will not work;
 otherwise, if you have no drivers, MSC will work, and CDC will work on Windows 10 only.
 Thus, it's best to set the USB ID to one for which there are no drivers.
