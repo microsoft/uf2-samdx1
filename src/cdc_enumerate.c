@@ -441,7 +441,7 @@ void AT91F_InitUSB(void) {
 
     /* Enable USB clock */
     #ifdef SAMD21
-    PM->APBBMASK.bit.USB = true;
+    PM->APBBMASK.reg |= PM_APBBMASK_USB;
     #define DM_PIN PIN_PA24G_USB_DM
     #define DM_MUX MUX_PA24G_USB_DM
     #define DP_PIN PIN_PA25G_USB_DP
