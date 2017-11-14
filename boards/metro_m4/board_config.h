@@ -1,16 +1,14 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
-#define __SAMD21J19A__ 1
-
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Metro M4"
 #define VOLUME_LABEL "METROM4BOOT"
 #define INDEX_URL "http://adafru.it/3505"
-#define BOARD_ID "SAMD21G19A-Metro-v0"
+#define BOARD_ID "SAMD51J19A-Metro-v0"
 
 #define USB_VID 0x239A
-#define USB_PID 0x0013
+#define USB_PID 0x0021
 
 #define LED_PIN PIN_PA21
 #define LED_TX_PIN PIN_PA27
