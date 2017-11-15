@@ -38,7 +38,7 @@ a UF2 file is written and immediately write it to flash.
 
 ## Board identification
 
-Configuration files for board `foo` is in `boards/foo/board_config.h`. You can
+Configuration files for board `foo` are in `boards/foo/board_config.h` and `board.mk`. You can
 build it with `make BOARD=foo`. You can also create `Makefile.user` file with `BOARD=foo`
 to change the default.
 
@@ -75,11 +75,11 @@ Thus, to update the bootloader, one can ship a user-space program,
 that contains the new version of the bootloader and copies it to the
 appropriate place in flash.
 
-Such a program is generated during build in files `update-bootloader.uf2`.
+Such a program is generated during build in files `update-bootloader*.uf2`.
 If you're already running UF2 bootloader, the easiest way to update
 it, is to just copy this file to the exposed MSD drive.
 
-The build also generates `update-bootloader.ino` with an equivalent Arduino
+The build also generates `update-bootloader*.ino` with an equivalent Arduino
 sketch. You can copy&paste it into Arduino IDE and upload it to the device.
 
 ## Fuses
@@ -116,7 +116,7 @@ to temporarily turn off the protection. In gdb the command is:
 ### Requirements
 
 * `make` and an Unix environment
-* `node`.js in path
+* `node`.js in path (optional)
 * `arm-none-eabi-gcc` in the path (the one coming with Yotta will do just fine)
 * `openocd` - you can use the one coming with Arduino (after your install the M0 board support)
 
@@ -142,7 +142,7 @@ at `0xffffffff`.
 The default board is `zero`. You can build a different one using:
 
 ```
-make BOARD=metro
+make BOARD=metro_m0
 ```
 
 If you're working on different board, it's best to create `Makefile.local`

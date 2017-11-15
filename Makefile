@@ -26,6 +26,8 @@ CFLAGS = $(COMMON_FLAGS) \
 -D__$(CHIP_VARIANT)__ \
 $(WFLAGS)
 
+UF2_VERSION_BASE = $(shell git describe --dirty --always --tags)
+
 ifeq ($(CHIP_FAMILY), samd21)
 LINKER_SCRIPT=./lib/samd21/samd21a/gcc/gcc/samd21j18a_flash.ld
 BOOTLOADER_SIZE=8192
@@ -79,9 +81,10 @@ SELF_SOURCES = $(COMMON_SRC) \
 OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SOURCES))
 SELF_OBJECTS = $(patsubst src/%.c,$(BUILD_PATH)/%.o,$(SELF_SOURCES)) $(BUILD_PATH)/selfdata.o
 
-NAME=bootloader
+NAME=bootloader-$(BOARD)-$(UF2_VERSION_BASE)
 EXECUTABLE=$(BUILD_PATH)/$(NAME).bin
 SELF_EXECUTABLE=$(BUILD_PATH)/update-$(NAME).uf2
+SELF_EXECUTABLE_INO=$(BUILD_PATH)/update-$(NAME).ino
 
 all: dirs $(EXECUTABLE) $(SELF_EXECUTABLE)
 
@@ -118,7 +121,7 @@ $(EXECUTABLE): $(OBJECTS)
 	@echo
 
 $(BUILD_PATH)/uf2_version.h: Makefile
-	echo "#define UF2_VERSION_BASE \"$(shell git describe --tags)\""> $@
+	echo "#define UF2_VERSION_BASE \"$(UF2_VERSION_BASE)\""> $@
 
 $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
@@ -134,7 +137,7 @@ $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h) $(BUILD_PATH)/uf2_ve
 $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
 	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
-$(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.js src/sketch.cpp
+$(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.py src/sketch.cpp
 	python scripts/gendata.py $(BOOTLOADER_SIZE) $(EXECUTABLE)
 
 clean:
@@ -162,29 +165,16 @@ drop-board: all
 	mkdir -p build/drop/$(BOARD)
 	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/
 	cp $(EXECUTABLE) build/drop/$(BOARD)/
-	cp $(BUILD_PATH)/update-bootloader.ino build/drop/$(BOARD)/
+	cp $(SELF_EXECUTABLE_INO) build/drop/$(BOARD)/
 	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/
 
 drop-pkg:
-	mv build/drop build/uf2-samd21-$(VERSION)
-	cp bin-README.md build/uf2-samd21-$(VERSION)/README.md
-	cd build; 7z a uf2-samd21-$(VERSION).zip uf2-samd21-$(VERSION)
-	rm -rf build/uf2-samd21-$(VERSION)
-
-tag:
-	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` do-tag
-
-do-tag:
-	git add inc/uf2.h
-	git diff --exit-code
-	git commit -m "v$(VERSION)"
-	git tag "v$(VERSION)"
-	git push
-	git push --tag
-	$(MAKE) drop
+	mv build/drop build/uf2-samd21-$(UF2_VERSION_BASE)
+	cp bin-README.md build/uf2-samd21-$(UF2_VERSION_BASE)/README.md
+	cd build; 7z a uf2-samd21-$(UF2_VERSION_BASE).zip uf2-samd21-$(UF2_VERSION_BASE)
+	rm -rf build/uf2-samd21-$(UF2_VERSION_BASE)
 
 all-boards:
 	for f in `cd boards; ls` ; do $(MAKE) BOARD=$$f drop-board ; done
 
-drop: all-boards
-	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
+drop: all-boards drop-pkg

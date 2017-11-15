@@ -24,7 +24,8 @@ with open(bin_name, "rb") as bootloader_bin:
 bootloader.extend([0xff] * (bootloader_size - len(bootloader)))
 
 # Output the bootloader binary data into C code to use in the self updater.
-with open(os.path.dirname(bin_name) + "/selfdata.c", "w") as output:
+selfdata_c_path = os.path.join(os.path.dirname(bin_name), "selfdata.c")
+with open(selfdata_c_path, "w") as output:
     output.write("#include <stdint.h>\n")
     output.write("const uint8_t bootloader[{}] ".format(bootloader_size) +
                  "__attribute__ ((aligned (4))) = {")
@@ -49,3 +50,16 @@ with open(os.path.dirname(bin_name) + "/selfdata.c", "w") as output:
     crcs = ["0x{:04x}".format(x) for x in crcs]
     output.write("const uint16_t bootloader_crcs[] = {" +
                  " ,".join(crcs) + "};\n")
+
+bin_dirname = os.path.dirname(bin_name)
+bin_basename_no_ext = os.path.basename(os.path.splitext(bin_name)[0])
+with open(os.path.join(bin_dirname, "update-" + bin_basename_no_ext + ".ino"), "w") as output:
+    output.write("""\
+// Bootloader update sketch. Paste into Arduino IDE and upload to the device
+// to update bootloader. It will blink a few times and then start pulsing.
+// Your OS will then detect a USB mass storage device.
+""")
+    with open(selfdata_c_path) as input:
+        output.write(input.read())
+    with open("src/sketch.cpp") as input:
+        output.write(input.read())
