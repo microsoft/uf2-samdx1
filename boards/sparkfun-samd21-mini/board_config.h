@@ -1,8 +1,6 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
-#define __SAMD21G18A__ 1
-
 #define VENDOR_NAME "Sparkfun"
 #define PRODUCT_NAME "SAMD21 Mini Breakout"
 #define VOLUME_LABEL "SPARKFUN"
