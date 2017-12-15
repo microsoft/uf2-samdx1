@@ -63,7 +63,7 @@ function main() {
 
     if (!pkgDir) fatal("cannot find Arduino packages directory")
 
-    let openocdPath = pkgDir + "tools/openocd/0.9.0-arduino/"
+    let openocdPath = pkgDir + "tools/openocd/0.10.0-arduino1-static/"
     if (!fs.existsSync(openocdPath)) fatal("openocd not installed in Arduino")
 
     let openocdBin = openocdPath + "bin/openocd"
@@ -71,7 +71,7 @@ function main() {
     if (process.platform == "win32")
         openocdBin += ".exe"
 
-    let zeroCfg = pkgDir + "hardware/samd/1.6.8/variants/arduino_zero/openocd_scripts/arduino_zero.cfg"
+    let zeroCfg = pkgDir + "hardware/samd/1.6.16/variants/arduino_zero/openocd_scripts/arduino_zero.cfg"
 
     let cmd = `telnet_port disabled; init; halt; `
     if (mode == "map")
