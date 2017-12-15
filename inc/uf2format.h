@@ -85,6 +85,8 @@ static inline void hf2_handover(uint8_t ep) {
     }
 }
 
+// the ep_in/ep_out are without the 0x80 mask
+// cbw_tag is in the same bit format as it came
 static inline void check_uf2_handover(uint8_t *buffer, uint32_t blocks_remaining, uint8_t ep_in,
                                       uint8_t ep_out, uint32_t cbw_tag) {
     if (!is_uf2_block(buffer))
