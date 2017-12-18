@@ -592,6 +592,12 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
     if (USB->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0) {
         /* Set packet size */
         cache->size = epdesc->DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT;
+
+        // this is when processing a hand-over
+        if (cache->read_job == 2) {
+            memcpy(&cache->buf, (void*)epdesc->DeviceDescBank[0].ADDR.reg, cache->size);
+        }
+
         packetSize = MIN(cache->size, length);
         if (pData) {
             cache->ptr = packetSize;
