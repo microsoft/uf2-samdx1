@@ -16,13 +16,13 @@ WFLAGS = \
 CFLAGS = $(COMMON_FLAGS) \
 -x c -c -pipe -nostdlib \
 --param max-inline-insns-single=500 \
--fno-strict-aliasing -fdata-sections -ffunction-sections -mlong-calls \
+-fno-strict-aliasing -fdata-sections -ffunction-sections \
 $(WFLAGS)
 
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 -Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
--save-temps  \
+-save-temps -nostartfiles \
 --specs=nano.specs --specs=nosys.specs 
 BUILD_PATH=build/$(BOARD)
 INCLUDES = -I./inc -I./inc/preprocessor
