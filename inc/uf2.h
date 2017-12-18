@@ -33,7 +33,7 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#define UF2_VERSION_BASE "v1.23.0"
+#define UF2_VERSION_BASE "v1.24.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
@@ -114,9 +114,15 @@
 #define WEB_VERSION ""
 #endif
 
+#if USE_MSC_HANDOVER
+#define MSC_HANDOVER_VERSION "O"
+#else
+#define MSC_HANDOVER_VERSION ""
+#endif
+
 #define UF2_VERSION                                                                                \
     UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
-        WEB_VERSION RESET_VERSION
+        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION
 
 // End of config
 
