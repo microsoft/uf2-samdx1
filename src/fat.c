@@ -231,11 +231,13 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state
             if (state->numWritten >= state->numBlocks) {
                 // wait a little bit before resetting, to avoid Windows transmit error
                 // https://github.com/Microsoft/uf2-samd21/issues/11
-                resetHorizon = timerHigh + 30;
+                if (!quiet)
+                    resetHorizon = timerHigh + 30;
                 // resetIntoApp();
             }
         }
     } else {
-        resetHorizon = timerHigh + 300;
+        if (!quiet)
+            resetHorizon = timerHigh + 300;
     }
 }
