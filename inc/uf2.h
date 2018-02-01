@@ -37,7 +37,7 @@
 #define WEBUSB_URL "pxt.io"
 #endif
 
-#define UF2_VERSION_BASE "v1.24.0"
+#define UF2_VERSION_BASE "v1.25.0"
 
 // needs to be more than ~4200 (to force FAT16)
 #define NUM_FAT_BLOCKS 8000
