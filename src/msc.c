@@ -846,21 +846,11 @@ void handoverPrep() {
 }
 
 static void handover(UF2_HandoverArgs *args) {
-    // reset interrupt vectors, so that we're not disturbed by
-    // interrupt handlers from user space
-
-    // for (int i = 1; i <= 0x1f; ++i){
-    //    system_interrupt_disable(i);
-    //}
-
     handoverPrep();
 
     PacketBuffer cache = {0};
     WriteState writeState = {0};
-
-    // for (int i = 0; i < 1000000; i++) {
-    //    asm("nop");
-    //}
+    cache.read_job = 2;
 
     // They may have 0x80 bit set
     args->ep_in &= 0xf;

@@ -39,9 +39,15 @@ __attribute__((__aligned__(4))) UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
 __attribute__((__aligned__(4)))
 const char devDescriptor[] = {
     /* Device descriptor */
-    0x12,           // bLength
-    0x01,           // bDescriptorType
-    0x00,           // bcdUSBL - v2.00; v2.10 is needed for WebUSB, but it breaks newer laptops running Win10
+    0x12, // bLength
+    0x01, // bDescriptorType
+// bcdUSBL - v2.00; v2.10 is needed for WebUSB; there were issues with newer laptops running Win10
+// but it seems to be resolved
+#if USE_WEBUSB
+    0x10,
+#else
+    0x00,
+#endif
     0x02,           //
     0xEF,           // bDeviceClass:    Misc
     0x02,           // bDeviceSubclass:
@@ -55,7 +61,7 @@ const char devDescriptor[] = {
     0x42,           //
     0x01,           // iManufacturer    // 0x01
     0x02,           // iProduct
-    0x00,           // SerialNumber
+    0x03,           // SerialNumber (required (!) for WebUSB)
     0x01            // bNumConfigs
 };
 
@@ -111,7 +117,7 @@ char cfgDescriptor[] = {
     0x01,                                   // CbConfigurationValue
     0x00,                                   // CiConfiguration
     0x80,                                   // CbmAttributes 0x80 - bus-powered
-    250,                                   // 500mA
+    250,                                    // 500mA
 
 #if USE_CDC
     // IAD for CDC
@@ -272,6 +278,8 @@ char cfgDescriptor[] = {
 #endif
 };
 
+#define WINUSB_SIZE 170
+
 __attribute__((__aligned__(4)))
 static char bosDescriptor[] = {
     0x05, // Length
@@ -294,7 +302,7 @@ static char bosDescriptor[] = {
     0x8B, 0xFD, 0xA0, 0x76, 0x88, 0x15, 0xB6, 0x65, // WebUSB GUID
     0x00, 0x01,                                     // Version 1.0
     0x01,                                           // Vendor request code
-    0x02,                                           // landing page
+    0x01,                                           // landing page
 
     0x1C,                                           // Length
     0x10,                                           // Device Capability descriptor
@@ -303,7 +311,7 @@ static char bosDescriptor[] = {
     0xDF, 0x60, 0xDD, 0xD8, 0x89, 0x45, 0xC7, 0x4C, // MS OS 2.0 GUID
     0x9C, 0xD2, 0x65, 0x9D, 0x9E, 0x64, 0x8A, 0x9F, // MS OS 2.0 GUID
     0x00, 0x00, 0x03, 0x06,                         // Windows version
-    0x2e, 0x00,                                     // Descriptor set length
+    WINUSB_SIZE, 0x00,                              // Descriptor set length
     0x02,                                           // Vendor request code
     0x00                                            // Alternate enumeration code
 #endif
@@ -316,49 +324,70 @@ static char msOS20Descriptor[] = {
     0x0A, 0x00,             // Descriptor size (10 bytes)
     0x00, 0x00,             // MS OS 2.0 descriptor set header
     0x00, 0x00, 0x03, 0x06, // Windows version (8.1) (0x06030000)
-    0x2e, 0x00,             // Size, MS OS 2.0 descriptor set
-
-    // Microsoft OS 2.0 configuration subset header
-    0x08, 0x00, // Descriptor size (8 bytes)
-    0x01, 0x00, // MS OS 2.0 configuration subset header
-    0x00,       // bConfigurationValue
-    0x00,       // Reserved
-    0x24, 0x00, // Size, MS OS 2.0 configuration subset
+    WINUSB_SIZE, 0x00,      // Size, MS OS 2.0 descriptor set
 
     // Microsoft OS 2.0 function subset header
-    0x08, 0x00, // Descriptor size (8 bytes)
-    0x02, 0x00, // MS OS 2.0 function subset header
-    WEB_IF_NUM, // first interface no
-    0x00,       // Reserved
-    0x1c, 0x00, // Size, MS OS 2.0 function subset
+    0x08, 0x00,             // Descriptor size (8 bytes)
+    0x02, 0x00,             // MS OS 2.0 function subset header
+    WEB_IF_NUM,             // first interface no
+    0x00,                   // Reserved
+    WINUSB_SIZE - 10, 0x00, // Size, MS OS 2.0 function subset
 
     // Microsoft OS 2.0 compatible ID descriptor (table 13)
-    0x14, 0x00,                   // wLength
+    20, 0x00,                     // wLength
     0x03, 0x00,                   // MS_OS_20_FEATURE_COMPATIBLE_ID
     'W', 'I', 'N', 'U', 'S', 'B', //
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
 
+    // interface guids
+    132, 0, 4, 0, 7, 0,
+    //
+    42, 0,
+    //
+    'D', 0, 'e', 0, 'v', 0, 'i', 0, 'c', 0, 'e', 0, 'I', 0, 'n', 0, 't', 0, 'e', 0, 'r', 0, 'f', 0,
+    'a', 0, 'c', 0, 'e', 0, 'G', 0, 'U', 0, 'I', 0, 'D', 0, 's', 0, 0, 0,
+    //
+    80, 0,
+    //
+    '{', 0, '9', 0, '2', 0, 'C', 0, 'E', 0, '6', 0, '4', 0, '6', 0, '2', 0, '-', 0, '9', 0, 'C', 0,
+    '7', 0, '7', 0, '-', 0, '4', 0, '6', 0, 'F', 0, 'E', 0, '-', 0, '9', 0, '3', 0, '3', 0, 'B', 0,
+    '-', 0, '3', 0, '1', 0, 'C', 0, 'B', 0, '9', 0, 'C', 0, '5', 0, 'A', 0, 'A', 0, '3', 0, 'B', 0,
+    '9', 0, '}', 0, 0, 0, 0, 0};
+
+STATIC_ASSERT(sizeof(msOS20Descriptor) == WINUSB_SIZE);
+
+#if USE_WEBUSB_ORIGINS
 #define ALLOWED_ORIGINS_SEQ 1, 2
 static const char *allowed_origins[] = {"localhost:3232", "samd.pxt.io"};
 
 #define NUM_ALLOWED_ORIGINS 2
 static const uint8_t allowedOriginsDesc[] = {
     // Allowed Origins Header, bNumConfigurations = 1
-    0x05, 0x00, 0x0c + NUM_ALLOWED_ORIGINS, 0x00, 0x01,
+    0x05,
+    0x00,
+    0x0c + NUM_ALLOWED_ORIGINS,
+    0x00,
+    0x01,
     // Configuration Subset Header, bNumFunctions = 1
-    0x04, 0x01, 0x01, 0x01,
+    0x04,
+    0x01,
+    0x01,
+    0x01,
     // Function Subset Header, bFirstInterface = pluggedInterface
-    0x03 + NUM_ALLOWED_ORIGINS, 0x02, WEB_IF_NUM, ALLOWED_ORIGINS_SEQ,
+    0x03 + NUM_ALLOWED_ORIGINS,
+    0x02,
+    WEB_IF_NUM,
+    ALLOWED_ORIGINS_SEQ,
 };
+
+STATIC_ASSERT((sizeof(allowed_origins) / sizeof(allowed_origins[0])) == NUM_ALLOWED_ORIGINS);
+STATIC_ASSERT(sizeof(allowedOriginsDesc) == 0x0c + NUM_ALLOWED_ORIGINS);
+#endif
 
 typedef struct {
     uint8_t len, tp, scheme;
     uint8_t buf[64];
 } __attribute__((packed)) WebUSB_URL;
-
-STATIC_ASSERT((sizeof(allowed_origins) / sizeof(allowed_origins[0])) == NUM_ALLOWED_ORIGINS);
-STATIC_ASSERT(sizeof(allowedOriginsDesc) == 0x0c + NUM_ALLOWED_ORIGINS);
 
 #endif
 
@@ -370,7 +399,7 @@ typedef struct {
     uint8_t data[70];
 } StringDescriptor;
 
-static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, };
+static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, "4242"};
 
 #define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
 
@@ -604,6 +633,12 @@ uint32_t USB_ReadCore(void *pData, uint32_t length, uint32_t ep, PacketBuffer *c
     if (USB->DEVICE.DeviceEndpoint[ep].EPINTFLAG.reg & USB_DEVICE_EPINTFLAG_TRCPT0) {
         /* Set packet size */
         cache->size = epdesc->DeviceDescBank[0].PCKSIZE.bit.BYTE_COUNT;
+
+        // this is when processing a hand-over
+        if (cache->read_job == 2) {
+            memcpy(&cache->buf, (void *)epdesc->DeviceDescBank[0].ADDR.reg, cache->size);
+        }
+
         packetSize = MIN(cache->size, length);
         if (pData) {
             cache->ptr = packetSize;
@@ -800,6 +835,7 @@ void AT91F_CDC_Enumerate() {
         break;
 #if USE_WEBUSB
     case STD_VENDOR_CTRL1:
+#if USE_WEBUSB_ORIGINS
         if (wIndex == 0x01)
             sendCtrl(allowedOriginsDesc, sizeof(allowedOriginsDesc));
         else if (wIndex == 0x02) {
@@ -816,6 +852,19 @@ void AT91F_CDC_Enumerate() {
         } else {
             stall_ep(0);
         }
+#else
+        if (wIndex == 0x02 && ctrlOutCache.buf[2] == 0x01) {
+            WebUSB_URL url;
+            url.len = strlen(WEBUSB_URL) + 3;
+            url.tp = 3;
+            // first URL is http, rest is https
+            url.scheme = 1;
+            memcpy(url.buf, WEBUSB_URL, url.len - 3);
+            sendCtrl(&url, url.len);
+        } else {
+            stall_ep(0);
+        }
+#endif
         break;
     case STD_VENDOR_CTRL2:
         if (wIndex == 0x07)

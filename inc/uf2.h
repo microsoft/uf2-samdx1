@@ -31,6 +31,10 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
+#ifndef WEBUSB_URL
+#define WEBUSB_URL "pxt.io"
+#endif
+
 #include "uf2_version.h"
 
 // needs to be more than ~4200 (to force FAT16)
@@ -51,7 +55,9 @@
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1 // 788 bytes
 // Expose HID via WebUSB
-#define USE_WEBUSB 0 // 400 bytes
+#define USE_WEBUSB 0
+// Return allowed WebUSB URLs; it seems to have been removed from the standard
+#define USE_WEBUSB_ORIGINS 0
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
@@ -112,9 +118,15 @@
 #define WEB_VERSION ""
 #endif
 
+#if USE_MSC_HANDOVER
+#define MSC_HANDOVER_VERSION "O"
+#else
+#define MSC_HANDOVER_VERSION ""
+#endif
+
 #define UF2_VERSION                                                                                \
     UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
-        WEB_VERSION RESET_VERSION
+        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION
 
 // End of config
 

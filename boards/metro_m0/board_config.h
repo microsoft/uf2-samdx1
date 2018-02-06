@@ -1,8 +1,6 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
-#define __SAMD21G18A__ 1
-
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Metro M0"
 #define VOLUME_LABEL "METROBOOT"

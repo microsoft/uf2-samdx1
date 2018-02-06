@@ -162,6 +162,9 @@ int main(void) {
         while (1) {
         }
 
+#if USB_PID == 0x0013  // Metro m0
+    delay(100);
+#endif
     led_init();
 
     logmsg("Start");
