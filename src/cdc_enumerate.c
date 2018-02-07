@@ -302,7 +302,7 @@ static char bosDescriptor[] = {
     0x8B, 0xFD, 0xA0, 0x76, 0x88, 0x15, 0xB6, 0x65, // WebUSB GUID
     0x00, 0x01,                                     // Version 1.0
     0x01,                                           // Vendor request code
-    0x01,                                           // landing page
+    0x00,                                           // landing page
 
     0x1C,                                           // Length
     0x10,                                           // Device Capability descriptor
@@ -355,39 +355,6 @@ static char msOS20Descriptor[] = {
     '9', 0, '}', 0, 0, 0, 0, 0};
 
 STATIC_ASSERT(sizeof(msOS20Descriptor) == WINUSB_SIZE);
-
-#if USE_WEBUSB_ORIGINS
-#define ALLOWED_ORIGINS_SEQ 1, 2
-static const char *allowed_origins[] = {"localhost:3232", "samd.pxt.io"};
-
-#define NUM_ALLOWED_ORIGINS 2
-static const uint8_t allowedOriginsDesc[] = {
-    // Allowed Origins Header, bNumConfigurations = 1
-    0x05,
-    0x00,
-    0x0c + NUM_ALLOWED_ORIGINS,
-    0x00,
-    0x01,
-    // Configuration Subset Header, bNumFunctions = 1
-    0x04,
-    0x01,
-    0x01,
-    0x01,
-    // Function Subset Header, bFirstInterface = pluggedInterface
-    0x03 + NUM_ALLOWED_ORIGINS,
-    0x02,
-    WEB_IF_NUM,
-    ALLOWED_ORIGINS_SEQ,
-};
-
-STATIC_ASSERT((sizeof(allowed_origins) / sizeof(allowed_origins[0])) == NUM_ALLOWED_ORIGINS);
-STATIC_ASSERT(sizeof(allowedOriginsDesc) == 0x0c + NUM_ALLOWED_ORIGINS);
-#endif
-
-typedef struct {
-    uint8_t len, tp, scheme;
-    uint8_t buf[64];
-} __attribute__((packed)) WebUSB_URL;
 
 #endif
 
@@ -835,36 +802,7 @@ void AT91F_CDC_Enumerate() {
         break;
 #if USE_WEBUSB
     case STD_VENDOR_CTRL1:
-#if USE_WEBUSB_ORIGINS
-        if (wIndex == 0x01)
-            sendCtrl(allowedOriginsDesc, sizeof(allowedOriginsDesc));
-        else if (wIndex == 0x02) {
-            WebUSB_URL url;
-            uint32_t idx = (uint32_t)ctrlOutCache.buf[2] - 1;
-            if (idx >= NUM_ALLOWED_ORIGINS)
-                stall_ep(0);
-            url.len = strlen(allowed_origins[idx]) + 3;
-            url.tp = 3;
-            // first URL is http, rest is https
-            url.scheme = idx == 0 ? 0 : 1;
-            memcpy(url.buf, allowed_origins[idx], url.len - 3);
-            sendCtrl(&url, url.len);
-        } else {
-            stall_ep(0);
-        }
-#else
-        if (wIndex == 0x02 && ctrlOutCache.buf[2] == 0x01) {
-            WebUSB_URL url;
-            url.len = strlen(WEBUSB_URL) + 3;
-            url.tp = 3;
-            // first URL is http, rest is https
-            url.scheme = 1;
-            memcpy(url.buf, WEBUSB_URL, url.len - 3);
-            sendCtrl(&url, url.len);
-        } else {
-            stall_ep(0);
-        }
-#endif
+        stall_ep(0);
         break;
     case STD_VENDOR_CTRL2:
         if (wIndex == 0x07)
