@@ -144,7 +144,7 @@ drop-pkg:
 	rm -rf build/uf2-samd21-$(VERSION)
 
 tag:
-	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` do-tag
+	"$(MAKE)" VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` do-tag
 
 do-tag:
 	git add inc/uf2.h
@@ -153,11 +153,11 @@ do-tag:
 	git tag "v$(VERSION)"
 	git push
 	git push --tag
-	$(MAKE) drop
+	"$(MAKE)" drop
 
 all-boards:
-	for f in `cd boards; ls` ; do $(MAKE) BOARD=$$f drop-board ; done
+	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board ; done
 
 drop: all-boards
-	$(MAKE) VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
+	"$(MAKE)" VERSION=`awk '/define UF2_VERSION_BASE/ { gsub(/"v?/, ""); print $$3 }' inc/uf2.h` drop-pkg
 
