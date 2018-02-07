@@ -33,10 +33,6 @@
 #define INDEX_URL "https://www.pxt.io/"
 #endif
 
-#ifndef WEBUSB_URL
-#define WEBUSB_URL "pxt.io"
-#endif
-
 #define UF2_VERSION_BASE "v1.25.0"
 
 // needs to be more than ~4200 (to force FAT16)
@@ -58,8 +54,6 @@
 #define USE_HID 1 // 788 bytes
 // Expose HID via WebUSB
 #define USE_WEBUSB 1
-// Return allowed WebUSB URLs; it seems to have been removed from the standard
-#define USE_WEBUSB_ORIGINS 0
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
