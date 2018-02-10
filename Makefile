@@ -29,13 +29,13 @@ $(WFLAGS)
 UF2_VERSION_BASE = $(shell git describe --dirty --always --tags)
 
 ifeq ($(CHIP_FAMILY), samd21)
-LINKER_SCRIPT=./lib/samd21/samd21a/gcc/gcc/samd21j18a_flash.ld
+LINKER_SCRIPT=scripts/samd21j18a.ld
 BOOTLOADER_SIZE=8192
 SELF_LINKER_SCRIPT=scripts/samd21j18a_self.ld
 endif
 
 ifeq ($(CHIP_FAMILY), samd51)
-LINKER_SCRIPT=./lib/samd51/gcc/gcc/samd51j18a_flash.ld
+LINKER_SCRIPT=scripts/samd51j19a.ld
 BOOTLOADER_SIZE=16384
 SELF_LINKER_SCRIPT=scripts/samd51j19a_self.ld
 endif

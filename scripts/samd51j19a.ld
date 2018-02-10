@@ -14,9 +14,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License.
  * You may obtain a copy of the Licence at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,10 +35,8 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions */
 MEMORY
 {
-  rom      (rx)  : ORIGIN = 0x00004000, LENGTH = 0x00080000 - 0x4000
+  rom      (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00080000
   ram      (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00030000
-  bkupram  (rwx) : ORIGIN = 0x47000000, LENGTH = 0x00002000
-  qspi     (rwx) : ORIGIN = 0x04000000, LENGTH = 0x01000000
 }
 
 /* The stack size used by the application. NOTE: you need to adjust according to your application. */
@@ -78,6 +76,8 @@ SECTIONS
         KEEP (*(SORT(.ctors.*)))
         KEEP (*crtend.o(.ctors))
 
+        /*
+
         . = ALIGN(4);
         KEEP(*(.fini))
 
@@ -91,6 +91,7 @@ SECTIONS
         KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
         KEEP (*(SORT(.dtors.*)))
         KEEP (*crtend.o(.dtors))
+        */
 
         . = ALIGN(4);
         _efixed = .;            /* End of text section */
@@ -117,24 +118,6 @@ SECTIONS
         _erelocate = .;
     } > ram
 
-    .bkupram (NOLOAD):
-    {
-        . = ALIGN(8);
-        _sbkupram = .;
-        *(.bkupram .bkupram.*);
-        . = ALIGN(8);
-        _ebkupram = .;
-    } > bkupram
-
-    .qspi (NOLOAD):
-    {
-        . = ALIGN(8);
-        _sqspi = .;
-        *(.qspi .qspi.*);
-        . = ALIGN(8);
-        _eqspi = .;
-    } > qspi
-
     /* .bss section which is used for uninitialized data */
     .bss (NOLOAD) :
     {
@@ -160,4 +143,9 @@ SECTIONS
 
     . = ALIGN(4);
     _end = . ;
+
+    _binfo_start = 0x00002000 - 4 * 4;
+    .binfo _binfo_start : {
+      KEEP(*(.binfo)) ;
+    } > rom
 }
