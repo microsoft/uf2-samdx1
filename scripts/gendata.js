@@ -32,7 +32,9 @@ infostr = infostr.split(/\r?\n/).map(l => "// " + l + "\n").join("")
 
 let size = buf.length
 let s = infostr + "\n"
-s += "const uint8_t bootloader[" + size + "] __attribute__ ((aligned (4))) = {"
+s += "const uint8_t bootloader[" + size + "] "
+s += "__attribute__ ((section(\".vectors.needs.to.go.first\"))) "
+s += "__attribute__ ((aligned (4))) = {"
 function tohex(v) {
   return "0x" + ("00" + v.toString(16)).slice(-2) + ", "
 }

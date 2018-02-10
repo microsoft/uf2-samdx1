@@ -51,7 +51,7 @@
 // Support Human Interface Device (HID) - serial, flashing and debug
 #define USE_HID 1 // 788 bytes
 // Expose HID via WebUSB
-#define USE_WEBUSB 0 // 400 bytes
+#define USE_WEBUSB 1
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
 
@@ -112,9 +112,15 @@
 #define WEB_VERSION ""
 #endif
 
+#if USE_MSC_HANDOVER
+#define MSC_HANDOVER_VERSION "O"
+#else
+#define MSC_HANDOVER_VERSION ""
+#endif
+
 #define UF2_VERSION                                                                                \
     UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
-        WEB_VERSION RESET_VERSION
+        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION
 
 // End of config
 
