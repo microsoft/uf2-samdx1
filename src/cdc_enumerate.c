@@ -390,15 +390,8 @@ static void load_serial_number(char serial_number[SERIAL_NUMBER_LENGTH]) {
     #endif
     uint32_t serial_number_idx = 0;
     for (int i = 0; i < 4; i++) {
-        uint32_t word = *(addresses[i]);
-        for (int j = 0; j < 8; j++) {
-            // Get top 4 bits.
-            uint8_t nibble = word >> 28;
-            word <<= 4;
-            serial_number[serial_number_idx++] = (nibble >= 10) ? 'A' + (nibble - 10) : '0' + nibble;
-        }
+        serial_number_idx += writeNum(&(serial_number[serial_number_idx]), *(addresses[i]), true);
     }
-
     serial_number[serial_number_idx] = '\0';
 }
 
