@@ -366,9 +366,38 @@ typedef struct {
     uint8_t data[70];
 } StringDescriptor;
 
-static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, "4242"};
 
+// Serial numbers are derived from four 32-bit words. Add one character for null terminator
+#define SERIAL_NUMBER_LENGTH (4 * 8 + 1)
+// serial_number will be filled in when needed.
+static char serial_number[SERIAL_NUMBER_LENGTH];
+
+static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, serial_number};
 #define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
+
+static void load_serial_number(char serial_number[SERIAL_NUMBER_LENGTH]) {
+    // These are locations that taken together make up a unique serial number.
+    #ifdef SAMD21
+    uint32_t* addresses[4] = {(uint32_t *) 0x0080A00C, (uint32_t *) 0x0080A040,
+                              (uint32_t *) 0x0080A044, (uint32_t *) 0x0080A048};
+    #endif
+    #ifdef SAMD51
+    uint32_t* addresses[4] = {(uint32_t *) 0x008061FC, (uint32_t *) 0x00806010,
+                              (uint32_t *) 0x00806014, (uint32_t *) 0x00806018};
+    #endif
+    uint32_t serial_number_idx = 0;
+    for (int i = 0; i < 4; i++) {
+        uint32_t word = *(addresses[i]);
+        for (int j = 0; j < 8; j++) {
+            // Get top 4 bits.
+            uint8_t nibble = word >> 28;
+            word <<= 4;
+            serial_number[serial_number_idx++] = (nibble >= 10) ? 'A' + (nibble - 10) : '0' + nibble;
+        }
+    }
+
+    serial_number[serial_number_idx] = '\0';
+}
 
 #if USE_CDC
 static usb_cdc_line_coding_t line_coding = {
@@ -778,6 +807,7 @@ void AT91F_CDC_Enumerate() {
                 desc.data[0] = 0x09;
                 desc.data[1] = 0x04;
             } else {
+                load_serial_number(serial_number);
                 const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
                 desc.len = strlen(ptr) * 2 + 2;
                 for (int i = 0; ptr[i]; i++) {

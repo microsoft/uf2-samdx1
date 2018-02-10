@@ -219,7 +219,7 @@ void sam_ba_monitor_run(void) {
                         // Erase the flash memory starting from ADDR to the end
                         // of flash.
 
-                        flash_erase_to_end(current_number);
+                        flash_erase_to_end((uint32_t *) current_number);
 
                         // Notify command completed
                         cdc_write_buf("X\n\r", 3);
