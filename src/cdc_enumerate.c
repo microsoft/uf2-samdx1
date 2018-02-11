@@ -105,6 +105,9 @@ const char hidDescriptor[] = {
 };
 #endif
 
+#ifndef USB_POWER_MA
+#define USB_POWER_MA 500
+#endif
 COMPILER_WORD_ALIGNED
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
@@ -117,7 +120,7 @@ char cfgDescriptor[] = {
     0x01,                                   // CbConfigurationValue
     0x00,                                   // CiConfiguration
     0x80,                                   // CbmAttributes 0x80 - bus-powered
-    250,                                    // 500mA
+    USB_POWER_MA/2,                         // MaxPower (*2mA)
 
 #if USE_CDC
     // IAD for CDC
@@ -171,7 +174,7 @@ char cfgDescriptor[] = {
     /* Endpoint 1 descriptor */
     0x07, // bLength
     0x05, // bDescriptorType
-    0x83, // bEndpointAddress, Endpoint 03 - IN
+    USB_EP_COMM | 0x80, // bEndpointAddress, Endpoint 03 - IN
     0x03, // bmAttributes      INT
     0x08, // wMaxPacketSize
     0x00,
@@ -192,7 +195,7 @@ char cfgDescriptor[] = {
     /* Endpoint 1 descriptor */
     0x07,     // bLength
     0x05,     // bDescriptorType
-    0x81,     // bEndpointAddress, Endpoint 01 - IN
+    USB_EP_IN | 0x80, // bEndpointAddress, Endpoint 01 - IN
     0x02,     // bmAttributes      BULK
     PKT_SIZE, // wMaxPacketSize
     0x00,
@@ -201,7 +204,7 @@ char cfgDescriptor[] = {
     /* Endpoint 2 descriptor */
     0x07,     // bLength
     0x05,     // bDescriptorType
-    0x02,     // bEndpointAddress, Endpoint 02 - OUT
+    USB_EP_OUT, // bEndpointAddress, Endpoint 02 - OUT
     0x02,     // bmAttributes      BULK
     PKT_SIZE, // wMaxPacketSize
     0x00,
