@@ -758,21 +758,24 @@ void AT91F_CDC_Enumerate() {
             sendCtrl(cfgDescriptor, sizeof(cfgDescriptor));
         else if (ctrlOutCache.buf[3] == 3) {
             if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
+            {
                 stall_ep(0);
-            StringDescriptor desc = {0};
-            desc.type = 3;
-            if (ctrlOutCache.buf[2] == 0) {
-                desc.len = 4;
-                desc.data[0] = 0x09;
-                desc.data[1] = 0x04;
             } else {
-                const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
-                desc.len = strlen(ptr) * 2 + 2;
-                for (int i = 0; ptr[i]; i++) {
-                    desc.data[i * 2] = ptr[i];
+                StringDescriptor desc = {0};
+                desc.type = 3;
+                if (ctrlOutCache.buf[2] == 0) {
+                    desc.len = 4;
+                    desc.data[0] = 0x09;
+                    desc.data[1] = 0x04;
+                } else {
+                    const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
+                    desc.len = strlen(ptr) * 2 + 2;
+                    for (int i = 0; ptr[i]; i++) {
+                        desc.data[i * 2] = ptr[i];
+                    }
                 }
+                sendCtrl(&desc, desc.len);
             }
-            sendCtrl(&desc, sizeof(StringDescriptor));
         } else if (ctrlOutCache.buf[3] == 0x0F) {
             sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
