@@ -77,6 +77,8 @@ bool row_same[FLASH_SIZE / NVMCTRL_BLOCK_SIZE][NVMCTRL_BLOCK_SIZE / FLASH_ROW_SI
 #define QUICK_FLASH 1
 
 void flash_write_row(uint32_t *dst, uint32_t *src) {
+    const uint32_t FLASH_ROW_SIZE_WORDS = FLASH_ROW_SIZE / 4;
+
     // The cache in Rev A isn't reliable when reading and writing to the NVM.
     NVMCTRL->CTRLA.bit.CACHEDIS0 = true;
     NVMCTRL->CTRLA.bit.CACHEDIS1 = true;
@@ -85,7 +87,7 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
     uint8_t row = (((uint32_t) dst) % NVMCTRL_BLOCK_SIZE) / FLASH_ROW_SIZE;
 #if QUICK_FLASH
     bool src_different = false;
-    for (uint32_t i = 0; i < FLASH_ROW_SIZE / 4; ++i) {
+    for (uint32_t i = 0; i < FLASH_ROW_SIZE_WORDS; ++i) {
         if (src[i] != dst[i]) {
             src_different = true;
             break;
@@ -102,17 +104,17 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
 
     if (!block_erased[block]) {
         uint8_t rows_per_block = NVMCTRL_BLOCK_SIZE / FLASH_ROW_SIZE;
-        uint8_t* block_address = block * NVMCTRL_BLOCK_SIZE;
+        uint32_t* block_address = (uint32_t *) (block * NVMCTRL_BLOCK_SIZE);
 
         bool some_rows_same = false;
         for (uint8_t i = 0; i < rows_per_block; i++) {
             some_rows_same = some_rows_same || row_same[block][i];
         }
-        uint32_t row_cache[rows_per_block][FLASH_ROW_SIZE / 4];
+        uint32_t row_cache[rows_per_block][FLASH_ROW_SIZE_WORDS];
         if (some_rows_same) {
             for (uint8_t i = 0; i < rows_per_block; i++) {
                 if(row_same[block][i]) {
-                    memcpy(row_cache[i], block_address + i * FLASH_ROW_SIZE, FLASH_ROW_SIZE);
+                    memcpy(row_cache[i], block_address + i * FLASH_ROW_SIZE_WORDS, FLASH_ROW_SIZE);
                 }
             }
         }
@@ -123,13 +125,13 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
                 if(row_same[block][i]) {
                     // dst is a uint32_t pointer so we add the number of words,
                     // not bytes.
-                    flash_write_words(block_address + i * FLASH_ROW_SIZE, row_cache[i], FLASH_ROW_SIZE / 4);
+                    flash_write_words(block_address + i * FLASH_ROW_SIZE_WORDS, row_cache[i], FLASH_ROW_SIZE_WORDS);
                 }
             }
         }
     }
 
-    flash_write_words(dst, src, FLASH_ROW_SIZE / 4);
+    flash_write_words(dst, src, FLASH_ROW_SIZE_WORDS);
 
     // Don't return until we're done writing in case something after us causes
     // a reset.
