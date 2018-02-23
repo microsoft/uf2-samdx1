@@ -105,6 +105,9 @@ const char hidDescriptor[] = {
 };
 #endif
 
+#ifndef USB_POWER_MA
+#define USB_POWER_MA 500
+#endif
 __attribute__((__aligned__(4)))
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
@@ -117,7 +120,7 @@ char cfgDescriptor[] = {
     0x01,                                   // CbConfigurationValue
     0x00,                                   // CiConfiguration
     0x80,                                   // CbmAttributes 0x80 - bus-powered
-    250,                                    // 500mA
+    USB_POWER_MA/2,                         // MaxPower (*2mA)
 
 #if USE_CDC
     // IAD for CDC
@@ -171,7 +174,7 @@ char cfgDescriptor[] = {
     /* Endpoint 1 descriptor */
     0x07, // bLength
     0x05, // bDescriptorType
-    0x83, // bEndpointAddress, Endpoint 03 - IN
+    USB_EP_COMM | 0x80, // bEndpointAddress, Endpoint 03 - IN
     0x03, // bmAttributes      INT
     0x08, // wMaxPacketSize
     0x00,
@@ -192,7 +195,7 @@ char cfgDescriptor[] = {
     /* Endpoint 1 descriptor */
     0x07,     // bLength
     0x05,     // bDescriptorType
-    0x81,     // bEndpointAddress, Endpoint 01 - IN
+    USB_EP_IN | 0x80, // bEndpointAddress, Endpoint 01 - IN
     0x02,     // bmAttributes      BULK
     PKT_SIZE, // wMaxPacketSize
     0x00,
@@ -201,7 +204,7 @@ char cfgDescriptor[] = {
     /* Endpoint 2 descriptor */
     0x07,     // bLength
     0x05,     // bDescriptorType
-    0x02,     // bEndpointAddress, Endpoint 02 - OUT
+    USB_EP_OUT, // bEndpointAddress, Endpoint 02 - OUT
     0x02,     // bmAttributes      BULK
     PKT_SIZE, // wMaxPacketSize
     0x00,
@@ -799,22 +802,25 @@ void AT91F_CDC_Enumerate() {
             sendCtrl(cfgDescriptor, sizeof(cfgDescriptor));
         else if (ctrlOutCache.buf[3] == 3) {
             if (ctrlOutCache.buf[2] >= STRING_DESCRIPTOR_COUNT)
+            {
                 stall_ep(0);
-            StringDescriptor desc = {0};
-            desc.type = 3;
-            if (ctrlOutCache.buf[2] == 0) {
-                desc.len = 4;
-                desc.data[0] = 0x09;
-                desc.data[1] = 0x04;
             } else {
+                StringDescriptor desc = {0};
+                desc.type = 3;
+                if (ctrlOutCache.buf[2] == 0) {
+                    desc.len = 4;
+                    desc.data[0] = 0x09;
+                    desc.data[1] = 0x04;
+                } else {
                 load_serial_number(serial_number);
-                const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
-                desc.len = strlen(ptr) * 2 + 2;
-                for (int i = 0; ptr[i]; i++) {
-                    desc.data[i * 2] = ptr[i];
+                    const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
+                    desc.len = strlen(ptr) * 2 + 2;
+                    for (int i = 0; ptr[i]; i++) {
+                        desc.data[i * 2] = ptr[i];
+                    }
                 }
+                sendCtrl(&desc, desc.len);
             }
-            sendCtrl(&desc, sizeof(StringDescriptor));
         } else if (ctrlOutCache.buf[3] == 0x0F) {
             sendCtrl(bosDescriptor, sizeof(bosDescriptor));
         }
