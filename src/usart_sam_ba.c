@@ -56,7 +56,6 @@ uint8_t mode_of_transfer;
  * \brief Open the given USART
  */
 void usart_open() {
-    uint32_t inst;
     uint32_t port;
     uint8_t pin;
 
@@ -103,7 +102,7 @@ void usart_open() {
     }
 
     #ifdef SAMD21
-    inst = uart_get_sercom_index(BOOT_USART_MODULE);
+    uint32_t inst = uart_get_sercom_index(BOOT_USART_MODULE);
     /* Enable clock for BOOT_USART_MODULE */
     PM->APBCMASK.reg |= (1u << (inst + PM_APBCMASK_SERCOM0_Pos));
 

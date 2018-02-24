@@ -9,7 +9,7 @@ ifeq ($(CHIP_FAMILY), samd51)
 COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -g -DSAMD51
 endif
 WFLAGS = \
--Wall -Wstrict-prototypes \
+-Werror -Wall -Wstrict-prototypes \
 -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 \
 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 \
 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch \
@@ -175,6 +175,6 @@ drop-pkg:
 	rm -rf build/uf2-samd21-$(UF2_VERSION_BASE)
 
 all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board ; done
+	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board || break; done
 
 drop: all-boards drop-pkg
