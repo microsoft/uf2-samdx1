@@ -137,6 +137,10 @@ void sam_ba_monitor_run(void) {
             logwrite("SERIAL:");
             logmsg(data);
             led_signal();
+#if USE_BINARY_FILES
+            // reset binary_files_timer
+            binary_files_timer = 0;
+#endif
         }
         ptr = data;
         for (i = 0; i < length; i++) {

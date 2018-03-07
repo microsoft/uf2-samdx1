@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.ARMGCC.C</ToolchainName>
+    <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
+    <avrdevice>ATSAMD21G18A</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>C</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\build\</OutputDirectory>
+    <AssemblyName>uf2-samd21</AssemblyName>
+    <Name>uf2-samd21</Name>
+    <RootNamespace>uf2-samd21</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <ResetRule>0</ResetRule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <ToolchainSettings>
+      <ArmGcc xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+        <armgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(ProjectDir)\boards\%24(Configuration)</Value>
+            <Value>%24(ProjectDir)\inc</Value>
+            <Value>%24(ProjectDir)\inc\preprocessor</Value>
+            <Value>%24(ProjectDir)\asf\common</Value>
+            <Value>%24(ProjectDir)\asf\common\utils</Value>
+            <Value>%24(ProjectDir)\asf\common\utils\interrupt</Value>
+            <Value>%24(ProjectDir)\asf\sam0\drivers\system\interrupt</Value>
+            <Value>%24(ProjectDir)\asf\sam0\drivers\system\interrupt\system_interrupt_samd21</Value>
+            <Value>%24(ProjectDir)\asf\sam0\utils</Value>
+            <Value>%24(ProjectDir)\asf\sam0\utils\header_files</Value>
+            <Value>%24(ProjectDir)\asf\sam0\utils\cmsis\samd21\include</Value>
+            <Value>%24(ProjectDir)\asf\sam0\utils\cmsis\samd21\source</Value>
+            <Value>%24(ProjectDir)\asf\thirdparty\CMSIS\Include</Value>
+          </ListValues>
+        </armgcc.compiler.directories.IncludePaths>
+        <armgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </armgcc.compiler.symbols.DefSymbols>
+        <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
+        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+        <armgcc.compiler.optimization.PrepareDataForGarbageCollection>True</armgcc.compiler.optimization.PrepareDataForGarbageCollection>
+        <armgcc.compiler.optimization.EnableLongCalls>False</armgcc.compiler.optimization.EnableLongCalls>
+        <armgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -Wall -Wstrict-prototypes -Werror-implicit-function-declaration -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef -Wbad-function-cast -Wwrite-strings -Waggregate-return -Wformat -Wmissing-format-attribute -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs -Wlong-long -Wunreachable-code -Wcast-align -Wno-missing-braces -Wno-overflow -Wno-shadow -Wno-attributes -Wno-packed -Wno-pointer-sign</armgcc.compiler.miscellaneous.OtherFlags>
+        <armgcc.linker.general.DoNotUseStandardStartFiles>True</armgcc.linker.general.DoNotUseStandardStartFiles>
+        <armgcc.linker.general.UseNewlibNano>True</armgcc.linker.general.UseNewlibNano>
+        <armgcc.linker.general.AdditionalSpecs>Use syscall stubs (--specs=nosys.specs)</armgcc.linker.general.AdditionalSpecs>
+        <armgcc.linker.libraries.LibrarySearchPaths>
+          <ListValues>
+            <Value>%24(ProjectDir)\asf\sam0\utils\linker_scripts\samd21\gcc\</Value>
+          </ListValues>
+        </armgcc.linker.libraries.LibrarySearchPaths>
+        <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+        <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd21j18a_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
+      </ArmGcc>
+    </ToolchainSettings>
+    <RamSnippetAddress />
+    <EraseKey />
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'generic' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'circuitplay' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'dadamachines-automat' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'eitech-robotics' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'feather' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'gemma' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'grove-zero' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'itsybitsy_m0' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'metro' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'mkr1000' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'sensebox-mcu' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'sparkfun-samd21-dev' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'sparkfun-samd21-mini' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'trinket' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'wattuino-rc' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'zero' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="inc\preprocessor\mrecursion.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\preprocessor\mrepeat.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\preprocessor\preprocessor.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\preprocessor\stringz.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\preprocessor\tpaste.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\cdc_enumerate.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\sam_ba_monitor.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\neopixel.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\uart_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\uf2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\uf2format.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\uf2hid.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inc\usart_sam_ba.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\cdc_enumerate.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\fat.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\flash.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hid.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\msc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\sam_ba_monitor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\startup_samd21.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\uart_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\usart_sam_ba.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\utils.c">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="asf\" />
+    <Folder Include="asf\sam0\" />
+    <Folder Include="asf\sam0\utils\" />
+    <Folder Include="asf\sam0\utils\linker_scripts\" />
+    <Folder Include="asf\sam0\utils\linker_scripts\samd21\" />
+    <Folder Include="asf\sam0\utils\linker_scripts\samd21\gcc\" />
+    <Folder Include="src\" />
+    <Folder Include="inc\" />
+    <Folder Include="inc\preprocessor\" />
+    <Folder Include="boards\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="asf\sam0\utils\linker_scripts\samd21\gcc\\samd21j18a_flash.ld">
+      <SubType>compile</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>

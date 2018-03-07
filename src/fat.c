@@ -50,6 +50,8 @@ STATIC_ASSERT(sizeof(DirEntry) == 32);
 struct TextFile {
     const char name[11];
     const char *content;
+    const uint32_t length;
+    const uint32_t startCluster;
 };
 
 #define STR0(x) #x
@@ -72,19 +74,28 @@ const char indexFile[] = //
     "</html>\n";
 #endif
 
+#define UF2_SIZE (FLASH_SIZE * 2)
+#define UF2_SECTORS (UF2_SIZE / 512)
+#define UF2_FIRST_SECTOR (4)
+#define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
+
+// Binary files use clusters behind UF2_LAST_SECTOR
+#define BIN_SECTORS ((FLASH_SIZE - APP_START_ADDRESS) / 512)
+#define BIN_FIRST_SECTOR (UF2_LAST_SECTOR + 1)
+#define BIN_LAST_SECTOR (BIN_FIRST_SECTOR + BIN_SECTORS - 1)
+
 static const struct TextFile info[] = {
-    {.name = "INFO_UF2TXT", .content = infoUf2File},
+    {.name = "INFO_UF2TXT", .content = infoUf2File, .length = sizeof(infoUf2File)-1, .startCluster = 2},
 #if USE_INDEX_HTM
-    {.name = "INDEX   HTM", .content = indexFile},
+    {.name = "INDEX   HTM", .content = indexFile, .length = sizeof(indexFile)-1, .startCluster = 3},
 #endif
-    {.name = "CURRENT UF2"},
+    {.name = "CURRENT UF2", .length = (UF2_SIZE), .startCluster = UF2_FIRST_SECTOR},  // 4
+#if USE_BINARY_FILES
+    {.name = "CURRENT BIN", .length = (FLASH_SIZE - APP_START_ADDRESS), .startCluster = BIN_FIRST_SECTOR}, //  0x405
+#endif
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
-#define UF2_SIZE (FLASH_SIZE * 2)
-#define UF2_SECTORS (UF2_SIZE / 512)
-#define UF2_FIRST_SECTOR (NUM_INFO + 1)
-#define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
 #endif
 
 #define RESERVED_SECTORS 1
@@ -140,16 +151,25 @@ void read_block(uint32_t block_no, uint8_t *data) {
         if (sectionIdx >= SECTORS_PER_FAT)
             sectionIdx -= SECTORS_PER_FAT;
 #if USE_FAT
+        uint16_t *fat_data =  (void *)data;
+
         if (sectionIdx == 0) {
-            data[0] = 0xf0;
-            for (int i = 1; i < NUM_INFO * 2 + 4; ++i) {
-                data[i] = 0xff;
+		    fat_data[0] = 0xfff0;
+		    fat_data[1] = 0xffff;
+
+		    for (int i = 0; i < NUM_INFO; ++i) {
+                fat_data[i + 2] = (info[i].length >= 256)? info[i].startCluster : 0xffff;
             }
         }
+
         for (int i = 0; i < 256; ++i) {
             uint32_t v = sectionIdx * 256 + i;
             if (UF2_FIRST_SECTOR <= v && v <= UF2_LAST_SECTOR)
-                ((uint16_t *)(void *)data)[i] = v == UF2_LAST_SECTOR ? 0xffff : v + 1;
+                fat_data[i] = (v == UF2_LAST_SECTOR) ? 0xffff : v + 1;
+#if USE_BINARY_FILES
+            if (BIN_FIRST_SECTOR <= v && v <= BIN_LAST_SECTOR)
+                fat_data[i] = (v == BIN_LAST_SECTOR) ? 0xffff : v + 1;
+#endif
         }
 #else
         if (sectionIdx == 0)
@@ -161,24 +181,25 @@ void read_block(uint32_t block_no, uint8_t *data) {
         sectionIdx -= START_ROOTDIR;
         if (sectionIdx == 0) {
             DirEntry *d = (void *)data;
-            padded_memcpy(d->name, BootBlock.VolumeLabel, 11);
+            padded_memcpy(d->name, (const char *)BootBlock.VolumeLabel, 11);
             d->attrs = 0x28;
             for (int i = 0; i < NUM_INFO; ++i) {
                 d++;
                 const struct TextFile *inf = &info[i];
-                d->size = inf->content ? strlen(inf->content) : UF2_SIZE;
-                d->startCluster = i + 2;
+                d->size = inf->length;
+                d->startCluster = inf->startCluster;
                 padded_memcpy(d->name, inf->name, 11);
             }
         }
     } else {
         sectionIdx -= START_CLUSTERS;
-        if (sectionIdx < NUM_INFO - 1) {
+        if (sectionIdx < 2) {
             memcpy(data, info[sectionIdx].content, strlen(info[sectionIdx].content));
-        } else {
-            sectionIdx -= NUM_INFO - 1;
-            uint32_t addr = sectionIdx * 256;
-            if (addr < FLASH_SIZE) {
+        } else  {
+            sectionIdx -= 2; //NUM_INFO - 1;
+
+            if(sectionIdx < FLASH_SIZE/256) {
+                uint32_t addr = sectionIdx * 256;
                 UF2_Block *bl = (void *)data;
                 bl->magicStart0 = UF2_MAGIC_START0;
                 bl->magicStart1 = UF2_MAGIC_START1;
@@ -189,6 +210,15 @@ void read_block(uint32_t block_no, uint8_t *data) {
                 bl->payloadSize = 256;
                 memcpy(bl->data, (void *)addr, bl->payloadSize);
             }
+#if USE_BINARY_FILES
+            else {
+                sectionIdx -= FLASH_SIZE/256;
+                uint32_t addr = APP_START_ADDRESS + sectionIdx * 512;
+                if (addr < FLASH_SIZE) {
+                    memcpy(data, (void *)addr, 512);
+                }
+            }
+#endif
         }
     }
 #endif
@@ -196,7 +226,52 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state) {
     UF2_Block *bl = (void *)data;
+
     if (!is_uf2_block(bl)) {
+#if USE_BINARY_FILES
+        static int32_t base_block_no = -1;
+
+        // ignore writings in the first 3 seconds
+        // binary_files_timer increments 48000 times per second
+        if(binary_files_timer < (3 * 48000)) {
+            return;
+        }
+
+        if (block_no >= START_CLUSTERS) {
+            // first block written to flash ?
+            if (base_block_no < 0 ) {
+                // check 7 reserved handlers of SAMD21 (located after hard-fault handler)
+                for(uint8_t i=15; i < (15+(7*4)); i++) {
+                    if(data[i] != 0x00)
+                        return;
+                }
+
+                // check block data length and ignore files <= 256 Bytes
+                uint16_t len;
+                for(len = 511; len > 0; len--) {
+                    if((data[len] != 0x00) && (data[len] != 0xFF))
+                        break;
+                }
+                if(len < 256)
+                    return;
+
+                // save first block no
+                base_block_no = block_no;
+            }
+
+            // write block to flash
+            uint32_t targetAddr = APP_START_ADDRESS + (block_no - base_block_no) * 512;
+            if (targetAddr < FLASH_SIZE) {
+                flash_write_row((void *)targetAddr, (void *)data);
+                flash_write_row((void *)(targetAddr + 256), (void *)&data[256]);
+            }
+        }
+        else if (base_block_no >= 0) {
+            base_block_no = -1;
+            resetHorizon = timerHigh + 150;
+            binary_files_timer = 0;
+        }
+#endif
         return;
     }
 

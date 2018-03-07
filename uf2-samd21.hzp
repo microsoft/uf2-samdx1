@@ -1,0 +1,78 @@
+<!DOCTYPE CrossStudio_Project_File>
+<solution Name="uf2-samd21" target="8" version="2">
+  <project Name="uf2-samd21">
+    <configuration
+      Name="Common"
+      Platform="ARM"
+      Target="SAMD21G18A"
+      arm_core_type="Cortex-M0+"
+      arm_fpu_type="None"
+      arm_architecture="v6M"
+      arm_instruction_set="Thumb"
+      arm_library_architecture="v6M"
+      arm_library_instruction_set="Thumb"
+      arm_library_optimization="Small"
+      arm_linker_heap_size="1024"
+      arm_linker_stack_size="8192"
+      arm_long_calls="No"
+      arm_target_debug_interface_type="ADIv5"
+      build_intermediate_directory="build/$(Configuration)"
+      build_output_directory="build/$(Configuration)"
+      c_preprocessor_definitions="__SAMD21G18A__;__THUMB;NO_SYSTEM_INIT;STARTUP_FROM_RESET;NDEBUG"
+      c_only_additional_options="-Wall;-Wstrict-prototypes;-Werror-implicit-function-declaration;-Wpointer-arith;-Wchar-subscripts;-Wcomment;-Wformat=2;-Wimplicit-int;-Wmain;-Wparentheses;-Wsequence-point;-Wreturn-type;-Wswitch;-Wtrigraphs;-Wunused;-Wuninitialized;-Wunknown-pragmas;-Wfloat-equal;-Wundef;-Wbad-function-cast;-Wwrite-strings;-Waggregate-return;-Wformat;-Wmissing-format-attribute;-Wno-deprecated-declarations;-Wpacked;-Wredundant-decls;-Wnested-externs;-Wlong-long;-Wunreachable-code;-Wcast-align;-Wno-missing-braces;-Wno-overflow;-Wno-shadow;-Wno-attributes;-Wno-packed;-Wno-pointer-sign"
+      c_user_include_directories="$(ProjectDir)/boards/$(Configuration);$(ProjectDir)/src;$(ProjectDir)/inc;$(ProjectDir)/inc/preprocessor;$(ProjectDir)/asf/common;$(ProjectDir)/asf/common/utils;$(ProjectDir)/asf/common/utils/interrupt;$(ProjectDir)/asf/sam0/drivers/system/interrupt;$(ProjectDir)/asf/sam0/drivers/system/interrupt/system_interrupt_samd21;$(ProjectDir)/asf/sam0/utils;$(ProjectDir)/asf/sam0/utils/header_files;$(ProjectDir)/asf/sam0/utils/cmsis/samd21/include;$(ProjectDir)/asf/sam0/utils/cmsis/samd21/source;$(ProjectDir)/asf/thirdparty/CMSIS/Include"
+      gcc_c_language_standard="gnu99"
+      gcc_debugging_level="None"
+      gcc_optimization_level="Optimize For Size"
+      gcc_entry_point="reset_handler"
+      gcc_no_common="No"
+      gcc_omit_frame_pointer="No"
+      link_include_standard_libraries="Yes"
+      link_include_startup_code="Yes"
+      linker_memory_map_file="$(TargetsDir)/SAM/SAMD21G18A_MemoryMap.xml"
+      linker_output_format="bin"
+      linker_printf_fp_enabled="No"
+      linker_section_placement_file="$(TargetsDir)/SAM/flash_placement.xml"
+      package_dependencies="SAM"
+      project_directory=""
+      project_type="Executable" />
+    <folder
+      Name="src"
+      exclude="selfmain.*;sketch.*;startup_samd21.*"
+      filter="*.c;*.cpp;*.cxx;*.cc;*.h;*.s;*.asm;*.inc"
+      path="src/"
+      recurse="Yes" />
+    <folder
+      Name="inc"
+      exclude=""
+      filter="*.c;*.cpp;*.cxx;*.cc;*.h;*.s;*.asm;*.inc"
+      path="inc/"
+      recurse="Yes" />
+    <folder
+      Name="boards"
+      exclude=""
+      filter="*.c;*.cpp;*.cxx;*.cc;*.h;*.s;*.asm;*.inc"
+      path="boards/"
+      recurse="Yes" />
+    <folder Name="System Files">
+      <file file_name="$(StudioDir)/source/thumb_crt0.s" />
+      <file file_name="$(TargetsDir)/SAM/SAMD21_Startup.s" />
+    </folder>
+  </project>
+  <configuration Name="generic"/>
+  <configuration Name="circuitplay"/>
+  <configuration Name="dadamachines-automat"/>
+  <configuration Name="eitech-robotics"/>
+  <configuration Name="feather"/>
+  <configuration Name="gemma"/>
+  <configuration Name="grove-zero"/>
+  <configuration Name="itsybitsy_m0"/>
+  <configuration Name="metro"/>
+  <configuration Name="mkr1000"/>
+  <configuration Name="sensebox-mcu"/>
+  <configuration Name="sparkfun-samd21-dev"/>
+  <configuration Name="sparkfun-samd21-mini"/>
+  <configuration Name="trinket"/>
+  <configuration Name="wattuino-rc"/>
+  <configuration Name="zero"/>
+</solution>
