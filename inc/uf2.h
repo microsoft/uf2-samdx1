@@ -71,6 +71,7 @@
 #define USE_MSC_CHECKS 0   // check validity of MSC commands; 460 bytes
 #define USE_CDC_TERMINAL 0 // enable ASCII mode on CDC loop (not used by BOSSA); 228 bytes
 #define USE_DBG_MSC 0      // output debug info about MSC
+#define USE_BINARY_FILES 0 // enable Arduino bin-files in MSC; 296 bytes
 
 #if USE_CDC
 #define CDC_VERSION "S"
@@ -120,9 +121,15 @@
 #define MSC_HANDOVER_VERSION ""
 #endif
 
+#if USE_BINARY_FILES
+#define BINARY_VERSION "B"
+#else
+#define BINARY_VERSION ""
+#endif
+
 #define UF2_VERSION                                                                                \
     UF2_VERSION_BASE " " CDC_VERSION LOGS_VERSION FAT_VERSION ASSERT_VERSION HID_VERSION           \
-        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION
+        WEB_VERSION RESET_VERSION MSC_HANDOVER_VERSION BINARY_VERSION
 
 // End of config
 
@@ -251,6 +258,9 @@ void RGBLED_set_color(uint32_t color);
 #define LED_MSC_TGL() PINOP(LED_PIN, OUTTGL)
 
 extern uint32_t timerHigh, resetHorizon;
+#if USE_BINARY_FILES
+extern uint32_t binary_files_timer;
+#endif
 void timerTick(void);
 void delay(uint32_t ms);
 void hidHandoverLoop(int ep);

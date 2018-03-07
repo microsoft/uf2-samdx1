@@ -102,8 +102,14 @@ static uint32_t now;
 static uint32_t signal_end;
 int8_t led_tick_step = 1;
 static uint8_t limit = 200;
+#if USE_BINARY_FILES
+uint32_t binary_files_timer = 0;
+#endif
 
 void led_tick() {
+#if USE_BINARY_FILES
+    binary_files_timer++;
+#endif
     now++;
     if (signal_end) {
         if (now == signal_end - 1000) {
