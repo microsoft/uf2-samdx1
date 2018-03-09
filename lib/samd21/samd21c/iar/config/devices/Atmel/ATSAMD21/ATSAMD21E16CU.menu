@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<optionMenuItem>
+  <tag>ATSAMD21E16CU</tag>
+  <display>Atmel ATSAMD21E16CU</display>
+  <data>$CUR_DIR$\ATSAMD21E16CU.i79</data>
+</optionMenuItem>

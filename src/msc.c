@@ -44,9 +44,10 @@
 
 #include "uf2.h"
 
-#include "services/usb/class/msc/sbc_protocol.h"
-#include "services/usb/class/msc/spc_protocol.h"
-#include "services/usb/class/msc/usb_protocol_msc.h"
+#include "lib/usb_msc/sbc_protocol.h"
+#include "lib/usb_msc/spc_protocol.h"
+#include "lib/usb_msc/usb_protocol.h"
+#include "lib/usb_msc/usb_protocol_msc.h"
 
 #if !USE_DBG_MSC
 #undef logmsg
@@ -54,6 +55,21 @@
 #define logmsg(...) NOOP
 #define logval(...) NOOP
 #endif
+
+// From sam0/utils/compiler.h in ASF3
+#define  le32_to_cpu(x) (x)
+#define  cpu_to_le32(x) (x)
+#define  CPU_TO_BE32(x) ((uint32_t)__builtin_bswap32((uint32_t)(x)))
+#define  cpu_to_be16(x) ((uint16_t)(((uint16_t)(x) >> 8) |\
+                           ((uint16_t)(x) << 8)))
+
+#define MSB3(u32)   (((uint8_t  *)&(u32))[0]) //!< Most significant byte of 4th rank of \a u32.
+#define MSB2(u32)   (((uint8_t  *)&(u32))[1]) //!< Most significant byte of 3rd rank of \a u32.
+#define MSB1(u32)   (((uint8_t  *)&(u32))[2]) //!< Most significant byte of 2nd rank of \a u32.
+#define MSB0(u32)   (((uint8_t  *)&(u32))[3]) //!< Most significant byte of 1st rank of \a u32.
+
+#define  MSB(u16)   (((uint8_t  *)&(u16))[1]) //!< Most significant byte of \a u16.
+#define  LSB(u16)   (((uint8_t  *)&(u16))[0]) //!< Least significant byte of \a u16.
 
 bool mscReset = false;
 
@@ -468,8 +484,7 @@ static void udi_msc_sense_fail(uint8_t sense_key, uint16_t add_sense, uint32_t l
     udi_msc_sense.information[1] = lba >> 16;
     udi_msc_sense.information[2] = lba >> 8;
     udi_msc_sense.information[3] = lba;
-    udi_msc_sense.AddSenseCode = add_sense >> 8;
-    udi_msc_sense.AddSnsCodeQlfr = add_sense;
+    udi_msc_sense.AddSense = add_sense;
 }
 
 static void udi_msc_sense_pass(void) {
@@ -533,7 +548,7 @@ static void udi_msc_read_format_capacity(void) {
 
 static void udi_msc_spc_inquiry(void) {
     uint8_t length;
-    COMPILER_ALIGNED(4)
+    __attribute__((__aligned__(4)))
     // Constant inquiry data for all LUNs
     static struct scsi_inquiry_data udi_msc_inquiry_data = {
         .pq_pdt = SCSI_INQ_PQ_CONNECTED | SCSI_INQ_DT_DIR_ACCESS,
@@ -606,7 +621,7 @@ static void udi_msc_spc_mode_sense(bool b_sense10) {
     uint8_t mode;
     uint8_t request_lgt;
     struct spc_control_page_info_execpt *ptr_mode;
-    COMPILER_ALIGNED(4) static union sense_6_10 sense;
+    __attribute__((__aligned__(4))) static union sense_6_10 sense;
 
     // Clear all fields
     memset(&sense, 0, sizeof(sense));
@@ -678,7 +693,7 @@ static void udi_msc_sbc_start_stop(void) {
 }
 
 static void udi_msc_sbc_read_capacity(void) {
-    COMPILER_ALIGNED(4) static struct sbc_read_capacity10_data udi_msc_capacity;
+    __attribute__((__aligned__(4))) static struct sbc_read_capacity10_data udi_msc_capacity;
 
     if (!udi_msc_cbw_validate(sizeof(udi_msc_capacity), USB_CBW_DIRECTION_IN))
         return;
@@ -686,12 +701,12 @@ static void udi_msc_sbc_read_capacity(void) {
     udi_msc_capacity.max_lba = NUM_FAT_BLOCKS - 1;
     // Format capacity data
     udi_msc_capacity.block_len = CPU_TO_BE32(UDI_MSC_BLOCK_SIZE);
-    udi_msc_capacity.max_lba = cpu_to_be32(udi_msc_capacity.max_lba);
+    udi_msc_capacity.max_lba = CPU_TO_BE32(udi_msc_capacity.max_lba);
     // Send the corresponding sense data
     udi_msc_data_send((uint8_t *)&udi_msc_capacity, sizeof(udi_msc_capacity));
 }
 
-COMPILER_ALIGNED(4) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
+__attribute__((__aligned__(4))) static uint8_t block_buffer[UDI_MSC_BLOCK_SIZE];
 static WriteState usbWriteState;
 
 static void udi_msc_sbc_trans(bool b_read) {
@@ -820,10 +835,9 @@ static void process_handover(UF2_HandoverArgs *handover, PacketBuffer *handoverC
     USB_WriteCore((void *)&csw, sizeof(csw), handover->ep_in, true);
 }
 
-#include "system_interrupt.h"
-
 void handoverPrep() {
-    cpu_irq_disable();
+    __disable_irq();
+    __DMB();
 
     USB->DEVICE.INTENCLR.reg = USB_DEVICE_INTENCLR_MASK;
     USB->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_MASK;

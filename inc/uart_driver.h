@@ -29,7 +29,7 @@
 
 #ifndef UART_DRIVER_H
 #define UART_DRIVER_H
-#include "samd21.h"
+#include "sam.h"
 #include <stdbool.h>
 #include <stdio.h>
 

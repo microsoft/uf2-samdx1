@@ -57,11 +57,11 @@ s += "const uint16_t bootloader_crcs[] = {" + crcs + "};\n"
 let selfdata = "#include <stdint.h>\n" + s
 fs.writeFileSync(buildPath + "/selfdata.c", selfdata)
 
-let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
-let instr =`//
-// Bootloader update sketch. Paste into Arduino IDE and upload to the device
-// to update bootloader. It will blink a few times and then start pulsing.
-// Your OS will then detect a USB mass storage device.
-//
-`;
-fs.writeFileSync(buildPath + "/update-bootloader.ino", instr + s + "\n" + sketch)
+// let sketch = fs.readFileSync("src/sketch.cpp", "utf8")
+// let instr =`//
+// // Bootloader update sketch. Paste into Arduino IDE and upload to the device
+// // to update bootloader. It will blink a few times and then start pulsing.
+// // Your OS will then detect a USB mass storage device.
+// //
+// `;
+// fs.writeFileSync(buildPath + "/update-bootloader.ino", instr + s + "\n" + sketch)

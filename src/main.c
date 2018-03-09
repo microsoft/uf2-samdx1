@@ -81,6 +81,13 @@ static void check_start_application(void);
 static volatile bool main_b_cdc_enable = false;
 extern int8_t led_tick_step;
 
+#ifdef SAMD21
+#define RESET_CONTROLLER PM
+#endif
+#ifdef SAMD51
+#define RESET_CONTROLLER RSTC
+#endif
+
 /**
  * \brief Check the application startup condition
  *
@@ -102,7 +109,8 @@ static void check_start_application(void) {
 
 #if USE_SINGLE_RESET
     if (SINGLE_RESET()) {
-        if (PM->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+        if (RESET_CONTROLLER->RCAUSE.bit.POR ||
+                *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             // the second tap on reset will go into app
             *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
             // this will be cleared after succesful USB enumeration
@@ -113,7 +121,7 @@ static void check_start_application(void) {
     }
 #endif
 
-    if (PM->RCAUSE.bit.POR) {
+    if (RESET_CONTROLLER->RCAUSE.bit.POR) {
         *DBL_TAP_PTR = 0;
     } else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
         *DBL_TAP_PTR = 0;
@@ -154,7 +162,8 @@ int main(void) {
         while (1) {
         }
 
-#if USB_PID == 0x0013  // Metro m0
+#if (USB_VID == 0x239a) && (USB_PID == 0x0013)  // Adafruit Metro M0
+    // Delay a bit so SWD programmer can have time to attach.
     delay(100);
 #endif
     led_init();
@@ -173,7 +182,9 @@ int main(void) {
     /* We have determined we should stay in the monitor. */
     /* System initialization */
     system_init();
-    cpu_irq_enable();
+
+    __DMB();
+    __enable_irq();
 
 #if USE_UART
     /* UART is enabled in all cases */
@@ -186,7 +197,7 @@ int main(void) {
 
     // not enumerated yet
     RGBLED_set_color(COLOR_START);
-    led_tick_step = 0;
+    led_tick_step = 10;
 
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
@@ -197,8 +208,7 @@ int main(void) {
                 resetHorizon = 0;
 #endif
                 RGBLED_set_color(COLOR_USB);
-                if (!led_tick_step)
-                    led_tick_step = 1;
+                led_tick_step = 1;
             }
 
             main_b_cdc_enable = true;

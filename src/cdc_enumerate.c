@@ -34,9 +34,9 @@
 PacketBuffer ctrlOutCache;
 PacketBuffer endpointCache[MAX_EP];
 
-COMPILER_WORD_ALIGNED UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
+__attribute__((__aligned__(4))) UsbDeviceDescriptor usb_endpoint_table[MAX_EP];
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 const char devDescriptor[] = {
     /* Device descriptor */
     0x12, // bLength
@@ -71,7 +71,7 @@ const char devDescriptor[] = {
 
 #if USE_HID
 // can be requested separately from the entire config desc
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 char hidCfgDescriptor[] = {
     9,          // size
     4,          // interface
@@ -84,7 +84,7 @@ char hidCfgDescriptor[] = {
     3,          // stringID
 };
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 const char hidDescriptor[] = {
     0x06, 0x97, 0xFF, // usage page vendor 0x97 (usage 0xff97 0x0001)
     0x09, 0x01,       // usage 1
@@ -108,7 +108,7 @@ const char hidDescriptor[] = {
 #ifndef USB_POWER_MA
 #define USB_POWER_MA 500
 #endif
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 char cfgDescriptor[] = {
     /* ============== CONFIGURATION 1 =========== */
     /* Configuration 1 descriptor */
@@ -283,7 +283,7 @@ char cfgDescriptor[] = {
 
 #define WINUSB_SIZE 170
 
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 static char bosDescriptor[] = {
     0x05, // Length
     0x0F, // Binary Object Store descriptor
@@ -321,7 +321,7 @@ static char bosDescriptor[] = {
 };
 
 #if USE_WEBUSB
-COMPILER_WORD_ALIGNED
+__attribute__((__aligned__(4)))
 static char msOS20Descriptor[] = {
     // Microsoft OS 2.0 descriptor set header (table 10)
     0x0A, 0x00,             // Descriptor size (10 bytes)
@@ -369,9 +369,31 @@ typedef struct {
     uint8_t data[70];
 } StringDescriptor;
 
-static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, "4242"};
 
+// Serial numbers are derived from four 32-bit words. Add one character for null terminator
+#define SERIAL_NUMBER_LENGTH (4 * 8 + 1)
+// serial_number will be filled in when needed.
+static char serial_number[SERIAL_NUMBER_LENGTH];
+
+static const char *string_descriptors[] = {0, VENDOR_NAME, PRODUCT_NAME, serial_number};
 #define STRING_DESCRIPTOR_COUNT (sizeof(string_descriptors) / sizeof(string_descriptors[0]))
+
+static void load_serial_number(char serial_number[SERIAL_NUMBER_LENGTH]) {
+    // These are locations that taken together make up a unique serial number.
+    #ifdef SAMD21
+    uint32_t* addresses[4] = {(uint32_t *) 0x0080A00C, (uint32_t *) 0x0080A040,
+                              (uint32_t *) 0x0080A044, (uint32_t *) 0x0080A048};
+    #endif
+    #ifdef SAMD51
+    uint32_t* addresses[4] = {(uint32_t *) 0x008061FC, (uint32_t *) 0x00806010,
+                              (uint32_t *) 0x00806014, (uint32_t *) 0x00806018};
+    #endif
+    uint32_t serial_number_idx = 0;
+    for (int i = 0; i < 4; i++) {
+        serial_number_idx += writeNum(&(serial_number[serial_number_idx]), *(addresses[i]), true);
+    }
+    serial_number[serial_number_idx] = '\0';
+}
 
 #if USE_CDC
 static usb_cdc_line_coding_t line_coding = {
@@ -439,21 +461,39 @@ void AT91F_InitUSB(void) {
     uint32_t pad_transn, pad_transp, pad_trim;
 
     /* Enable USB clock */
+    #ifdef SAMD21
     PM->APBBMASK.reg |= PM_APBBMASK_USB;
+    #define DM_PIN PIN_PA24G_USB_DM
+    #define DM_MUX MUX_PA24G_USB_DM
+    #define DP_PIN PIN_PA25G_USB_DP
+    #define DP_MUX MUX_PA25G_USB_DP
+    #endif
+    #ifdef SAMD51
+    #define DM_PIN PIN_PA24H_USB_DM
+    #define DM_MUX MUX_PA24H_USB_DM
+    #define DP_PIN PIN_PA25H_USB_DP
+    #define DP_MUX MUX_PA25H_USB_DP
+    #endif
 
     /* Set up the USB DP/DN pins */
-    PORT->Group[0].PINCFG[PIN_PA24G_USB_DM].bit.PMUXEN = 1;
-    PORT->Group[0].PMUX[PIN_PA24G_USB_DM / 2].reg &= ~(0xF << (4 * (PIN_PA24G_USB_DM & 0x01u)));
-    PORT->Group[0].PMUX[PIN_PA24G_USB_DM / 2].reg |= MUX_PA24G_USB_DM
-                                                     << (4 * (PIN_PA24G_USB_DM & 0x01u));
-    PORT->Group[0].PINCFG[PIN_PA25G_USB_DP].bit.PMUXEN = 1;
-    PORT->Group[0].PMUX[PIN_PA25G_USB_DP / 2].reg &= ~(0xF << (4 * (PIN_PA25G_USB_DP & 0x01u)));
-    PORT->Group[0].PMUX[PIN_PA25G_USB_DP / 2].reg |= MUX_PA25G_USB_DP
-                                                     << (4 * (PIN_PA25G_USB_DP & 0x01u));
+    PORT->Group[0].PINCFG[DM_PIN].bit.PMUXEN = 1;
+    PORT->Group[0].PMUX[DM_PIN / 2].reg &= ~(0xF << (4 * (DM_PIN & 0x01u)));
+    PORT->Group[0].PMUX[DM_PIN / 2].reg |= DM_MUX << (4 * (DM_PIN & 0x01u));
+    PORT->Group[0].PINCFG[DP_PIN].bit.PMUXEN = 1;
+    PORT->Group[0].PMUX[DP_PIN / 2].reg &= ~(0xF << (4 * (DP_PIN & 0x01u)));
+    PORT->Group[0].PMUX[DP_PIN / 2].reg |= DP_MUX << (4 * (DP_PIN & 0x01u));
 
+    #ifdef SAMD21
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(6) | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_CLKEN;
-    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
-        ;
+    while (GCLK->STATUS.bit.SYNCBUSY) {}
+    #endif
+    #ifdef SAMD51
+    GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK0_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
+    MCLK->AHBMASK.bit.USB_ = true;
+    MCLK->APBBMASK.bit.USB_ = true;
+
+    while(GCLK->SYNCBUSY.bit.GENCTRL0) {}
+    #endif
 
     /* Reset */
     USB->HOST.CTRLA.bit.SWRST = 1;
@@ -462,9 +502,7 @@ void AT91F_InitUSB(void) {
     }
 
     /* Load Pad Calibration */
-    pad_transn = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_USB_PAD_TRANSN_POS / 32)) >>
-                  (NVM_USB_PAD_TRANSN_POS % 32)) &
-                 ((1 << NVM_USB_PAD_TRANSN_SIZE) - 1);
+    pad_transn = ((*((uint32_t*) USB_FUSES_TRANSN_ADDR)) & USB_FUSES_TRANSN_Msk) >> USB_FUSES_TRANSN_Pos;
 
     if (pad_transn == 0x1F) {
         pad_transn = 5;
@@ -472,18 +510,14 @@ void AT91F_InitUSB(void) {
 
     USB->HOST.PADCAL.bit.TRANSN = pad_transn;
 
-    pad_transp = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_USB_PAD_TRANSP_POS / 32)) >>
-                  (NVM_USB_PAD_TRANSP_POS % 32)) &
-                 ((1 << NVM_USB_PAD_TRANSP_SIZE) - 1);
+    pad_transp = ((*((uint32_t*) USB_FUSES_TRANSP_ADDR)) & USB_FUSES_TRANSP_Msk) >> USB_FUSES_TRANSP_Pos;
 
     if (pad_transp == 0x1F) {
         pad_transp = 29;
     }
 
     USB->HOST.PADCAL.bit.TRANSP = pad_transp;
-    pad_trim = (*((uint32_t *)(NVMCTRL_OTP4) + (NVM_USB_PAD_TRIM_POS / 32)) >>
-                (NVM_USB_PAD_TRIM_POS % 32)) &
-               ((1 << NVM_USB_PAD_TRIM_SIZE) - 1);
+    pad_trim = ((*((uint32_t*) USB_FUSES_TRIM_ADDR)) & USB_FUSES_TRIM_Msk) >> USB_FUSES_TRIM_Pos;
 
     if (pad_trim == 0x7) {
         pad_trim = 3;
@@ -771,6 +805,7 @@ void AT91F_CDC_Enumerate() {
                     desc.data[0] = 0x09;
                     desc.data[1] = 0x04;
                 } else {
+                load_serial_number(serial_number);
                     const char *ptr = string_descriptors[ctrlOutCache.buf[2]];
                     desc.len = strlen(ptr) * 2 + 2;
                     for (int i = 0; ptr[i]; i++) {
