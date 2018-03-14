@@ -94,9 +94,7 @@ volatile uint32_t sp;
 void call_applet(uint32_t address) {
     uint32_t app_start_address;
 
-    __disable_irq();
-    __DMB();
-
+    /* Save current Stack Pointer */
     sp = __get_MSP();
 
     /* Rebase the Stack Pointer */
@@ -106,7 +104,10 @@ void call_applet(uint32_t address) {
     app_start_address = *(uint32_t *)(address + 4);
 
     /* Jump to application Reset Handler in the application */
-    asm("bx %0" ::"r"(app_start_address));
+    asm("blx %0" ::"r"(app_start_address):"r0","r1","r2","r3","lr");
+
+    /* Rebase the Stack Pointer */
+    __set_MSP(sp);
 }
 
 uint32_t current_number;
@@ -193,10 +194,6 @@ void sam_ba_monitor_run(void) {
                         sam_ba_putdata_term((uint8_t *)&current_number, 4);
                     } else if (command == 'G') {
                         call_applet(current_number);
-                        /* Rebase the Stack Pointer */
-                        __set_MSP(sp);
-                        __DMB();
-                        __enable_irq();
                         if (b_sam_ba_interface_usart) {
                             cdc_write_buf("\x06", 1);
                         }
