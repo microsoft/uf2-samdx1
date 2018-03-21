@@ -148,10 +148,10 @@ void led_init() {
     // using APA102, set pins to outputs
     PINOP(BOARD_RGBLED_CLOCK_PIN, DIRSET);
     PINOP(BOARD_RGBLED_DATA_PIN, DIRSET);
-#endif
 
     // This won't work for neopixel, because we're running at 1MHz or thereabouts...
     RGBLED_set_color(COLOR_LEAVE);
+#endif
 }
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
