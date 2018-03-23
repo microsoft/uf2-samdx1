@@ -8,7 +8,7 @@
 #define BOARD_ID "SAMD51J19A-FeatherM4-v0"
 
 #define USB_VID 0x239A
-#define USB_PID 0x0021
+#define USB_PID 0x0022
 
 #define LED_PIN PIN_PA23
 
