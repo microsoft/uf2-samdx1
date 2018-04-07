@@ -66,9 +66,11 @@ static inline void neopixel_send_buffer(const uint8_t *ptr, int numBytes) {
 
     PINOP(BOARD_NEOPIXEL_PIN, DIRSET);
 
-    // turn off mux too, needed for metro m0 but no harm done!
+#if (USB_VID == 0x239a) && (USB_PID == 0x0013)  // Adafruit Metro M0
+    // turn off mux too, needed for metro m0
     PORT->Group[BOARD_NEOPIXEL_PIN / 32].PINCFG[BOARD_NEOPIXEL_PIN % 32].reg =
         (uint8_t)(PORT_PINCFG_INEN);
+#endif
 
     PINOP(BOARD_NEOPIXEL_PIN, OUTCLR);
     delay(1);
