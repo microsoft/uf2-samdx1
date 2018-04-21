@@ -164,7 +164,7 @@ int main(void) {
 
 #if (USB_VID == 0x239a) && (USB_PID == 0x0013)  // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.
-    delay(100);
+    delay(15);
 #endif
     led_init();
 
