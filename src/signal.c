@@ -1,57 +1,126 @@
 #include "uf2.h"
 #include "neopixel.h"
+#include "tcc_buzzer.h"
+
+void RGBLED_set_color(uint32_t color);
+
+#ifdef BOARD_NEOPIXEL_PIN
+#define COLOR_START 0x040000
+#define COLOR_USB 0x000400
+#define COLOR_UART 0x040400
+#define COLOR_LEAVE 0x000000
+#else
+#define COLOR_START 0x000040
+#define COLOR_USB 0x004000
+#define COLOR_UART 0x404000
+#define COLOR_LEAVE 0x400040
+#endif
 
 // Status Signalling
-#ifndef ON_TIME 
+#ifndef HB_ON_TIME 
+// Default to Heartbeat ON of 500ms
+#define HB_ON_TIME 500
+#endif
 
-static uint32_t now;
-static uint32_t signal_end;
-int8_t led_tick_step = 1;
-static uint8_t limit = 200;
+#ifndef HB_OFF_TIME 
+// Default to Heartbeat OFF of 500ms
+#define HB_OFF_TIME 500
+#endif
 
-// led_tick is called by the systick IRQ.  It SHOULD be called
-// 1000 times a second.
+#ifdef LED_PIN
+#define SIGNAL_OFF() PINOP(LED_PIN, OUTCLR)
+#define SIGNAL_ON() PINOP(LED_PIN, OUTSET)
+#define SIGNAL_TGL() PINOP(LED_PIN, OUTTGL)
+#elif (defined(BUZZER_PIN) && defined(BUZZER_TCC))
+// Enable/Disable buzzer by toggling the pin mux.
+#define SIGNAL_OFF() PINCFG(BUZZER_PIN) = 0x60;
+#define SIGNAL_ON()  PINCFG(BUZZER_PIN) = 0x61;
+#define SIGNAL_TGL() PINCFG(BUZZER_PIN) = PINCFG(BUZZER_PIN) ^ 0x01;
+#else
+#define SIGNAL_OFF()
+#define SIGNAL_ON()
+#define SIGNAL_TGL()
+#endif
 
-void led_tick() {
+static uint32_t now = 0;
+static uint8_t  rpt = 0;
+static uint32_t hb_ontime = HB_ON_TIME;
+static uint32_t hb_offtime = HB_ON_TIME + HB_ON_TIME;
+
+// signal_tick is called by the systick IRQ.  It SHOULD be called
+// SYSTICK_FREQ times a second.
+
+void signal_tick() {
+    // Flash the Heartbeat
     now++;
-    if (signal_end) {
-        if (now == signal_end - 1000) {
-            LED_MSC_ON();
-        }
-        if (now == signal_end) {
-            signal_end = 0;
-        }
+    if (now < hb_ontime) {
+        SIGNAL_ON();
+    } else if (now < (hb_offtime)) {
+        SIGNAL_OFF();
     } else {
-        uint8_t curr = now & 0xff;
-        if (curr == 0) {
-            LED_MSC_ON();
-            if (limit < 10 || limit > 250) {
-                led_tick_step = -led_tick_step;
+        // This allows us short bursts of flashing at different
+        // duty cycles.  Just set hb_ontime and hb_offtime
+        // to the required values.  Then set rpt to the number of
+        // flash cycles you want.
+        // After it completes, it will go back to the normal heartbeat.
+        now = 0;
+        if (rpt > 0) {
+            rpt--;
+            if (rpt == 0) {
+                hb_ontime = HB_ON_TIME;
+                hb_offtime = HB_ON_TIME + HB_OFF_TIME;
             }
-            limit += led_tick_step;
-        } else if (curr == limit) {
-            LED_MSC_OFF();
         }
     }
+
 }
 
-void led_signal() {
-    if (signal_end < now) {
-        signal_end = now + 2000;
-        LED_MSC_OFF();
+void signal_state(uint8_t state) {
+    switch(state) {
+        case SIGNAL_START:
+            RGBLED_set_color(COLOR_START);
+            hb_ontime = 100;
+            hb_offtime = 200;
+            rpt = 10;
+        break;
+        case SIGNAL_USB:
+            RGBLED_set_color(COLOR_USB);
+            hb_ontime =  250;
+            hb_offtime = 500;
+            rpt = 4;
+        break;
+        case SIGNAL_UART:
+            RGBLED_set_color(COLOR_UART);
+            hb_ontime =  750;
+            hb_offtime = 1000;
+            rpt = 1;
+        break;
+        case SIGNAL_LEAVE:
+            RGBLED_set_color(COLOR_LEAVE);
+            hb_ontime =  0;
+            hb_offtime = 255;
+            rpt = 255;
+            SIGNAL_OFF();
+        break;
+        case SIGNAL_FLASHWR:
+            hb_ontime  = 1000;
+            hb_offtime = 2000;
+            rpt        = 10;
+        case SIGNAL_HB:
+        default:
+            // Force immediate return to normal heartbeat timing.
+            rpt = 1;
+        break;
     }
 }
 
-void led_init() {
+void signal_init() {
 #if defined(LED_PIN)    
     PINOP(LED_PIN, DIRSET);
-#endif    
-
-#if (defined(BUZZER_PIN) && defined(BUZZER_TCC))
+    LED_MSC_ON();
+#elif (defined(BUZZER_PIN) && defined(BUZZER_TCC))
     init_tcc_buzzer(); // TCC Buzzer acts a substitute for a led.
 #endif    
-
-    LED_MSC_ON();
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
     // using APA102, set pins to outputs
