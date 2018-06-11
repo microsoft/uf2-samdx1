@@ -31,6 +31,7 @@
 #define _MAIN_H_
 
 #define CPU_FREQUENCY 48000000
+#define SYSTICK_FREQ  1000
 
 #define FLASH_WAIT_STATES 1
 
