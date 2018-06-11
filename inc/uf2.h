@@ -127,17 +127,7 @@
 #define USE_MONITOR (USE_CDC || USE_UART)
 #define TIMER_STEP 1500
 
-#ifdef BOARD_NEOPIXEL_PIN
-#define COLOR_START 0x040000
-#define COLOR_USB 0x000400
-#define COLOR_UART 0x040400
-#define COLOR_LEAVE 0x000000
-#else
-#define COLOR_START 0x000040
-#define COLOR_USB 0x004000
-#define COLOR_UART 0x404000
-#define COLOR_LEAVE 0x400040
-#endif
+
 
 /*
 From CPU config:
@@ -240,28 +230,21 @@ void resetIntoApp(void);
 void resetIntoBootloader(void);
 void system_init(void);
 
-#define LED_TICK led_tick
-
 #define PINOP(pin, OP) (PORT->Group[(pin) / 32].OP.reg = (1 << ((pin) % 32)))
 #define PINIP(pin) (((PORT->Group[(pin) / 32].IN.reg) >> ((pin) % 32)) & 0x1)
 #define PINCFG(pin) (PORT->Group[(pin) / 32].PINCFG[(pin) % 32].reg)
 #define PINMUX(pin) (PORT->Group[(pin) / 32].PMUX[((pin) % 32)/2].reg)
 
-void led_tick(void);
-void led_signal(void);
-void led_init(void);
-void RGBLED_set_color(uint32_t color);
+void signal_init(void);
+void signal_tick(void);
+void signal_state(uint8_t state);
+#define SIGNAL_START   0x00
+#define SIGNAL_USB     0x01
+#define SIGNAL_UART    0x02
+#define SIGNAL_LEAVE   0x03
+#define SIGNAL_FLASHWR 0x04
+#define SIGNAL_HB      0x05
 
-// Not all targets have a LED
-#if defined(LED_PIN) 
-#define LED_MSC_OFF() PINOP(LED_PIN, OUTCLR)
-#define LED_MSC_ON() PINOP(LED_PIN, OUTSET)
-#define LED_MSC_TGL() PINOP(LED_PIN, OUTTGL)
-#else
-#define LED_MSC_OFF() 
-#define LED_MSC_ON() 
-#define LED_MSC_TGL() 
-#endif
 
 extern uint32_t timerHigh, resetHorizon;
 void timerTick(void);

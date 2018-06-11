@@ -86,7 +86,7 @@ void setBootProt(int v) {
 }
 
 int main(void) {
-    led_init();
+    signal_init();
 
     logmsg("Start");
 
@@ -147,12 +147,8 @@ int main(void) {
     uint32_t zeros[2] = {0, 0};
     flash_write_words((void *)(BOOTLOADER_K * 1024), zeros, 2);
 
-    for (i = 0; i < 20; ++i) {
-        LED_MSC_TGL();
-        delay(1000);
-    }
-
-    LED_MSC_OFF();
+    signal_state(SIGNAL_FLASHWR);
+    delay(20000);
 
     #ifdef SAMD21
     setBootProt(2); // 8k

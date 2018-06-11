@@ -79,7 +79,6 @@
 static void check_start_application(void);
 
 static volatile bool main_b_cdc_enable = false;
-extern int8_t led_tick_step;
 
 #ifdef SAMD21
 #define RESET_CONTROLLER PM
@@ -158,10 +157,7 @@ static void check_start_application(void) {
         *DBL_TAP_PTR = 0;
     }
 
-    LED_MSC_OFF();
-#if defined(__SAMD21E18A__)
-    RGBLED_set_color(COLOR_LEAVE);
-#endif
+    signal_state(SIGNAL_LEAVE);
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);
@@ -190,7 +186,7 @@ int main(void) {
     // Delay a bit so SWD programmer can have time to attach.
     delay(15);
 #endif
-    led_init();
+    signal_init();
 
     logmsg("Start");
     assert((uint32_t)&_etext < APP_START_ADDRESS);
@@ -220,8 +216,7 @@ int main(void) {
     usb_init();
 
     // not enumerated yet
-    RGBLED_set_color(COLOR_START);
-    led_tick_step = 10;
+    signal_state(SIGNAL_START);
 
     /* Wait for a complete enum on usb or a '#' char on serial line */
     while (1) {
@@ -231,8 +226,7 @@ int main(void) {
                 // this might have been set
                 resetHorizon = 0;
 #endif
-                RGBLED_set_color(COLOR_USB);
-                led_tick_step = 1;
+                signal_state(SIGNAL_USB);
             }
 
             main_b_cdc_enable = true;
@@ -251,7 +245,7 @@ int main(void) {
 #if USE_UART
         /* Check if a '#' has been received */
         if (!main_b_cdc_enable && usart_sharp_received()) {
-            RGBLED_set_color(COLOR_UART);
+            signal_state(SIGNAL_UART);
             sam_ba_monitor_init(SAM_BA_INTERFACE_USART);
             /* SAM-BA on UART loop */
             while (1) {
