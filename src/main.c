@@ -97,17 +97,21 @@ static void check_start_application(void) {
 
 // Check if there is an IO which will hold us inside the bootloader.
 #if defined(HOLD_PIN) && defined(HOLD_STATE)
+    PORT_PINCFG_Type pincfg = {0};
+    pincfg.bit.PMUXEN = false;
+    pincfg.bit.INEN   = true;
+    pincfg.bit.DRVSTR = true;
+    
     PINOP(HOLD_PIN, DIRCLR);        // Pin is an input
 
   #if defined(HOLD_PIN_PULLUP)
-    PINCFG(HOLD_PIN, 0x06);
+    pincfg.bit.PULLEN = true;
     PINOP(HOLD_PIN, OUTSET); // Pin is pulled up.
   #elif defined(HOLD_PIN_PULLDOWN)
-    PINCFG(HOLD_PIN, 0x06);
+    pincfg.bit.PULLEN = true;
     PINOP(HOLD_PIN, OUTCLR); // Pin is pulled up.
-  #else 
-    PINCFG(HOLD_PIN, 0x02);
   #endif
+    PINCFG(HOLD_PIN) = pincfg.reg;
 
     if (PINIP(HOLD_PIN) == HOLD_STATE) {
         /* Stay in bootloader */
