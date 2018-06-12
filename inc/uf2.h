@@ -235,16 +235,30 @@ void system_init(void);
 #define PINCFG(pin) (PORT->Group[(pin) / 32].PINCFG[(pin) % 32].reg)
 #define PINMUX(pin) (PORT->Group[(pin) / 32].PMUX[((pin) % 32)/2].reg)
 
+typedef enum {
+  SIGNAL_HB      = 0,
+  SIGNAL_START,
+  SIGNAL_USB,
+#if USE_UART
+  SIGNAL_UART,
+#endif  
+  SIGNAL_LEAVE,
+  SIGNAL_FLASHWR,
+  SIGNAL_MAX    // Not a signal, used to size the enum. ALWAYS LAST.
+} SigState;
+
 void signal_init(void);
 void signal_tick(void);
-void signal_state(uint8_t state);
-#define SIGNAL_START   0x00
-#define SIGNAL_USB     0x01
-#define SIGNAL_UART    0x02
-#define SIGNAL_LEAVE   0x03
-#define SIGNAL_FLASHWR 0x04
-#define SIGNAL_HB      0x05
-
+void signal_state(SigState state);
+//void signal_state(uint8_t state);
+/*
+#define SIGNAL_HB      0x00
+#define SIGNAL_START   0x01
+#define SIGNAL_USB     0x02
+#define SIGNAL_UART    0x03
+#define SIGNAL_LEAVE   0x04
+#define SIGNAL_FLASHWR 0x05
+*/
 
 extern uint32_t timerHigh, resetHorizon;
 void timerTick(void);
