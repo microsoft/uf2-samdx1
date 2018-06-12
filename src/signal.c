@@ -9,22 +9,80 @@ void RGBLED_set_color(uint32_t color);
 #define COLOR_USB 0x000400
 #define COLOR_UART 0x040400
 #define COLOR_LEAVE 0x000000
+#define COLOR_FLASHWR 0x040404
 #else
 #define COLOR_START 0x000040
 #define COLOR_USB 0x004000
 #define COLOR_UART 0x404000
 #define COLOR_LEAVE 0x400040
+#define COLOR_FLASHWR 0x404040
 #endif
 
-// Status Signalling
-#ifndef HB_ON_TIME 
-// Default to Heartbeat ON of 500ms
-#define HB_ON_TIME 500
+// Status Signalling - Default Timings, Target Boards can override.
+// Heartbeat Default ON/OFF Times (miliseconds).
+// NOTE: Can not change REPS, ALWAYS = 0.
+#ifndef SIGHB_ON_MS
+#define SIGHB_ON_MS 500
 #endif
 
-#ifndef HB_OFF_TIME 
-// Default to Heartbeat OFF of 500ms
-#define HB_OFF_TIME 500
+#ifndef SIGHB_OFF_MS
+#define SIGHB_OFF_MS 500
+#endif
+#define SIGHB_REPS 0
+
+// Start Default ON/OFF Times (miliseconds).
+#ifndef SIGSTART_ON_MS
+#define SIGSTART_ON_MS 100
+#endif
+#ifndef SIGSTART_OFF_MS
+#define SIGSTART_OFF_MS 100
+#endif
+#ifndef SIGSTART_REPS
+#define SIGSTART_REPS 10
+#endif
+
+// USB Default ON/OFF Times (miliseconds).
+#ifndef SIGUSB_ON_MS
+#define SIGUSB_ON_MS 250
+#endif
+#ifndef SIGUSB_OFF_MS
+#define SIGUSB_OFF_MS 250
+#endif
+#ifndef SIGUSB_REPS
+#define SIGUSB_REPS 4
+#endif
+
+// UART Default ON/OFF Times (miliseconds).
+#ifndef SIGUART_ON_MS
+#define SIGUART_ON_MS 750
+#endif
+#ifndef SIGUART_OFF_MS
+#define SIGUART_OFF_MS 250
+#endif
+#ifndef SIGUART_REPS
+#define SIGUART_REPS 1
+#endif
+
+// Leave Default ON/OFF Times (miliseconds).
+#ifndef SIGLEAVE_ON_MS
+#define SIGLEAVE_ON_MS 0
+#endif
+#ifndef SIGLEAVE_OFF_MS
+#define SIGLEAVE_OFF_MS 1000
+#endif
+#ifndef SIGLEAVE_REPS
+#define SIGLEAVE_REPS 255
+#endif
+
+// Flash Write Default ON/OFF Times (miliseconds).
+#ifndef SIGFLASHWR_ON_MS
+#define SIGFLASHWR_ON_MS 1000
+#endif
+#ifndef SIGFLASHWR_OFF_MS
+#define SIGFLASHWR_OFF_MS 1000
+#endif
+#ifndef SIGFLASHWR_REPS
+#define SIGFLASHWR_REPS 10
 #endif
 
 #ifdef LED_PIN
@@ -42,20 +100,36 @@ void RGBLED_set_color(uint32_t color);
 #define SIGNAL_TGL()
 #endif
 
-static uint32_t now = 0;
-static uint8_t  rpt = 0;
-static uint32_t hb_ontime = HB_ON_TIME;
-static uint32_t hb_offtime = HB_ON_TIME + HB_ON_TIME;
+typedef struct {
+    uint16_t ontime;
+    uint16_t offtime;
+    uint8_t  rpt;
+} signal;
 
-// signal_tick is called by the systick IRQ.  It SHOULD be called
-// SYSTICK_FREQ times a second.
+#define SIGTIME(SIG) {SIG ## _ON_MS, (SIG ## _ON_MS + SIG ## _OFF_MS), SIG ## _REPS}
 
-void signal_tick() {
+const signal states[SIGNAL_MAX] = {
+    SIGTIME(SIGHB),      // SIGNAL_HB
+    SIGTIME(SIGSTART),   // SIGNAL_START
+    SIGTIME(SIGUSB),     // SIGNAL_USB
+#if USE_UART
+    SIGTIME(SIGUART),    // SIGNAL_UART
+#endif    
+    SIGTIME(SIGLEAVE),   // SIGNAL_LEAVE
+    SIGTIME(SIGFLASHWR), // SIGNAL_FLASHWR
+};
+
+static uint16_t now;
+static signal active_signal;
+
+// signal_tick is the systick IRQ.  
+// It SHOULD be called SYSTICK_FREQ times a second.
+void SysTick_Handler(void) {
     // Flash the Heartbeat
     now++;
-    if (now < hb_ontime) {
+    if (now < active_signal.ontime) {
         SIGNAL_ON();
-    } else if (now < (hb_offtime)) {
+    } else if (now < (active_signal.offtime)) {
         SIGNAL_OFF();
     } else {
         // This allows us short bursts of flashing at different
@@ -64,63 +138,46 @@ void signal_tick() {
         // flash cycles you want.
         // After it completes, it will go back to the normal heartbeat.
         now = 0;
-        if (rpt > 0) {
-            rpt--;
-            if (rpt == 0) {
-                hb_ontime = HB_ON_TIME;
-                hb_offtime = HB_ON_TIME + HB_OFF_TIME;
-            }
+        active_signal.rpt--;
+        if (active_signal.rpt == 0xFF) {
+            active_signal = states[SIGNAL_HB];
         }
     }
-
 }
 
-void signal_state(uint8_t state) {
-    switch(state) {
-        case SIGNAL_START:
-            RGBLED_set_color(COLOR_START);
-            hb_ontime = 100;
-            hb_offtime = 200;
-            rpt = 10;
-        break;
-        case SIGNAL_USB:
-            RGBLED_set_color(COLOR_USB);
-            hb_ontime =  250;
-            hb_offtime = 500;
-            rpt = 4;
-        break;
-        case SIGNAL_UART:
-            RGBLED_set_color(COLOR_UART);
-            hb_ontime =  750;
-            hb_offtime = 1000;
-            rpt = 1;
-        break;
-        case SIGNAL_LEAVE:
-            RGBLED_set_color(COLOR_LEAVE);
-            hb_ontime =  0;
-            hb_offtime = 255;
-            rpt = 255;
-            SIGNAL_OFF();
-        break;
-        case SIGNAL_FLASHWR:
-            hb_ontime  = 1000;
-            hb_offtime = 2000;
-            rpt        = 10;
-        case SIGNAL_HB:
-        default:
-            // Force immediate return to normal heartbeat timing.
-            rpt = 1;
-        break;
+#if defined(BOARD_RGBLED_CLOCK_PIN)
+// Heartbeat has no color for a multi color led.
+const uint32_t color_states[SIGNAL_MAX-1] = {
+    COLOR_START,   // SIGNAL_START
+    COLOR_USB,     // SIGNAL_USB
+#if USE_UART    
+    COLOR_UART,    // SIGNAL_UART
+#endif    
+    COLOR_LEAVE,   // SIGNAL_LEAVE
+    COLOR_FLASHWR, // SIGNAL_FLASHWR
+};
+#endif    
+
+
+//void signal_state(uint8_t state) {
+void signal_state(SigState state) {
+    active_signal = states[state];
+#if defined(BOARD_RGBLED_CLOCK_PIN)
+    if (state != SIGNAL_HB) { // Don't set a color for Heartbeats.
+        RGBLED_set_color(color_states[state-1]);
     }
+#endif    
 }
 
 void signal_init() {
 #if defined(LED_PIN)    
     PINOP(LED_PIN, DIRSET);
-    LED_MSC_ON();
+    SIGNAL_ON();
 #elif (defined(BUZZER_PIN) && defined(BUZZER_TCC))
     init_tcc_buzzer(); // TCC Buzzer acts a substitute for a led.
 #endif    
+
+    signal_state(SIGNAL_HB);
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
     // using APA102, set pins to outputs
