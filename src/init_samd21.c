@@ -127,4 +127,4 @@ void system_init(void) {
     // PORT->Group[0].PMUX[30 / 2].reg |= PORT_PMUX_PMUXE_H;
 }
 
-void SysTick_Handler(void) { signal_tick(); }
+

@@ -80,5 +80,3 @@ void system_init(void) {
 
     SysTick_Config(CPU_FREQUENCY/SYSTICK_FREQ);
 }
-
-void SysTick_Handler(void) { signal_tick(); }
