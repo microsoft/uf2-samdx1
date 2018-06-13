@@ -24,6 +24,11 @@
 #define BUZZER_PIN PIN_PA12
 #define BUZZER_TCC 2
 
+// Buzzer is annoying with long beeps all the time, 
+// just bip and wait a while, much nicer.
+#define SIGHB_ON_MS 100
+#define SIGHB_OFF_MS 1900
+
 // No Led
 //#define LED_PIN PIN_PA17
 
