@@ -1,6 +1,8 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
+#define CRYSTALLESS    1
+
 #define VENDOR_NAME "Electronic Cats"
 #define PRODUCT_NAME "Meow Meow"
 #define VOLUME_LABEL "MEOWMEOW"
