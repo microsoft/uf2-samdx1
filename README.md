@@ -23,6 +23,7 @@ Thus, it's really easy for the microcontroller to recognize a block of
 a UF2 file is written and immediately write it to flash.
 
 * **UF2 specification repo:** https://github.com/Microsoft/uf2
+* [#DeskOfLadyada UF24U ! LIVE @adafruit #adafruit #programming](https://youtu.be/WxCuB6jxLs0)
 
 ## Features
 
