@@ -4,7 +4,7 @@
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Feather M4 Express"
 #define VOLUME_LABEL "FEATHERBOOT"
-#define INDEX_URL "http://adafru.it/3321"
+#define INDEX_URL "http://adafru.it/3857"
 #define BOARD_ID "SAMD51J19A-FeatherM4-v0"
 
 #define USB_VID 0x239A
