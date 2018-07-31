@@ -117,7 +117,7 @@ to temporarily turn off the protection. In gdb the command is:
 
 * `make` and an Unix environment
 * `node`.js in path (optional)
-* `arm-none-eabi-gcc` in the path (the one coming with Yotta will do just fine)
+* `arm-none-eabi-gcc` in the path (the one coming with Yotta will do just fine). You can get the latest version from ARM: https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
 * `openocd` - you can use the one coming with Arduino (after your install the M0 board support)
 
 Atmel Studio is not supported.
