@@ -138,7 +138,7 @@ void sam_ba_monitor_run(void) {
         if (length) {
             logwrite("SERIAL:");
             logmsg(data);
-            led_signal();
+            signal_state(SIGNAL_HB);
         }
         ptr = data;
         for (i = 0; i < length; i++) {
@@ -182,7 +182,7 @@ void sam_ba_monitor_run(void) {
                     } else if (command == 'W') {
                         // detect BOSSA resetting us
                         if ((uint32_t)ptr_data == 0xE000ED0C)
-                            RGBLED_set_color(COLOR_LEAVE);
+                            signal_state(SIGNAL_LEAVE);
                         *((int *)(void *)ptr_data) = current_number;
                     } else if (command == 'o') {
                         sam_ba_putdata_term(ptr_data, 1);

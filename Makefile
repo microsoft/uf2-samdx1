@@ -3,10 +3,10 @@ BOARD=zero
 include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
 ifeq ($(CHIP_FAMILY), samd21)
-COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -g -DSAMD21
+COMMON_FLAGS = -mthumb -mcpu=cortex-m0plus -Os -ggdb3 -DSAMD21
 endif
 ifeq ($(CHIP_FAMILY), samd51)
-COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -g -DSAMD51
+COMMON_FLAGS = -mthumb -mcpu=cortex-m4 -O2 -ggdb3 -DSAMD51
 endif
 WFLAGS = \
 -Werror -Wall -Wstrict-prototypes \
@@ -64,7 +64,8 @@ COMMON_SRC = \
 	src/init_$(CHIP_FAMILY).c \
 	src/startup_$(CHIP_FAMILY).c \
 	src/usart_sam_ba.c \
-	src/utils.c
+	src/utils.c \
+	src/signal.c
 
 SOURCES = $(COMMON_SRC) \
 	src/cdc_enumerate.c \

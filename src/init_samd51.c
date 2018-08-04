@@ -78,7 +78,5 @@ void system_init(void) {
      */
     MCLK->CPUDIV.reg = MCLK_CPUDIV_DIV_DIV1;
 
-    SysTick_Config(1000);
+    SysTick_Config(CPU_FREQUENCY/SYSTICK_FREQ);
 }
-
-void SysTick_Handler(void) { LED_TICK(); }
