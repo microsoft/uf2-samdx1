@@ -233,7 +233,12 @@ void padded_memcpy(char *dst, const char *src, int len);
 #define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
 
 #if USE_SINGLE_RESET
+#ifdef SAMD21
 #define SINGLE_RESET() (*((uint32_t *)0x20B4) == 0x87eeb07c)
+#endif
+#ifdef SAMD51
+#define SINGLE_RESET() (*((uint32_t *)0x4268) == 0x87eeb07c)
+#endif
 #endif
 
 void resetIntoApp(void);

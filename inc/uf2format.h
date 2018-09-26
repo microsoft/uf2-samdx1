@@ -54,7 +54,7 @@ typedef void (*UF2_HID_Handover_Handler)(int ep);
 
 // this is required to be exactly 16 bytes long by the linker script
 typedef struct {
-    void *reserved0;
+    const uint32_t *config_data;
     UF2_HID_Handover_Handler handoverHID;
     UF2_MSC_Handover_Handler handoverMSC;
     const char *info_uf2;
