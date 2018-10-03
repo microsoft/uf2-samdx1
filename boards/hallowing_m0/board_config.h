@@ -5,7 +5,7 @@
 #define PRODUCT_NAME "Hallowing M0"
 #define VOLUME_LABEL "HALLOWBOOT"
 #define INDEX_URL "http://adafru.it/3900"
-#define BOARD_ID "SAMD21G18A-Feather-v0"
+#define BOARD_ID "SAMD21G18A-Hallowing-v0"
 
 #define USB_VID 0x239A
 #define USB_PID 0xB000
