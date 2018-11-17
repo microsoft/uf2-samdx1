@@ -10,3 +10,5 @@ scripts/clean-ifaces/*.plist
 TAGS
 
 \.DS_Store
+
+env/
