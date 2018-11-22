@@ -1,6 +1,8 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
+#define CRYSTALLESS    1
+
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "ItsyBitsy M4 Express"
 #define VOLUME_LABEL "ITSYM4BOOT"
