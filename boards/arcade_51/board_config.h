@@ -50,14 +50,30 @@
 #define PIN_SDA PIN_PA12
 #define PIN_SCL PIN_PA13
 
-#define CONFIG_DATA                                                                                \
+#if 0
+// game controller make
+#define BUTTONS                                                                                    \
+    CFG(PIN_BTN_LEFT, PIN_SDA)                                                                     \
+    CFG(PIN_BTN_UP, PIN_D7)                                                                        \
+    CFG(PIN_BTN_RIGHT, PIN_SCL)                                                                    \
+    CFG(PIN_BTN_DOWN, PIN_D9)                                                                      \
+    CFG(PIN_BTN_A, PIN_D10)                                                                        \
+    CFG(PIN_BTN_B, PIN_D11)                                                                        \
+    CFG(PIN_BTN_MENU, PIN_D12)
+#else
+// breadboarded Itsy
+#define BUTTONS                                                                                    \
     CFG(PIN_BTN_LEFT, PIN_D11)                                                                     \
     CFG(PIN_BTN_UP, PIN_D10)                                                                       \
     CFG(PIN_BTN_RIGHT, PIN_D9)                                                                     \
     CFG(PIN_BTN_DOWN, PIN_D12)                                                                     \
     CFG(PIN_BTN_A, PIN_SCL)                                                                        \
     CFG(PIN_BTN_B, PIN_D7)                                                                         \
-    CFG(PIN_BTN_MENU, PIN_SDA)                                                                     \
+    CFG(PIN_BTN_MENU, PIN_SDA)
+#endif
+
+#define CONFIG_DATA                                                                                \
+    BUTTONS                                                                                        \
     CFG(PIN_DISPLAY_CS, PIN_A2)                                                                    \
     CFG(PIN_DISPLAY_SCK, PIN_SCK)                                                                  \
     CFG(PIN_DISPLAY_MOSI, PIN_MOSI)                                                                \
