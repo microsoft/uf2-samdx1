@@ -201,7 +201,8 @@ void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state
     }
 
     if ((bl->flags & UF2_FLAG_NOFLASH) || bl->payloadSize != 256 || (bl->targetAddr & 0xff) ||
-        bl->targetAddr < APP_START_ADDRESS || bl->targetAddr >= FLASH_SIZE) {
+        bl->targetAddr < APP_START_ADDRESS || bl->targetAddr >= FLASH_SIZE ||
+        !UF2_IS_MY_FAMILY(bl)) {
 #if USE_DBG_MSC
         if (!quiet)
             logval("invalid target addr", bl->targetAddr);
