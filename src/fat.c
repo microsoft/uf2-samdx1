@@ -196,13 +196,12 @@ void read_block(uint32_t block_no, uint8_t *data) {
 
 void write_block(uint32_t block_no, uint8_t *data, bool quiet, WriteState *state) {
     UF2_Block *bl = (void *)data;
-    if (!is_uf2_block(bl)) {
+    if (!is_uf2_block(bl) || !UF2_IS_MY_FAMILY(bl)) {
         return;
     }
 
     if ((bl->flags & UF2_FLAG_NOFLASH) || bl->payloadSize != 256 || (bl->targetAddr & 0xff) ||
-        bl->targetAddr < APP_START_ADDRESS || bl->targetAddr >= FLASH_SIZE ||
-        !UF2_IS_MY_FAMILY(bl)) {
+        bl->targetAddr < APP_START_ADDRESS || bl->targetAddr >= FLASH_SIZE) {
 #if USE_DBG_MSC
         if (!quiet)
             logval("invalid target addr", bl->targetAddr);
