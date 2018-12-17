@@ -7,6 +7,8 @@
 #define INDEX_URL "http://adafru.it/"
 #define BOARD_ID "SAMD51J20A-PyPortal-v0"
 
+#define CRYSTALLESS    1
+
 #define USB_VID 0x239A
 #define USB_PID 0x0035
 
