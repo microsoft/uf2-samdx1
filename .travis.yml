@@ -2,9 +2,6 @@ language: node_js
 sudo: false
 node_js:
   - "5.7.0"
-notifications:
-  email:
-    - yelm-eng@microsoft.com
 addons:
   apt:
     packages:
