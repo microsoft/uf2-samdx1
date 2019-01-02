@@ -5,15 +5,15 @@ static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
 
 void delay(uint32_t ms) {
-    // SAMD21 starts up at 1mhz by default.
-    #ifdef SAMD21
-    ms <<= 8;
-    #endif
-    // SAMD51 starts up at 48mhz by default.
-    #ifdef SAMD51
-    ms <<= 12;
-    #endif
-    for (int i = 1; i < ms; ++i) {
+     // SAMD21 starts up at 1mhz by default.	
+     #ifdef SAMD21	
+     ms <<= 8;
+     #endif	
+     // SAMD51 starts up at 48mhz by default.	
+     #ifdef SAMD51	
+     ms <<= 12;	
+     #endif
+	 for (int i = 1; i < ms; ++i) {
         asm("nop");
     }
 }
@@ -109,8 +109,14 @@ static uint32_t now;
 static uint32_t signal_end;
 int8_t led_tick_step = 1;
 static uint8_t limit = 200;
+#if USE_BINARY_FILES
+uint32_t binary_files_timer = 0;
+#endif
 
 void led_tick() {
+#if USE_BINARY_FILES
+    binary_files_timer++;
+#endif
     now++;
     if (signal_end) {
         if (now == signal_end - 1000) {
@@ -141,10 +147,10 @@ void led_signal() {
 }
 
 void led_init() {
-#if defined(LED_PIN)    
-    PINOP(LED_PIN, DIRSET);
+#if defined(LED_PIN)    	
+     PINOP(LED_PIN, DIRSET);
 #endif    
-    LED_MSC_ON();
+ LED_MSC_ON();
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
     // using APA102, set pins to outputs
