@@ -97,7 +97,7 @@ void call_applet(uint32_t address) {
     cpu_irq_disable();
 
     /* Save current Stack Pointer */
-	sp = __get_MSP();
+    sp = __get_MSP();
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)address);
@@ -106,12 +106,11 @@ void call_applet(uint32_t address) {
     app_start_address = *(uint32_t *)(address + 4);
 
     /* Jump to application Reset Handler in the application */
-         asm("blx %0" ::"r"(app_start_address):"r0","r1","r2","r3","lr");
-		 /*asm("bx %0" ::"r"(app_start_address));*/
- 
-      /* Rebase the Stack Pointer */	
-     __set_MSP(sp);
-}
+    asm("blx %0" ::"r"(app_start_address):"r0","r1","r2","r3","lr");
+	/*asm("bx %0" ::"r"(app_start_address));*/
+
+    /* Rebase the Stack Pointer */
+    __set_MSP(sp);
 
 uint32_t current_number;
 uint32_t i, length;
@@ -238,6 +237,7 @@ void sam_ba_monitor_run(void) {
                             flash_erase_row((void *)dst_addr);
                             dst_addr += FLASH_ROW_SIZE;
                         }
+						/*flash_erase_to_end((uint32_t *) current_number);*/
 
                         // Notify command completed
                         cdc_write_buf("X\n\r", 3);

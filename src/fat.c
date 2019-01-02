@@ -93,13 +93,13 @@ static const struct TextFile info[] = {
 #if USE_BINARY_FILES
     {.name = "CURRENT BIN", .length = (FLASH_SIZE - APP_START_ADDRESS), .startCluster = BIN_FIRST_SECTOR}, //  0x405
 #endif
-	{.name = "CURRENT UF2"},
+    {.name = "CURRENT UF2"},
 };
 #define NUM_INFO (sizeof(info) / sizeof(info[0]))
 
-#define UF2_SIZE (FLASH_SIZE * 2)	
-#define UF2_SECTORS (UF2_SIZE / 512)	
-#define UF2_FIRST_SECTOR (NUM_INFO + 1)	
+#define UF2_SIZE (FLASH_SIZE * 2)
+#define UF2_SECTORS (UF2_SIZE / 512)
+#define UF2_FIRST_SECTOR (NUM_INFO + 1)
 #define UF2_LAST_SECTOR (UF2_FIRST_SECTOR + UF2_SECTORS - 1)
 
 #endif
