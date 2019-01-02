@@ -94,7 +94,8 @@ volatile uint32_t sp;
 void call_applet(uint32_t address) {
     uint32_t app_start_address;
 
-    /* Save current Stack Pointer */
+    cpu_irq_disable();
+
     sp = __get_MSP();
 
     /* Rebase the Stack Pointer */
@@ -104,10 +105,7 @@ void call_applet(uint32_t address) {
     app_start_address = *(uint32_t *)(address + 4);
 
     /* Jump to application Reset Handler in the application */
-    asm("blx %0" ::"r"(app_start_address):"r0","r1","r2","r3","lr");
-
-    /* Rebase the Stack Pointer */
-    __set_MSP(sp);
+    asm("bx %0" ::"r"(app_start_address));
 }
 
 uint32_t current_number;
@@ -139,6 +137,10 @@ void sam_ba_monitor_run(void) {
             logwrite("SERIAL:");
             logmsg(data);
             led_signal();
+#if USE_BINARY_FILES
+            // reset binary_files_timer
+            binary_files_timer = 0;
+#endif
         }
         ptr = data;
         for (i = 0; i < length; i++) {
@@ -159,7 +161,7 @@ void sam_ba_monitor_run(void) {
                             // We need to add first the remaining data of the
                             // current buffer already read from usb
                             // read a maximum of "current_number" bytes
-                            u32tmp = (length - i) < current_number ? (length - i) : current_number;
+                            u32tmp = min((length - i), current_number);
                             memcpy(ptr_data, ptr, u32tmp);
                             i += u32tmp;
                             ptr += u32tmp;
@@ -194,6 +196,9 @@ void sam_ba_monitor_run(void) {
                         sam_ba_putdata_term((uint8_t *)&current_number, 4);
                     } else if (command == 'G') {
                         call_applet(current_number);
+                        /* Rebase the Stack Pointer */
+                        __set_MSP(sp);
+                        cpu_irq_enable();
                         if (b_sam_ba_interface_usart) {
                             cdc_write_buf("\x06", 1);
                         }
@@ -216,7 +221,18 @@ void sam_ba_monitor_run(void) {
                         // Erase the flash memory starting from ADDR to the end
                         // of flash.
 
-                        flash_erase_to_end((uint32_t *) current_number);
+                        // Note: the flash memory is erased in ROWS, that is in
+                        // block of 4 pages.
+                        //       Even if the starting address is the last byte
+                        //       of a ROW the entire
+                        //       ROW is erased anyway.
+
+                        uint32_t dst_addr = current_number; // starting address
+
+                        while (dst_addr < FLASH_SIZE) {
+                            flash_erase_row((void *)dst_addr);
+                            dst_addr += FLASH_ROW_SIZE;
+                        }
 
                         // Notify command completed
                         cdc_write_buf("X\n\r", 3);
