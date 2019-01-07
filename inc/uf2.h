@@ -1,6 +1,7 @@
 #ifndef UF2_H
 #define UF2_H 1
 
+#include <stdint.h>
 #include "board_config.h"
 
 #include "sam.h"

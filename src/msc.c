@@ -42,9 +42,11 @@
  */
 
 
+#define DEFINE_CONFIG_DATA 1
+
 #include "uf2.h"
 
-#include "config_data.h"
+#include "configkeys.h"
 
 #include "lib/usb_msc/sbc_protocol.h"
 #include "lib/usb_msc/spc_protocol.h"
@@ -865,16 +867,8 @@ static void handover(UF2_HandoverArgs *args) {
 }
 #endif
 
-#ifdef CONFIG_DATA
-static const uint32_t config_data[] = {
-    CONFIG_DATA_MAGIC,
-    CONFIG_DATA
-    0, 0
-};
-#endif
-
 __attribute__((section(".binfo"))) __attribute__((__used__)) const UF2_BInfo binfo = {
-#ifdef CONFIG_DATA
+#ifdef HAS_CONFIG_DATA
     .config_data = config_data,
 #endif
 #if USE_MSC_HANDOVER
