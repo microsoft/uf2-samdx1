@@ -46,8 +46,6 @@
 
 #include "uf2.h"
 
-#include "configkeys.h"
-
 #include "lib/usb_msc/sbc_protocol.h"
 #include "lib/usb_msc/spc_protocol.h"
 #include "lib/usb_msc/usb_protocol.h"

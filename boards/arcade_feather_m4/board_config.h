@@ -28,6 +28,8 @@
 #define BOOT_GCLK_ID_SLOW SERCOM0_GCLK_ID_SLOW
 
 #define HAS_CONFIG_DATA 1
+#define BOARD_SCREEN 1
+
 
 // This configuration data should be edited at https://microsoft.github.io/uf2/patcher/
 // Just drop this file there.

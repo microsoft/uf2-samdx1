@@ -15,6 +15,10 @@
 #include <stdio.h>
 #include <string.h>
 
+
+#include "configkeys.h"
+
+
 #undef DISABLE
 #undef ENABLE
 
@@ -55,6 +59,12 @@
 #define USE_WEBUSB 1
 // Doesn't yet disable code, just enumeration
 #define USE_MSC 1
+
+#ifdef BOARD_SCREEN
+#define USE_SCREEN 1
+#else
+#define USE_SCREEN 0
+#endif
 
 // If enabled, bootloader will start on power-on and every reset. A second reset
 // will start the app. This only happens if the app says it wants that (see SINGLE_RESET() below).
@@ -283,5 +293,13 @@ STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
 #endif
 
 extern const char infoUf2File[];
+
+#if USE_SCREEN
+void draw_screen(void);
+void draw_hf2(void);
+void draw_drag(void);
+void screen_init(void);
+void screen_early_init(void);
+#endif
 
 #endif

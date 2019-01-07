@@ -155,10 +155,9 @@ void led_init() {
     RGBLED_set_color(COLOR_LEAVE);
 #endif
 
-#if defined(PIN_DISPLAY_BL)
+#if USE_SCREEN
     // turn display backlight
-    PINOP(PIN_DISPLAY_BL, DIRSET);
-    PINOP(PIN_DISPLAY_BL, OUTCLR);
+    screen_early_init();
 #endif
 }
 
