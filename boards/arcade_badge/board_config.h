@@ -41,8 +41,8 @@ const uint32_t config_data[] = {
     1, 0x2e, // PIN_ACCELEROMETER_INT = PB14
     2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL
     3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA
-    4, 0x6b, // PIN_BTN_A = PD11
-    5, 0x6a, // PIN_BTN_B = PD10
+    4, 0x3ef, // PIN_BTN_A = P_1007
+    5, 0x3ee, // PIN_BTN_B = P_1006
     13, 0x17, // PIN_LED = PIN_D13
     18, 0x36, // PIN_MISO = PB22
     19, 0x37, // PIN_MOSI = PB23
@@ -63,18 +63,18 @@ const uint32_t config_data[] = {
     41, 0x18, // DISPLAY_CFG2 = 0x18
     43, 0x1, // PIN_DISPLAY_RST = PA01
     44, 0x0, // PIN_DISPLAY_BL = PA00
-    47, 0x64, // PIN_BTN_LEFT = PD04
-    48, 0x67, // PIN_BTN_RIGHT = PD07
-    49, 0x65, // PIN_BTN_UP = PD05
-    50, 0x66, // PIN_BTN_DOWN = PD06
-    51, 0x68, // PIN_BTN_MENU = PD08
+    47, 0x3e8, // PIN_BTN_LEFT = P_1000
+    48, 0x3eb, // PIN_BTN_RIGHT = P_1003
+    49, 0x3e9, // PIN_BTN_UP = P_1001
+    50, 0x3ea, // PIN_BTN_DOWN = P_1002
+    51, 0x3ec, // PIN_BTN_MENU = P_1004
     59, 0x200, // SPEAKER_VOLUME = 512
     60, 0x10, // PIN_JACK_TX = PIN_D5
     65, 0x2, // PIN_JACK_SND = PIN_A0
     66, 0x20, // PIN_BTNMX_LATCH = PB00
     67, 0x3f, // PIN_BTNMX_CLOCK = PB31
     68, 0x3e, // PIN_BTNMX_DATA = PB30
-    69, 0x69, // PIN_BTN_SOFT_RESET = PD09
+    69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
     70, 0x32, // ACCELEROMETER_TYPE = LIS3DH
     100, 0x2, // PIN_A0 = PA02
     101, 0x5, // PIN_A1 = PA05
@@ -106,5 +106,3 @@ const uint32_t config_data[] = {
 #endif
 
 #endif
-
-
