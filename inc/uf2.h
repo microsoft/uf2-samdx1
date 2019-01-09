@@ -136,7 +136,13 @@
 // End of config
 
 #define USE_MONITOR (USE_CDC || USE_UART)
+
+#ifdef SAMD51
+// 51 also runs at 48MHz in bootloader mode, but it's still faster
+#define TIMER_STEP 2000
+#else
 #define TIMER_STEP 1500
+#endif
 
 #ifdef BOARD_NEOPIXEL_PIN
 #define COLOR_START 0x040000
