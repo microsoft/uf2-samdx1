@@ -10,6 +10,7 @@ struct HF2_BININFO_Result {
     uint32_t flash_page_size;
     uint32_t flash_num_pages;
     uint32_t max_message_size;
+    uint32_t uf2_family;
 };
 
 #define HF2_CMD_INFO 0x0002
