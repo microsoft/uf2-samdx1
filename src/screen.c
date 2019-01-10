@@ -364,11 +364,14 @@ void draw_screen() {
 
     uint8_t *p = fb;
     for (int i = 0; i < DISPLAY_WIDTH; ++i) {
+        uint8_t cc[DISPLAY_HEIGHT * 2];
+        uint32_t dst = 0;
         for (int j = 0; j < DISPLAY_HEIGHT; ++j) {
             uint16_t color = palette[*p++ & 0xf];
-            uint8_t cc[] = {color >> 8, color & 0xff};
-            transfer(cc, 2);
+            cc[dst++] = color >> 8;
+            cc[dst++] = color & 0xff;
         }
+        transfer(cc, sizeof(cc));
     }
 
     SET_CS(1);
