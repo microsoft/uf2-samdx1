@@ -34,7 +34,7 @@
 #include "uf2_version.h"
 
 // needs to be more than ~4200 (to force FAT16)
-#define NUM_FAT_BLOCKS 8000
+#define NUM_FAT_BLOCKS 16000
 
 // Logging to help debugging
 #define USE_LOGS 0
