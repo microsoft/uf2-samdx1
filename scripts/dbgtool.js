@@ -71,7 +71,7 @@ function main() {
     if (process.platform == "win32")
         openocdBin += ".exe"
 
-    let zeroCfg = pkgDir + "hardware/samd/1.6.16/variants/arduino_zero/openocd_scripts/arduino_zero.cfg"
+    let zeroCfg = pkgDir + "hardware/samd/1.6.17/variants/arduino_zero/openocd_scripts/arduino_zero.cfg"
 
     let cmd = `telnet_port disabled; init; halt; `
     if (mode == "map")
