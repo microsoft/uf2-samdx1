@@ -37,7 +37,7 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    59, 100,  // used entries, total entries
+    60, 100,  // used entries, total entries
     4, 0xd, // PIN_BTN_A = PIN_SCL
     5, 0x12, // PIN_BTN_B = PIN_D7
     7, 0x22, // PIN_DOTSTAR_CLOCK = PB02
