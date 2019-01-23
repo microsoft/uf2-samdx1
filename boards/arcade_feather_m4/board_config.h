@@ -39,7 +39,7 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    52, 100,  // used entries, total entries
+    53, 100,  // used entries, total entries
     4, 0xd, // PIN_BTN_A = PIN_SCL
     5, 0x12, // PIN_BTN_B = PIN_D6
     13, 0x17, // PIN_LED = PIN_D13
@@ -70,6 +70,7 @@ const uint32_t config_data[] = {
     50, 0x16, // PIN_BTN_DOWN = PIN_D12
     51, 0xc, // PIN_BTN_MENU = PIN_SDA
     59, 0x200, // SPEAKER_VOLUME = 512
+    60, 0x30, // PIN_JACK_TX = PIN_D1
     100, 0x2, // PIN_A0 = PA02
     101, 0x5, // PIN_A1 = PA05
     102, 0x28, // PIN_A2 = PB08
@@ -94,11 +95,12 @@ const uint32_t config_data[] = {
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     /* CF2 END */
 };
 #endif
 
 #endif
+
 
 
