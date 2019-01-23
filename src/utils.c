@@ -5,14 +5,14 @@ static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
 
 void delay(uint32_t ms) {
-    // SAMD21 starts up at 1mhz by default.
-    #ifdef SAMD21
+// SAMD21 starts up at 1mhz by default.
+#ifdef SAMD21
     ms <<= 8;
-    #endif
-    // SAMD51 starts up at 48mhz by default.
-    #ifdef SAMD51
+#endif
+// SAMD51 starts up at 48mhz by default.
+#ifdef SAMD51
     ms <<= 12;
-    #endif
+#endif
     for (int i = 1; i < ms; ++i) {
         asm("nop");
     }
@@ -141,9 +141,9 @@ void led_signal() {
 }
 
 void led_init() {
-#if defined(LED_PIN)    
+#if defined(LED_PIN)
     PINOP(LED_PIN, DIRSET);
-#endif    
+#endif
     LED_MSC_ON();
 
 #if defined(BOARD_RGBLED_CLOCK_PIN)
@@ -153,6 +153,11 @@ void led_init() {
 
     // This won't work for neopixel, because we're running at 1MHz or thereabouts...
     RGBLED_set_color(COLOR_LEAVE);
+#endif
+
+#if USE_SCREEN
+    // turn display backlight
+    screen_early_init();
 #endif
 }
 

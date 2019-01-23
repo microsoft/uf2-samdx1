@@ -42,7 +42,7 @@ endif
 
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
--Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
+-Wl,--warn-section-align \
 -save-temps -nostartfiles \
 --specs=nano.specs --specs=nosys.specs
 BUILD_PATH=build/$(BOARD)
@@ -64,6 +64,8 @@ COMMON_SRC = \
 	src/init_$(CHIP_FAMILY).c \
 	src/startup_$(CHIP_FAMILY).c \
 	src/usart_sam_ba.c \
+	src/screen.c \
+	src/images.c \
 	src/utils.c
 
 SOURCES = $(COMMON_SRC) \
