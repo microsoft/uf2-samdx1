@@ -2,10 +2,10 @@
 #define BOARD_CONFIG_H
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "Metro M4 Express WiFi"
+#define PRODUCT_NAME "Metro M4 AirLift"
 #define VOLUME_LABEL "METROM4BOOT"
 #define INDEX_URL "http://adafru.it/"
-#define BOARD_ID "SAMD51J19A-Metro-v0"
+#define BOARD_ID "SAMD51J19A-Metro-AirLift-v0"
 
 #define USB_VID 0x239A
 #define USB_PID 0x0037
