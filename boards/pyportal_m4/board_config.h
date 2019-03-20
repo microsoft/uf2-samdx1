@@ -4,7 +4,7 @@
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "PyPortal M4 Express"
 #define VOLUME_LABEL "PORTALBOOT"
-#define INDEX_URL "http://adafru.it/"
+#define INDEX_URL "http://adafru.it/4116"
 #define BOARD_ID "SAMD51J20A-PyPortal-v0"
 
 #define CRYSTALLESS    1
@@ -12,7 +12,7 @@
 #define USB_VID 0x239A
 #define USB_PID 0x0035
 
-#define LED_PIN PIN_PA27
+#define LED_PIN PIN_PB23
 
 #define BOARD_NEOPIXEL_PIN PIN_PB22
 #define BOARD_NEOPIXEL_COUNT 1
