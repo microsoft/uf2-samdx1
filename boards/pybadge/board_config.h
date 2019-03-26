@@ -2,10 +2,10 @@
 #define BOARD_CONFIG_H
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "pyBadge Express"
+#define PRODUCT_NAME "pyBadge"
 #define VOLUME_LABEL "BADGEBOOT"
-#define INDEX_URL "http://adafru.it/"
-#define BOARD_ID "SAMD51G19A-pyBadge-v0"
+#define INDEX_URL "http://adafru.it/4200"
+#define BOARD_ID "SAMD51J19A-pyBadge-v0"
 
 #define USB_VID 0x239A
 #define USB_PID 0x0033
