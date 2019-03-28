@@ -244,7 +244,7 @@ extern const uint8_t pendriveLogo[];
 extern const uint8_t arrowLogo[];
 
 static void printch(int x, int y, int col, const uint8_t *fnt) {
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 6; ++i) {
         uint8_t *p = fb + (x + i) * DISPLAY_HEIGHT + y;
         uint8_t mask = 0x01;
         for (int j = 0; j < 8; ++j) {
@@ -258,7 +258,7 @@ static void printch(int x, int y, int col, const uint8_t *fnt) {
 }
 
 static void printch4(int x, int y, int col, const uint8_t *fnt) {
-    for (int i = 0; i < 8 * 4; ++i) {
+    for (int i = 0; i < 6 * 4; ++i) {
         uint8_t *p = fb + (x + i) * DISPLAY_HEIGHT + y;
         uint8_t mask = 0x01;
         for (int j = 0; j < 8; ++j) {
@@ -338,8 +338,8 @@ void print(int x, int y, int col, const char *text) {
         if (c >= 0x7f)
             c = '?';
         c -= ' ';
-        printch(x, y, col, &font8[c * 8]);
-        x += 8;
+        printch(x, y, col, &font8[c * 6]);
+        x += 6;
     }
 }
 
@@ -347,8 +347,8 @@ void print4(int x, int y, int col, const char *text) {
     while (*text) {
         char c = *text++;
         c -= ' ';
-        printch4(x, y, col, &font8[c * 8]);
-        x += 8 * 4;
+        printch4(x, y, col, &font8[c * 6]);
+        x += 6 * 4;
     }
 }
 
@@ -394,17 +394,17 @@ void draw_drag() {
     drawBar(52, 55, 8);
     drawBar(107, 14, 4);
 
-    print4(40, 10, 1, "D51");
-    print(37, 43, 6, "UF2 " UF2_VERSION_BASE);
-    print(3, 110, 1, "arcade.makecode.com");
+    print4(108, 5, 1, "D5");
+    print(112, 40, 6, UF2_VERSION_BASE);
+    print(23, 110, 1, "arcade.makecode.com");
 
 #define DRAG 70
 #define DRAGX 10
     printicon(DRAGX + 20, DRAG + 5, 1, fileLogo);
     printicon(DRAGX + 66, DRAG, 1, arrowLogo);
     printicon(DRAGX + 108, DRAG, 1, pendriveLogo);
-    print(2, DRAG - 12, 1, "arcade.uf2");
-    print(95, DRAG - 12, 1, "ARCD-D51");
+    print(10, DRAG - 12, 1, "arcade.uf2");
+    print(98, DRAG - 12, 1, "ARCADE-D5");
 
     draw_screen();
 }
