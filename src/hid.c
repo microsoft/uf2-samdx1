@@ -138,6 +138,7 @@ void process_core(HID_InBuffer *pkt) {
         resp->bininfo.flash_page_size = FLASH_ROW_SIZE;
         resp->bininfo.flash_num_pages = FLASH_SIZE / FLASH_ROW_SIZE;
         resp->bininfo.max_message_size = sizeof(pkt->buf);
+        resp->bininfo.uf2_family = UF2_FAMILY;
         send_hf2_response(pkt, sizeof(resp->bininfo));
         return;
 
