@@ -5,10 +5,10 @@
 
 #define VENDOR_NAME "Microsoft Research"
 #define PRODUCT_NAME "Project Brookdale"
-#define VOLUME_LABEL "MOTION_BEAD"
+#define VOLUME_LABEL "PROX_BEAD"
 #define INDEX_URL "https://www.microsoft.com/en-us/research/"
 
-#define BOARD_ID "SAMD21G18A-MotionBead-v2"
+#define BOARD_ID "SAMD21G18A-ProximityBead-v0"
 
 #define USB_VID 0x239A
 #define USB_PID 0x0018
