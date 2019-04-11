@@ -3,7 +3,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Feather Arcade D51"
-#define VOLUME_LABEL "ARCD-D51"
+#define VOLUME_LABEL "ARCADE-D5"
 #define INDEX_URL "https://arcade.makecode.com/"
 #define BOARD_ID "SAMD51J19A-Feather-Arcade-D51"
 

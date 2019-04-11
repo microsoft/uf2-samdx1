@@ -3,7 +3,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Arcade D51"
-#define VOLUME_LABEL "ARCD-D51"
+#define VOLUME_LABEL "ARCADE-D5"
 #define INDEX_URL "http://adafru.it/"
 #define BOARD_ID "SAMD51J19A-Arcade-D51"
 

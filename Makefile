@@ -102,6 +102,27 @@ burn: all
 
 run: burn wait logs
 
+# This currently only works on macOS with a BMP debugger attached.
+# It's meant to flash the bootloader in a loop.
+BMP = $(shell ls -1 /dev/cu.usbmodem* | head -1)
+BMP_ARGS = --nx -ex "set mem inaccessible-by-default off" -ex "set confirm off" -ex "target extended-remote $(BMP)" -ex "mon swdp_scan" -ex "attach 1"
+GDB = arm-none-eabi-gdb
+
+bmp-flash: $(BUILD_PATH)/$(NAME).bin
+	@test "X$(BMP)" != "X"
+	$(GDB) $(BMP_ARGS) -ex "load" -ex "quit" $(BUILD_PATH)/$(NAME).elf | tee build/flash.log
+	@grep -q "Transfer rate" build/flash.log
+
+bmp-flashone:
+	while : ; do $(MAKE) bmp-flash && exit 0 ; sleep 1 ; done
+	afplay /System/Library/PrivateFrameworks/ScreenReader.framework/Versions/A/Resources/Sounds/Error.aiff
+
+bmp-loop:
+	while : ; do $(MAKE) bmp-flashone ; sleep 5 ; done
+
+bmp-gdb: $(BUILD_PATH)/$(NAME).bin
+	$(GDB) $(BMP_ARGS) $(BUILD_PATH)/$(NAME).elf
+
 wait:
 	sleep 5
 
