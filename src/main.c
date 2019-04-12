@@ -247,7 +247,9 @@ int main(void) {
 
         if (!main_b_cdc_enable) {
             // get more predictable timings before the USB is enumerated
-            delay(1);
+            for (int i = 1; i < 256; ++i) {
+                asm("nop");
+            }
         }
     }
 }
