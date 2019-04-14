@@ -114,7 +114,7 @@ static void check_start_application(void) {
             *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
             // this will be cleared after succesful USB enumeration
             // this is around 1.5s
-            resetHorizon = timerHigh + 300;
+            resetHorizon = timerHigh + 50;
             return;
         }
     }
@@ -244,5 +244,12 @@ int main(void) {
             process_msc();
         }
 #endif
+
+        if (!main_b_cdc_enable) {
+            // get more predictable timings before the USB is enumerated
+            for (int i = 1; i < 256; ++i) {
+                asm("nop");
+            }
+        }
     }
 }
