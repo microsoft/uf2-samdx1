@@ -72,7 +72,7 @@
  * to use the interrupt vectors of the application @0x2000.<- not required as
  * application code is taking care of this
  *
-*/
+ */
 
 #include "uf2.h"
 
@@ -109,13 +109,12 @@ static void check_start_application(void) {
 
 #if USE_SINGLE_RESET
     if (SINGLE_RESET()) {
-        if (RESET_CONTROLLER->RCAUSE.bit.POR ||
-                *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
+        if (RESET_CONTROLLER->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             // the second tap on reset will go into app
             *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
             // this will be cleared after succesful USB enumeration
             // this is around 1.5s
-            resetHorizon = timerHigh + 300;
+            resetHorizon = timerHigh + 50;
             return;
         }
     }
@@ -162,7 +161,7 @@ int main(void) {
         while (1) {
         }
 
-#if (USB_VID == 0x239a) && (USB_PID == 0x0013)  // Adafruit Metro M0
+#if (USB_VID == 0x239a) && (USB_PID == 0x0013) // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.
     delay(15);
 #endif
@@ -209,6 +208,11 @@ int main(void) {
 #endif
                 RGBLED_set_color(COLOR_USB);
                 led_tick_step = 1;
+
+#if USE_SCREEN
+                screen_init();
+                draw_drag();
+#endif
             }
 
             main_b_cdc_enable = true;
@@ -240,5 +244,12 @@ int main(void) {
             process_msc();
         }
 #endif
+
+        if (!main_b_cdc_enable) {
+            // get more predictable timings before the USB is enumerated
+            for (int i = 1; i < 256; ++i) {
+                asm("nop");
+            }
+        }
     }
 }

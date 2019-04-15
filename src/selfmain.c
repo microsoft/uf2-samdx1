@@ -47,15 +47,37 @@ void setBootProt(int v) {
     fuses[0] = *((uint32_t *)NVM_FUSE_ADDR);
     fuses[1] = *(((uint32_t *)NVM_FUSE_ADDR) + 1);
 
+    bool repair_fuses = false;
+    // Check for damaged fuses. If the NVM user page was accidentally erased, there
+    // will be 1's in wrong places. This would enable the watchdog timer and cause other
+    // problems. So check for all ones outside of the SAMD21/51 BOOTPROT fields, or all ones
+    // in fuses[1]. If it appears the fuses page was erased, replace fuses with reasonable values.
+    if ((fuses[0] & 0x03fffff0) == 0x03fffff0 || fuses[1] == 0xffffffff) {
+        repair_fuses = true;
+
+        // These canonical fuse values taken from working Adafruit SAMD21 and SAMD51 boards.
+        #ifdef SAMD21
+        fuses[0] = 0xD8E0C7FA;
+        fuses[1] = 0xFFFFFC5D;
+        #endif
+        #ifdef SAMD51
+        fuses[0] = 0xF69A9239;
+        fuses[1] = 0xAEECFF80;
+        #endif
+    }
+
     uint32_t bootprot = (fuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
 
+    logval("repair_fuses", repair_fuses);
     logval("fuse0", fuses[0]);
     logval("fuse1", fuses[1]);
     logval("bootprot", bootprot);
     logval("needed", v);
 
-    if (bootprot == v)
+    // Don't write if nothing will be changed.
+    if (bootprot == v && !repair_fuses) {
         return;
+    }
 
     fuses[0] = (fuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
@@ -102,14 +124,15 @@ int main(void) {
     logmsg("Before main loop");
 
     #ifdef SAMD21
-    setBootProt(7); // 0k
+    // Disable BOOTPROT while updating bootloader.
+    setBootProt(7); // 0k - See "Table 22-2 Boot Loader Size" in datasheet.
     #endif
     #ifdef SAMD51
     // We only need to set the BOOTPROT once on the SAMD51. For updates, we can
     // temporarily turn the protection off instead.
-    if (NVMCTRL->STATUS.bit.BOOTPROT != 13) {
-        setBootProt(13); // 16k
-    }
+    // setBootProt() will only write BOOTPROT if it is not already correct.
+    // setBootProt() will also fix the fuse values if they appear to be all ones.
+    setBootProt(13); // 16k. See "Table 25-10 Boot Loader Size" in datasheet.
     exec_cmd(NVMCTRL_CTRLB_CMD_SBPDIS);
     NVMCTRL->CTRLA.bit.CACHEDIS0 = true;
     NVMCTRL->CTRLA.bit.CACHEDIS1 = true;
@@ -155,6 +178,7 @@ int main(void) {
     LED_MSC_OFF();
 
     #ifdef SAMD21
+    // Re-enable BOOTPROT
     setBootProt(2); // 8k
     #endif
     // For the SAMD51, the boot protection will automatically be re-enabled on

@@ -42,7 +42,7 @@ endif
 
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
--Wl,--warn-section-align -Wl,--warn-unresolved-symbols \
+-Wl,--warn-section-align \
 -save-temps -nostartfiles \
 --specs=nano.specs --specs=nosys.specs
 BUILD_PATH=build/$(BOARD)
@@ -64,6 +64,8 @@ COMMON_SRC = \
 	src/init_$(CHIP_FAMILY).c \
 	src/startup_$(CHIP_FAMILY).c \
 	src/usart_sam_ba.c \
+	src/screen.c \
+	src/images.c \
 	src/utils.c
 
 SOURCES = $(COMMON_SRC) \
@@ -99,6 +101,27 @@ burn: all
 	node scripts/dbgtool.js $(BUILD_PATH)/$(NAME).bin
 
 run: burn wait logs
+
+# This currently only works on macOS with a BMP debugger attached.
+# It's meant to flash the bootloader in a loop.
+BMP = $(shell ls -1 /dev/cu.usbmodem* | head -1)
+BMP_ARGS = --nx -ex "set mem inaccessible-by-default off" -ex "set confirm off" -ex "target extended-remote $(BMP)" -ex "mon swdp_scan" -ex "attach 1"
+GDB = arm-none-eabi-gdb
+
+bmp-flash: $(BUILD_PATH)/$(NAME).bin
+	@test "X$(BMP)" != "X"
+	$(GDB) $(BMP_ARGS) -ex "load" -ex "quit" $(BUILD_PATH)/$(NAME).elf | tee build/flash.log
+	@grep -q "Transfer rate" build/flash.log
+
+bmp-flashone:
+	while : ; do $(MAKE) bmp-flash && exit 0 ; sleep 1 ; done
+	afplay /System/Library/PrivateFrameworks/ScreenReader.framework/Versions/A/Resources/Sounds/Error.aiff
+
+bmp-loop:
+	while : ; do $(MAKE) bmp-flashone ; sleep 5 ; done
+
+bmp-gdb: $(BUILD_PATH)/$(NAME).bin
+	$(GDB) $(BMP_ARGS) $(BUILD_PATH)/$(NAME).elf
 
 wait:
 	sleep 5

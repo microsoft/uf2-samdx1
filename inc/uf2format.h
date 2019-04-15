@@ -9,9 +9,11 @@
 // if you increase that, you will also need to update the linker script file
 #ifdef SAMD21
 #define APP_START_ADDRESS 0x00002000
+#define UF2_FAMILY 0x68ed2b88
 #endif
 #ifdef SAMD51
 #define APP_START_ADDRESS 0x00004000
+#define UF2_FAMILY 0x55114460
 #endif
 
 #define UF2_MAGIC_START0 0x0A324655UL // "UF2\n"
@@ -20,6 +22,10 @@
 
 // If set, the block is "comment" and should not be flashed to the device
 #define UF2_FLAG_NOFLASH 0x00000001
+#define UF2_FLAG_FAMILYID_PRESENT 0x00002000
+
+#define UF2_IS_MY_FAMILY(bl)                                                                       \
+    (((bl)->flags & UF2_FLAG_FAMILYID_PRESENT) == 0 || (bl)->familyID == UF2_FAMILY)
 
 typedef struct {
     // 32 byte header
@@ -30,7 +36,7 @@ typedef struct {
     uint32_t payloadSize;
     uint32_t blockNo;
     uint32_t numBlocks;
-    uint32_t reserved;
+    uint32_t familyID;
 
     // raw data;
     uint8_t data[476];
@@ -54,7 +60,7 @@ typedef void (*UF2_HID_Handover_Handler)(int ep);
 
 // this is required to be exactly 16 bytes long by the linker script
 typedef struct {
-    void *reserved0;
+    const uint32_t *config_data;
     UF2_HID_Handover_Handler handoverHID;
     UF2_MSC_Handover_Handler handoverMSC;
     const char *info_uf2;
