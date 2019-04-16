@@ -39,7 +39,7 @@
 #include "uf2_version.h"
 
 // needs to be more than ~4200 (to force FAT16)
-#define NUM_FAT_BLOCKS 8000
+#define NUM_FAT_BLOCKS 16000
 
 // Logging to help debugging
 #define USE_LOGS 0
@@ -272,14 +272,14 @@ void led_init(void);
 void RGBLED_set_color(uint32_t color);
 
 // Not all targets have a LED
-#if defined(LED_PIN) 
+#if defined(LED_PIN)
 #define LED_MSC_OFF() PINOP(LED_PIN, OUTCLR)
 #define LED_MSC_ON() PINOP(LED_PIN, OUTSET)
 #define LED_MSC_TGL() PINOP(LED_PIN, OUTTGL)
 #else
-#define LED_MSC_OFF() 
-#define LED_MSC_ON() 
-#define LED_MSC_TGL() 
+#define LED_MSC_OFF()
+#define LED_MSC_ON()
+#define LED_MSC_TGL()
 #endif
 
 extern uint32_t timerHigh, resetHorizon;

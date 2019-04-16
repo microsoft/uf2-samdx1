@@ -4,9 +4,9 @@
 #define CRYSTALLESS    1
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "pIRKey"
+#define PRODUCT_NAME "pIRKey M0"
 #define VOLUME_LABEL "PIRKEYBOOT"
-#define INDEX_URL "http://adafru.it/"
+#define INDEX_URL "http://adafru.it/3364"
 #define BOARD_ID "SAMD21E18A-pIRKey-v0"
 
 #define USB_VID 0x239A
