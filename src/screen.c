@@ -394,7 +394,7 @@ void draw_drag() {
     drawBar(52, 55, 8);
     drawBar(107, 14, 4);
 
-    print4(108, 5, 1, "D5");
+    print4(52-8*strlen(PRODUCT_NAME), 5, 1, PRODUCT_NAME);
     print(112, 40, 6, UF2_VERSION_BASE);
     print(23, 110, 1, "arcade.makecode.com");
 
@@ -404,7 +404,7 @@ void draw_drag() {
     printicon(DRAGX + 66, DRAG, 1, arrowLogo);
     printicon(DRAGX + 108, DRAG, 1, pendriveLogo);
     print(10, DRAG - 12, 1, "arcade.uf2");
-    print(98, DRAG - 12, 1, "ARCADE-D5");
+    print(98, DRAG - 12, 1, VOLUME_LABEL);
 
     draw_screen();
 }

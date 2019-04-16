@@ -2,13 +2,13 @@
 #define BOARD_CONFIG_H
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "Arcade D51"
-#define VOLUME_LABEL "ARCADE-D5"
-#define INDEX_URL "http://adafru.it/"
-#define BOARD_ID "SAMD51J19A-Arcade-D51"
+#define PRODUCT_NAME "PyBadge"
+#define VOLUME_LABEL "BADGEBOOT"
+#define INDEX_URL "http://adafru.it/4200"
+#define BOARD_ID "SAMD51J19A-PyBadge-M4"
 
 #define USB_VID 0x239A
-#define USB_PID 0x002B
+#define USB_PID 0x0033
 
 #define LED_PIN PIN_PA23
 
@@ -55,7 +55,7 @@ const uint32_t config_data[] = {
     25, 0xc, // PIN_SDA = PA12
     28, 0x10, // PIN_TX = PA16
     32, 0x2d, // PIN_DISPLAY_SCK = PB13
-    34, 0x2c, // PIN_DISPLAY_MOSI = PB12
+    34, 0x2f, // PIN_DISPLAY_MOSI = PB15
     35, 0x27, // PIN_DISPLAY_CS = PB07
     36, 0x25, // PIN_DISPLAY_DC = PB05
     37, 0xa0, // DISPLAY_WIDTH = 160
@@ -63,8 +63,8 @@ const uint32_t config_data[] = {
     39, 0x80, // DISPLAY_CFG0 = 0x80
     40, 0x12c2d, // DISPLAY_CFG1 = 0x12c2d
     41, 0x18, // DISPLAY_CFG2 = 0x18
-    43, 0x1, // PIN_DISPLAY_RST = PA01
-    44, 0x0, // PIN_DISPLAY_BL = PA00
+    43, 0x00, // PIN_DISPLAY_RST = PA00
+    44, 0x01, // PIN_DISPLAY_BL = PA01
     47, 0x3e8, // PIN_BTN_LEFT = P_1000
     48, 0x3eb, // PIN_BTN_RIGHT = P_1003
     49, 0x3e9, // PIN_BTN_UP = P_1001
