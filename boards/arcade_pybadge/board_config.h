@@ -3,7 +3,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "PyBadge"
-#define VOLUME_LABEL "BADGEBOOT"
+#define VOLUME_LABEL "PYBADGEBOOT"
 #define INDEX_URL "http://adafru.it/4200"
 #define BOARD_ID "SAMD51J19A-PyBadge-M4"
 

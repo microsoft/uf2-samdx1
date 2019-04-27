@@ -3,7 +3,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "PyGamer"
-#define VOLUME_LABEL "GAMERBOOT"
+#define VOLUME_LABEL "PYGAMERBOOT"
 #define INDEX_URL "http://adafru.it/"
 #define BOARD_ID "SAMD51J19A-PyGamer-M4"
 

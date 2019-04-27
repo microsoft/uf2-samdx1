@@ -404,7 +404,7 @@ void draw_drag() {
     printicon(DRAGX + 66, DRAG, 1, arrowLogo);
     printicon(DRAGX + 108, DRAG, 1, pendriveLogo);
     print(10, DRAG - 12, 1, "arcade.uf2");
-    print(98, DRAG - 12, 1, VOLUME_LABEL);
+    print(90, DRAG - 12, 1, VOLUME_LABEL);
 
     draw_screen();
 }
