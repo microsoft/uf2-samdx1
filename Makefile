@@ -123,6 +123,19 @@ bmp-loop:
 bmp-gdb: $(BUILD_PATH)/$(NAME).bin
 	$(GDB) $(BMP_ARGS) $(BUILD_PATH)/$(NAME).elf
 
+$(BUILD_PATH)/flash.jlink: $(BUILD_PATH)/$(NAME).bin
+	echo " \n\
+r \n\
+h \n\
+loadbin \"$(BUILD_PATH)/$(NAME).bin\", 0x0 \n\
+verifybin \"$(BUILD_PATH)/$(NAME).bin\", 0x0 \n\
+r \n\
+qc \n\
+" > $(BUILD_PATH)/flash.jlink
+
+jlink-flash: $(BUILD_PATH)/$(NAME).bin $(BUILD_PATH)/flash.jlink
+	jlinkexe -if swd -device AT$(CHIP_VARIANT) -speed 4000 -CommanderScript $(BUILD_PATH)/flash.jlink
+
 wait:
 	sleep 5
 
