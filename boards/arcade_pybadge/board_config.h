@@ -53,6 +53,7 @@ const uint32_t config_data[] = {
     23, 0x11, // PIN_SCK = PA17
     24, 0xd, // PIN_SCL = PA13
     25, 0xc, // PIN_SDA = PA12
+    26, 0x1b, // SPEAKER_AMP = PA27
     28, 0x10, // PIN_TX = PA16
     32, 0x2d, // PIN_DISPLAY_SCK = PB13
     34, 0x2f, // PIN_DISPLAY_MOSI = PB15
