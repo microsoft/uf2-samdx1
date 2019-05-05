@@ -71,8 +71,8 @@ const uint32_t config_data[] = {
     49, 0x3e9, // PIN_BTN_UP = P_1001
     50, 0x3ea, // PIN_BTN_DOWN = P_1002
     51, 0x3ec, // PIN_BTN_MENU = P_1004
-    59, 0x200, // SPEAKER_VOLUME = 512
-    60, 0x10, // PIN_JACK_TX = PIN_D5
+    59, 64,    // SPEAKER_VOLUME
+    60, 0x17, // PIN_JACK_TX = PIN_D13
     65, 0x2, // PIN_JACK_SND = PIN_A0
     69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
     70, 0x32, // ACCELEROMETER_TYPE = LIS3DH
