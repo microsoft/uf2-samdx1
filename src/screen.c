@@ -395,7 +395,7 @@ void draw_drag() {
     drawBar(107, 14, 4);
 
     print4(52-8*strlen(PRODUCT_NAME), 5, 1, PRODUCT_NAME);
-    print(112, 40, 6, UF2_VERSION_BASE);
+    print(50, 40, 6, UF2_VERSION_BASE);
     print(23, 110, 1, "arcade.makecode.com");
 
 #define DRAG 70
