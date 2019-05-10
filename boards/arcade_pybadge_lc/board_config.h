@@ -2,18 +2,18 @@
 #define BOARD_CONFIG_H
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "PyGamer"
-#define VOLUME_LABEL "PYGAMERBOOT"
-#define INDEX_URL "http://adafru.it/"
-#define BOARD_ID "SAMD51J19A-PyGamer-M4"
+#define PRODUCT_NAME "BadgeLC"
+#define VOLUME_LABEL "BADGELCBOOT"
+#define INDEX_URL "http://adafru.it/3939"
+#define BOARD_ID "SAMD51J19A-PyBadgeLC-M4"
 
 #define USB_VID 0x239A
-#define USB_PID 0x003D
+#define USB_PID 0x0034
 
 #define LED_PIN PIN_PA23
 
 #define BOARD_NEOPIXEL_PIN PIN_PA15
-#define BOARD_NEOPIXEL_COUNT 5
+#define BOARD_NEOPIXEL_COUNT 1
 
 #define BOARD_SCREEN 1
 
@@ -39,10 +39,7 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    61, 100,  // used entries, total entries
-    1, 0x2e, // PIN_ACCELEROMETER_INT = PB14
-    2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL
-    3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA
+    57, 100,  // used entries, total entries
     4, 0x3ee, // PIN_BTN_A = P_1006
     5, 0x3ef, // PIN_BTN_B = P_1007
     13, 0x17, // PIN_LED = PIN_D13
@@ -57,7 +54,7 @@ const uint32_t config_data[] = {
     28, 0x10, // PIN_TX = PA16
     32, 0x2d, // PIN_DISPLAY_SCK = PB13
     34, 0x2f, // PIN_DISPLAY_MOSI = PB15
-    35, 0x2c, // PIN_DISPLAY_CS = PB12
+    35, 0x27, // PIN_DISPLAY_CS = PB07
     36, 0x25, // PIN_DISPLAY_DC = PB05
     37, 0xa0, // DISPLAY_WIDTH = 160
     38, 0x80, // DISPLAY_HEIGHT = 128
@@ -66,16 +63,15 @@ const uint32_t config_data[] = {
     41, 0x18, // DISPLAY_CFG2 = 0x18
     43, 0x00, // PIN_DISPLAY_RST = PA00
     44, 0x01, // PIN_DISPLAY_BL = PA01
-    47, 0x4D7, // PIN_BTN_LEFT = PB07 analog
-    48, 0x473, // PIN_BTN_RIGHT = PB07 analog
-    49, 0x4D6, // PIN_BTN_UP = PB06 analog
-    50, 0x472, // PIN_BTN_DOWN = PB06 analog
+    47, 0x3e8, // PIN_BTN_LEFT = P_1000
+    48, 0x3eb, // PIN_BTN_RIGHT = P_1003
+    49, 0x3e9, // PIN_BTN_UP = P_1001
+    50, 0x3ea, // PIN_BTN_DOWN = P_1002
     51, 0x3ec, // PIN_BTN_MENU = P_1004
-    59, 64, // SPEAKER_VOLUME = 64
+    59, 64,    // SPEAKER_VOLUME
     60, 0x17, // PIN_JACK_TX = PIN_D13
     65, 0x2, // PIN_JACK_SND = PIN_A0
     69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
-    70, 0x32, // ACCELEROMETER_TYPE = LIS3DH
     71, 0x20, // PIN_BTNMX_LATCH = PB00
     72, 0x3f, // PIN_BTNMX_CLOCK = PB31
     73, 0x3e, // PIN_BTNMX_DATA = PB30
@@ -95,7 +91,7 @@ const uint32_t config_data[] = {
     161, 0x15, // PIN_D11 = PA21
     162, 0x16, // PIN_D12 = PA22
     163, 0x17, // PIN_D13 = PA23
-    200, 0x5, // NUM_NEOPIXELS = 5
+    200, 0x1, // NUM_NEOPIXELS = 1
     204, 0x80000, // FLASH_BYTES = 0x80000
     205, 0x30000, // RAM_BYTES = 0x30000
     208, 0x18591ab9, // BOOTLOADER_BOARD_ID = 0x18591ab9

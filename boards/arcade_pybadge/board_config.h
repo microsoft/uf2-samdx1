@@ -39,7 +39,7 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    60, 100,  // used entries, total entries
+    61, 100,  // used entries, total entries
     1, 0x2e, // PIN_ACCELEROMETER_INT = PB14
     2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL
     3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA
