@@ -39,10 +39,11 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    57, 100,  // used entries, total entries
+    58, 100,  // used entries, total entries
     4, 0x3ee, // PIN_BTN_A = P_1006
     5, 0x3ef, // PIN_BTN_B = P_1007
     13, 0x17, // PIN_LED = PIN_D13
+    14, 0x24, // PIN_LIGHT = PB04
     18, 0x36, // PIN_MISO = PB22
     19, 0x37, // PIN_MOSI = PB23
     20, 0xf, // PIN_NEOPIXEL = PA15
@@ -50,7 +51,7 @@ const uint32_t config_data[] = {
     23, 0x11, // PIN_SCK = PA17
     24, 0xd, // PIN_SCL = PA13
     25, 0xc, // PIN_SDA = PA12
-    26, 0x1b, // SPEAKER_AMP = PA27
+    26, 0x1b, // PIN_SPEAKER_AMP = PA27
     28, 0x10, // PIN_TX = PA16
     32, 0x2d, // PIN_DISPLAY_SCK = PB13
     34, 0x2f, // PIN_DISPLAY_MOSI = PB15
@@ -61,14 +62,14 @@ const uint32_t config_data[] = {
     39, 0x80, // DISPLAY_CFG0 = 0x80
     40, 0x12c2d, // DISPLAY_CFG1 = 0x12c2d
     41, 0x18, // DISPLAY_CFG2 = 0x18
-    43, 0x00, // PIN_DISPLAY_RST = PA00
-    44, 0x01, // PIN_DISPLAY_BL = PA01
+    43, 0x0, // PIN_DISPLAY_RST = PA00
+    44, 0x1, // PIN_DISPLAY_BL = PA01
     47, 0x3e8, // PIN_BTN_LEFT = P_1000
     48, 0x3eb, // PIN_BTN_RIGHT = P_1003
     49, 0x3e9, // PIN_BTN_UP = P_1001
     50, 0x3ea, // PIN_BTN_DOWN = P_1002
     51, 0x3ec, // PIN_BTN_MENU = P_1004
-    59, 64,    // SPEAKER_VOLUME
+    59, 0x40, // SPEAKER_VOLUME = 64
     60, 0x17, // PIN_JACK_TX = PIN_D13
     65, 0x2, // PIN_JACK_SND = PIN_A0
     69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
@@ -99,9 +100,10 @@ const uint32_t config_data[] = {
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     /* CF2 END */
 };
 #endif
 
 #endif
+
