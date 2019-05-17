@@ -141,6 +141,7 @@ int main(void) {
     const uint8_t *ptr = bootloader;
     int i;
 
+#ifdef SAMD21
     for (i = 0; i < BOOTLOADER_K; ++i) {
         int crc = 0;
         for (int j = 0; j < 1024; ++j) {
@@ -151,6 +152,7 @@ int main(void) {
             panic(1);
         }
     }
+#endif
 
     for (i = 0; i < BOOTLOADER_K * 1024; i += FLASH_ROW_SIZE) {
         memcpy(pageBuf, &bootloader[i], FLASH_ROW_SIZE);

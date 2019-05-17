@@ -2,18 +2,18 @@
 #define BOARD_CONFIG_H
 
 #define VENDOR_NAME "Adafruit Industries"
-#define PRODUCT_NAME "PyBadge"
-#define VOLUME_LABEL "PYBADGEBOOT"
-#define INDEX_URL "http://adafru.it/4200"
-#define BOARD_ID "SAMD51J19A-PyBadge-M4"
+#define PRODUCT_NAME "BadgeLC"
+#define VOLUME_LABEL "BADGELCBOOT"
+#define INDEX_URL "http://adafru.it/3939"
+#define BOARD_ID "SAMD51J19A-PyBadgeLC-M4"
 
 #define USB_VID 0x239A
-#define USB_PID 0x0033
+#define USB_PID 0x0034
 
 #define LED_PIN PIN_PA23
 
 #define BOARD_NEOPIXEL_PIN PIN_PA15
-#define BOARD_NEOPIXEL_COUNT 5
+#define BOARD_NEOPIXEL_COUNT 1
 
 #define BOARD_SCREEN 1
 
@@ -39,10 +39,7 @@
 const uint32_t config_data[] = {
     /* CF2 START */
     513675505, 539130489, // magic
-    62, 100,  // used entries, total entries
-    1, 0x2e, // PIN_ACCELEROMETER_INT = PB14
-    2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL
-    3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA
+    58, 100,  // used entries, total entries
     4, 0x3ee, // PIN_BTN_A = P_1006
     5, 0x3ef, // PIN_BTN_B = P_1007
     13, 0x17, // PIN_LED = PIN_D13
@@ -76,7 +73,6 @@ const uint32_t config_data[] = {
     60, 0x17, // PIN_JACK_TX = PIN_D13
     65, 0x2, // PIN_JACK_SND = PIN_A0
     69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
-    70, 0x32, // ACCELEROMETER_TYPE = LIS3DH
     71, 0x20, // PIN_BTNMX_LATCH = PB00
     72, 0x3f, // PIN_BTNMX_CLOCK = PB31
     73, 0x3e, // PIN_BTNMX_DATA = PB30
@@ -96,7 +92,7 @@ const uint32_t config_data[] = {
     161, 0x15, // PIN_D11 = PA21
     162, 0x16, // PIN_D12 = PA22
     163, 0x17, // PIN_D13 = PA23
-    200, 0x5, // NUM_NEOPIXELS = 5
+    200, 0x1, // NUM_NEOPIXELS = 1
     204, 0x80000, // FLASH_BYTES = 0x80000
     205, 0x30000, // RAM_BYTES = 0x30000
     208, 0x18591ab9, // BOOTLOADER_BOARD_ID = 0x18591ab9
@@ -104,7 +100,7 @@ const uint32_t config_data[] = {
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     /* CF2 END */
 };
 #endif

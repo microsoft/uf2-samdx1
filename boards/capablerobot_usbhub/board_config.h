@@ -10,7 +10,7 @@
 #define BOARD_ID     "SAMD51G19A-USBHub-v0"
 
 // VID & PID obtained from Microchip
-#define USB_VID 0x04D8  
+#define USB_VID 0x04D8
 #define USB_PID 0xEDB3
 
 #define LED_PIN PIN_PA19
