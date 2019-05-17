@@ -138,10 +138,10 @@ int main(void) {
     NVMCTRL->CTRLA.bit.CACHEDIS1 = true;
     #endif
 
-    const uint8_t *ptr = bootloader;
     int i;
 
 #ifdef SAMD21
+    const uint8_t *ptr = bootloader;
     for (i = 0; i < BOOTLOADER_K; ++i) {
         int crc = 0;
         for (int j = 0; j < 1024; ++j) {
