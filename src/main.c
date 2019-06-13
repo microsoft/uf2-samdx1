@@ -67,10 +67,9 @@
  * SAM-BA code will be located at 0x0 and executed before any applicative code.
  *
  * Applications compiled to be executed along with the bootloader will start at
- * 0x2000
- * Before jumping to the application, the bootloader changes the VTOR register
- * to use the interrupt vectors of the application @0x2000.<- not required as
- * application code is taking care of this
+ * 0x2000 (samd21) or 0x4000 (samd51)
+ * The bootloader doesn't changes the VTOR register, application code is 
+ * taking care of this.
  *
  */
 
