@@ -1,1 +1,0 @@
-#define UF2_VERSION_BASE "v3.6.0-7-g42c41a0"
