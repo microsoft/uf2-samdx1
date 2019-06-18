@@ -1,0 +1,773 @@
+Archive member included to satisfy reference by file (symbol)
+
+/usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+                              build/robohatmm151/flash_samd51.o (memcpy)
+
+Allocating common symbols
+Common symbol       size              file
+
+b_sharp_received    0x1               build/robohatmm151/usart_sam_ba.o
+block_erased        0x40              build/robohatmm151/flash_samd51.o
+timerHigh           0x4               build/robohatmm151/utils.o
+idx_rx_write        0x1               build/robohatmm151/usart_sam_ba.o
+size_of_data        0x2               build/robohatmm151/usart_sam_ba.o
+resetHorizon        0x4               build/robohatmm151/utils.o
+idx_tx_read         0x1               build/robohatmm151/usart_sam_ba.o
+buffer_tx_usart     0x80              build/robohatmm151/usart_sam_ba.o
+error_timeout       0x1               build/robohatmm151/usart_sam_ba.o
+mode_of_transfer    0x1               build/robohatmm151/usart_sam_ba.o
+idx_rx_read         0x1               build/robohatmm151/usart_sam_ba.o
+pageBuf             0x100             build/robohatmm151/selfmain.o
+idx_tx_write        0x1               build/robohatmm151/usart_sam_ba.o
+row_same            0x800             build/robohatmm151/flash_samd51.o
+buffer_rx_usart     0x80              build/robohatmm151/usart_sam_ba.o
+
+Discarded input sections
+
+ .text          0x0000000000000000        0x0 build/robohatmm151/flash_samd51.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/flash_samd51.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/flash_samd51.o
+ .text.flash_erase_block
+                0x0000000000000000       0x20 build/robohatmm151/flash_samd51.o
+ .text.flash_erase_to_end
+                0x0000000000000000       0x34 build/robohatmm151/flash_samd51.o
+ .text.copy_words
+                0x0000000000000000       0x18 build/robohatmm151/flash_samd51.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/init_samd51.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/init_samd51.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/init_samd51.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/startup_samd51.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/startup_samd51.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/startup_samd51.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/usart_sam_ba.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/usart_sam_ba.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/usart_sam_ba.o
+ .text.usart_open
+                0x0000000000000000       0xb8 build/robohatmm151/usart_sam_ba.o
+ .text.usart_close
+                0x0000000000000000        0xc build/robohatmm151/usart_sam_ba.o
+ .text.usart_putc
+                0x0000000000000000       0x14 build/robohatmm151/usart_sam_ba.o
+ .text.usart_getc
+                0x0000000000000000       0x18 build/robohatmm151/usart_sam_ba.o
+ .text.usart_sharp_received
+                0x0000000000000000       0x2c build/robohatmm151/usart_sam_ba.o
+ .text.usart_is_rx_ready
+                0x0000000000000000       0x10 build/robohatmm151/usart_sam_ba.o
+ .text.usart_readc
+                0x0000000000000000       0x20 build/robohatmm151/usart_sam_ba.o
+ .text.usart_putdata
+                0x0000000000000000       0x24 build/robohatmm151/usart_sam_ba.o
+ .text.usart_getdata
+                0x0000000000000000       0x1c build/robohatmm151/usart_sam_ba.o
+ .text.add_crc  0x0000000000000000       0x58 build/robohatmm151/usart_sam_ba.o
+ .text.getbytes
+                0x0000000000000000       0x80 build/robohatmm151/usart_sam_ba.o
+ .text.getPacket
+                0x0000000000000000       0x94 build/robohatmm151/usart_sam_ba.o
+ .text.usart_putdata_xmd
+                0x0000000000000000      0x164 build/robohatmm151/usart_sam_ba.o
+ .text.usart_getdata_xmd
+                0x0000000000000000       0xc0 build/robohatmm151/usart_sam_ba.o
+ .bss.crcCache  0x0000000000000000      0x200 build/robohatmm151/usart_sam_ba.o
+ .debug_info    0x0000000000000000     0x4699 build/robohatmm151/usart_sam_ba.o
+ .debug_abbrev  0x0000000000000000      0x540 build/robohatmm151/usart_sam_ba.o
+ .debug_loc     0x0000000000000000      0x870 build/robohatmm151/usart_sam_ba.o
+ .debug_aranges
+                0x0000000000000000       0x88 build/robohatmm151/usart_sam_ba.o
+ .debug_ranges  0x0000000000000000      0x218 build/robohatmm151/usart_sam_ba.o
+ .debug_line    0x0000000000000000      0x4b2 build/robohatmm151/usart_sam_ba.o
+ .debug_str     0x0000000000000000     0x161f build/robohatmm151/usart_sam_ba.o
+ .comment       0x0000000000000000       0x80 build/robohatmm151/usart_sam_ba.o
+ .debug_frame   0x0000000000000000      0x1b4 build/robohatmm151/usart_sam_ba.o
+ .ARM.attributes
+                0x0000000000000000       0x33 build/robohatmm151/usart_sam_ba.o
+ COMMON         0x0000000000000000      0x10c build/robohatmm151/usart_sam_ba.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/screen.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/screen.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/screen.o
+ .debug_info    0x0000000000000000      0x919 build/robohatmm151/screen.o
+ .debug_abbrev  0x0000000000000000      0x197 build/robohatmm151/screen.o
+ .debug_aranges
+                0x0000000000000000       0x18 build/robohatmm151/screen.o
+ .debug_line    0x0000000000000000      0x131 build/robohatmm151/screen.o
+ .debug_str     0x0000000000000000      0x5ec build/robohatmm151/screen.o
+ .comment       0x0000000000000000       0x80 build/robohatmm151/screen.o
+ .ARM.attributes
+                0x0000000000000000       0x33 build/robohatmm151/screen.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/images.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/images.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/images.o
+ .rodata.arrowLogo
+                0x0000000000000000       0x39 build/robohatmm151/images.o
+ .rodata.fileLogo
+                0x0000000000000000       0x4a build/robohatmm151/images.o
+ .rodata.font8  0x0000000000000000      0x240 build/robohatmm151/images.o
+ .rodata.pendriveLogo
+                0x0000000000000000       0x3e build/robohatmm151/images.o
+ .debug_info    0x0000000000000000      0x118 build/robohatmm151/images.o
+ .debug_abbrev  0x0000000000000000       0x66 build/robohatmm151/images.o
+ .debug_aranges
+                0x0000000000000000       0x18 build/robohatmm151/images.o
+ .debug_line    0x0000000000000000       0x90 build/robohatmm151/images.o
+ .debug_str     0x0000000000000000      0x1be build/robohatmm151/images.o
+ .comment       0x0000000000000000       0x80 build/robohatmm151/images.o
+ .ARM.attributes
+                0x0000000000000000       0x33 build/robohatmm151/images.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/utils.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/utils.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/utils.o
+ .text.panic    0x0000000000000000        0x4 build/robohatmm151/utils.o
+ .text.writeNum
+                0x0000000000000000       0x40 build/robohatmm151/utils.o
+ .text.timerTick
+                0x0000000000000000       0x3c build/robohatmm151/utils.o
+ .text.led_signal
+                0x0000000000000000       0x28 build/robohatmm151/utils.o
+ .text.RGBLED_set_color
+                0x0000000000000000        0x4 build/robohatmm151/utils.o
+ .bss.timerLow  0x0000000000000000        0x4 build/robohatmm151/utils.o
+ COMMON         0x0000000000000000        0x8 build/robohatmm151/utils.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/selfmain.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/selfmain.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/selfmain.o
+ .text          0x0000000000000000        0x0 build/robohatmm151/selfdata.o
+ .data          0x0000000000000000        0x0 build/robohatmm151/selfdata.o
+ .bss           0x0000000000000000        0x0 build/robohatmm151/selfdata.o
+ .rodata.bootloader_crcs
+                0x0000000000000000       0x20 build/robohatmm151/selfdata.o
+ .text          0x0000000000000000        0x0 /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .data          0x0000000000000000        0x0 /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .bss           0x0000000000000000        0x0 /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+rom              0x0000000000004000 0x000000000007c000 xr
+ram              0x0000000020000000 0x0000000000030000 xrw
+bkupram          0x0000000047000000 0x0000000000002000 xrw
+qspi             0x0000000004000000 0x0000000001000000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/robohatmm151/flash_samd51.o
+LOAD build/robohatmm151/init_samd51.o
+LOAD build/robohatmm151/startup_samd51.o
+LOAD build/robohatmm151/usart_sam_ba.o
+LOAD build/robohatmm151/screen.o
+LOAD build/robohatmm151/images.o
+LOAD build/robohatmm151/utils.o
+LOAD build/robohatmm151/selfmain.o
+LOAD build/robohatmm151/selfdata.o
+START GROUP
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/libgcc.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libc_nano.a
+END GROUP
+START GROUP
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/libgcc.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libc_nano.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libnosys.a
+END GROUP
+START GROUP
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/libgcc.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libc_nano.a
+LOAD /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libnosys.a
+END GROUP
+                0x000000000000c000                STACK_SIZE = DEFINED (STACK_SIZE)?STACK_SIZE:DEFINED (__stack_size__)?__stack_size__:0xc000
+
+.text           0x0000000000004000     0x4808
+                0x0000000000004000                . = ALIGN (0x4)
+                0x0000000000004000                _sfixed = .
+ *(.vectors .vectors.*)
+ .vectors       0x0000000000004000      0x264 build/robohatmm151/startup_samd51.o
+                0x0000000000004000                exception_table
+ *(.text .text.* .gnu.linkonce.t.*)
+ .text.flash_write_words
+                0x0000000000004264       0x6c build/robohatmm151/flash_samd51.o
+                0x0000000000004264                flash_write_words
+ .text.flash_write_row
+                0x00000000000042d0      0x17c build/robohatmm151/flash_samd51.o
+                0x00000000000042d0                flash_write_row
+ .text.system_init
+                0x000000000000444c       0xec build/robohatmm151/init_samd51.o
+                0x000000000000444c                system_init
+ .text.SysTick_Handler
+                0x0000000000004538        0x4 build/robohatmm151/init_samd51.o
+                0x0000000000004538                SysTick_Handler
+ .text.Dummy_Handler
+                0x000000000000453c        0x4 build/robohatmm151/startup_samd51.o
+                0x000000000000453c                EIC_5_Handler
+                0x000000000000453c                SERCOM0_2_Handler
+                0x000000000000453c                DebugMon_Handler
+                0x000000000000453c                EIC_13_Handler
+                0x000000000000453c                EVSYS_0_Handler
+                0x000000000000453c                TCC1_3_Handler
+                0x000000000000453c                DAC_3_Handler
+                0x000000000000453c                TRNG_Handler
+                0x000000000000453c                HardFault_Handler
+                0x000000000000453c                TC2_Handler
+                0x000000000000453c                PDEC_2_Handler
+                0x000000000000453c                EIC_4_Handler
+                0x000000000000453c                AC_Handler
+                0x000000000000453c                SERCOM3_1_Handler
+                0x000000000000453c                TCC2_3_Handler
+                0x000000000000453c                SERCOM3_2_Handler
+                0x000000000000453c                PendSV_Handler
+                0x000000000000453c                NMI_Handler
+                0x000000000000453c                ADC1_1_Handler
+                0x000000000000453c                EVSYS_3_Handler
+                0x000000000000453c                PDEC_0_Handler
+                0x000000000000453c                QSPI_Handler
+                0x000000000000453c                TCC0_0_Handler
+                0x000000000000453c                EIC_3_Handler
+                0x000000000000453c                TAL_0_Handler
+                0x000000000000453c                DAC_2_Handler
+                0x000000000000453c                SERCOM0_0_Handler
+                0x000000000000453c                RTC_Handler
+                0x000000000000453c                UsageFault_Handler
+                0x000000000000453c                SERCOM4_0_Handler
+                0x000000000000453c                EIC_10_Handler
+                0x000000000000453c                SERCOM0_3_Handler
+                0x000000000000453c                EIC_11_Handler
+                0x000000000000453c                EIC_9_Handler
+                0x000000000000453c                OSC32KCTRL_Handler
+                0x000000000000453c                TCC2_1_Handler
+                0x000000000000453c                SUPC_1_Handler
+                0x000000000000453c                TCC0_5_Handler
+                0x000000000000453c                TCC0_6_Handler
+                0x000000000000453c                EVSYS_1_Handler
+                0x000000000000453c                TCC1_4_Handler
+                0x000000000000453c                DMAC_0_Handler
+                0x000000000000453c                WDT_Handler
+                0x000000000000453c                EIC_8_Handler
+                0x000000000000453c                EIC_15_Handler
+                0x000000000000453c                SERCOM5_0_Handler
+                0x000000000000453c                TC1_Handler
+                0x000000000000453c                OSCCTRL_4_Handler
+                0x000000000000453c                SERCOM4_3_Handler
+                0x000000000000453c                EIC_12_Handler
+                0x000000000000453c                DMAC_4_Handler
+                0x000000000000453c                PAC_Handler
+                0x000000000000453c                TCC1_0_Handler
+                0x000000000000453c                USB_0_Handler
+                0x000000000000453c                OSCCTRL_0_Handler
+                0x000000000000453c                EIC_0_Handler
+                0x000000000000453c                OSCCTRL_3_Handler
+                0x000000000000453c                SERCOM4_1_Handler
+                0x000000000000453c                TC3_Handler
+                0x000000000000453c                Dummy_Handler
+                0x000000000000453c                TCC2_2_Handler
+                0x000000000000453c                SERCOM5_1_Handler
+                0x000000000000453c                TCC1_1_Handler
+                0x000000000000453c                DMAC_2_Handler
+                0x000000000000453c                ADC0_0_Handler
+                0x000000000000453c                SERCOM0_1_Handler
+                0x000000000000453c                OSCCTRL_2_Handler
+                0x000000000000453c                ADC1_0_Handler
+                0x000000000000453c                TCC1_2_Handler
+                0x000000000000453c                USB_1_Handler
+                0x000000000000453c                PM_Handler
+                0x000000000000453c                SERCOM2_3_Handler
+                0x000000000000453c                DAC_4_Handler
+                0x000000000000453c                TCC0_2_Handler
+                0x000000000000453c                DMAC_1_Handler
+                0x000000000000453c                USB_3_Handler
+                0x000000000000453c                TCC2_0_Handler
+                0x000000000000453c                PDEC_1_Handler
+                0x000000000000453c                MemManage_Handler
+                0x000000000000453c                SERCOM5_3_Handler
+                0x000000000000453c                USB_2_Handler
+                0x000000000000453c                SVC_Handler
+                0x000000000000453c                SDHC0_Handler
+                0x000000000000453c                SERCOM1_1_Handler
+                0x000000000000453c                EIC_2_Handler
+                0x000000000000453c                PCC_Handler
+                0x000000000000453c                DAC_0_Handler
+                0x000000000000453c                TCC0_1_Handler
+                0x000000000000453c                SERCOM1_3_Handler
+                0x000000000000453c                EIC_6_Handler
+                0x000000000000453c                OSCCTRL_1_Handler
+                0x000000000000453c                SERCOM1_0_Handler
+                0x000000000000453c                PUKCC_Handler
+                0x000000000000453c                SERCOM2_1_Handler
+                0x000000000000453c                SERCOM1_2_Handler
+                0x000000000000453c                SERCOM3_0_Handler
+                0x000000000000453c                EIC_1_Handler
+                0x000000000000453c                SERCOM4_2_Handler
+                0x000000000000453c                EVSYS_4_Handler
+                0x000000000000453c                EIC_7_Handler
+                0x000000000000453c                NVMCTRL_1_Handler
+                0x000000000000453c                SERCOM5_2_Handler
+                0x000000000000453c                SERCOM3_3_Handler
+                0x000000000000453c                ADC0_1_Handler
+                0x000000000000453c                SERCOM2_2_Handler
+                0x000000000000453c                EIC_14_Handler
+                0x000000000000453c                DAC_1_Handler
+                0x000000000000453c                NVMCTRL_0_Handler
+                0x000000000000453c                TAL_1_Handler
+                0x000000000000453c                MCLK_Handler
+                0x000000000000453c                EVSYS_2_Handler
+                0x000000000000453c                SUPC_0_Handler
+                0x000000000000453c                BusFault_Handler
+                0x000000000000453c                FREQM_Handler
+                0x000000000000453c                TC0_Handler
+                0x000000000000453c                TCC0_3_Handler
+                0x000000000000453c                DMAC_3_Handler
+                0x000000000000453c                TCC0_4_Handler
+                0x000000000000453c                RAMECC_Handler
+                0x000000000000453c                SERCOM2_0_Handler
+                0x000000000000453c                AES_Handler
+                0x000000000000453c                ICM_Handler
+ .text.Reset_Handler
+                0x0000000000004540       0x74 build/robohatmm151/startup_samd51.o
+                0x0000000000004540                Reset_Handler
+ .text.NVIC_SystemReset
+                0x00000000000045b4       0x20 build/robohatmm151/utils.o
+ .text.delay    0x00000000000045d4       0x14 build/robohatmm151/utils.o
+                0x00000000000045d4                delay
+ .text.resetIntoApp
+                0x00000000000045e8       0x14 build/robohatmm151/utils.o
+                0x00000000000045e8                resetIntoApp
+ .text.resetIntoBootloader
+                0x00000000000045fc       0x14 build/robohatmm151/utils.o
+                0x00000000000045fc                resetIntoBootloader
+ .text.led_tick
+                0x0000000000004610       0x88 build/robohatmm151/utils.o
+                0x0000000000004610                led_tick
+ .text.led_init
+                0x0000000000004698       0x10 build/robohatmm151/utils.o
+                0x0000000000004698                led_init
+ .text.setBootProt
+                0x00000000000046a8       0x9c build/robohatmm151/selfmain.o
+                0x00000000000046a8                setBootProt
+ .text.startup.main
+                0x0000000000004744       0xac build/robohatmm151/selfmain.o
+                0x0000000000004744                main
+ .text.memcpy   0x00000000000047f0       0x16 /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+                0x00000000000047f0                memcpy
+ *(.glue_7t)
+ .glue_7t       0x0000000000004806        0x0 linker stubs
+ *(.glue_7)
+ .glue_7        0x0000000000004806        0x0 linker stubs
+ *(.rodata .rodata* .gnu.linkonce.r.*)
+ *fill*         0x0000000000004806        0x2 
+ .rodata.bootloader
+                0x0000000000004808     0x4000 build/robohatmm151/selfdata.o
+                0x0000000000004808                bootloader
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+                0x0000000000008808                . = ALIGN (0x4)
+ *(.init)
+                0x0000000000008808                . = ALIGN (0x4)
+                0x0000000000008808                __preinit_array_start = .
+ *(.preinit_array)
+                0x0000000000008808                __preinit_array_end = .
+                0x0000000000008808                . = ALIGN (0x4)
+                0x0000000000008808                __init_array_start = .
+ *(SORT_BY_NAME(.init_array.*))
+ *(.init_array)
+                0x0000000000008808                __init_array_end = .
+                0x0000000000008808                . = ALIGN (0x4)
+ *crtbegin.o(.ctors)
+ *(EXCLUDE_FILE(*crtend.o) .ctors)
+ *(SORT_BY_NAME(.ctors.*))
+ *crtend.o(.ctors)
+                0x0000000000008808                . = ALIGN (0x4)
+ *(.fini)
+                0x0000000000008808                . = ALIGN (0x4)
+                0x0000000000008808                __fini_array_start = .
+ *(.fini_array)
+ *(SORT_BY_NAME(.fini_array.*))
+                0x0000000000008808                __fini_array_end = .
+ *crtbegin.o(.dtors)
+ *(EXCLUDE_FILE(*crtend.o) .dtors)
+ *(SORT_BY_NAME(.dtors.*))
+ *crtend.o(.dtors)
+                0x0000000000008808                . = ALIGN (0x4)
+                0x0000000000008808                _efixed = .
+                [!provide]                        PROVIDE (__exidx_start = .)
+
+.vfp11_veneer   0x0000000000008808        0x0
+ .vfp11_veneer  0x0000000000008808        0x0 linker stubs
+
+.v4_bx          0x0000000000008808        0x0
+ .v4_bx         0x0000000000008808        0x0 linker stubs
+
+.iplt           0x0000000000008808        0x0
+ .iplt          0x0000000000008808        0x0 build/robohatmm151/flash_samd51.o
+
+.igot.plt       0x0000000000008808        0x0
+ .igot.plt      0x0000000000008808        0x0 build/robohatmm151/flash_samd51.o
+
+.rel.dyn        0x0000000000008808        0x0
+ .rel.iplt      0x0000000000008808        0x0 build/robohatmm151/flash_samd51.o
+
+.ARM.exidx
+ *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+                [!provide]                        PROVIDE (__exidx_end = .)
+                0x0000000000008808                . = ALIGN (0x4)
+                0x0000000000008808                _etext = .
+
+.relocate       0x0000000020000000        0x4 load address 0x0000000000008808
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _srelocate = .
+ *(.ramfunc .ramfunc.*)
+ *(.data .data.*)
+ .data.led_tick_step
+                0x0000000020000000        0x1 build/robohatmm151/utils.o
+                0x0000000020000000                led_tick_step
+ .data.limit    0x0000000020000001        0x1 build/robohatmm151/utils.o
+                0x0000000020000004                . = ALIGN (0x4)
+ *fill*         0x0000000020000002        0x2 
+                0x0000000020000004                _erelocate = .
+
+.bkupram        0x0000000047000000        0x0
+                0x0000000047000000                . = ALIGN (0x8)
+                0x0000000047000000                _sbkupram = .
+ *(.bkupram .bkupram.*)
+                0x0000000047000000                . = ALIGN (0x8)
+                0x0000000047000000                _ebkupram = .
+
+.qspi           0x0000000004000000        0x0
+                0x0000000004000000                . = ALIGN (0x8)
+                0x0000000004000000                _sqspi = .
+ *(.qspi .qspi.*)
+                0x0000000004000000                . = ALIGN (0x8)
+                0x0000000004000000                _eqspi = .
+
+.bss            0x0000000020000004      0x948 load address 0x000000000000880c
+                0x0000000020000004                . = ALIGN (0x4)
+                0x0000000020000004                _sbss = .
+                0x0000000020000004                _szero = .
+ *(.bss .bss.*)
+ .bss.now       0x0000000020000004        0x4 build/robohatmm151/utils.o
+ .bss.signal_end
+                0x0000000020000008        0x4 build/robohatmm151/utils.o
+ *(COMMON)
+ COMMON         0x000000002000000c      0x840 build/robohatmm151/flash_samd51.o
+                0x000000002000000c                block_erased
+                0x000000002000004c                row_same
+ COMMON         0x000000002000084c      0x100 build/robohatmm151/selfmain.o
+                0x000000002000084c                pageBuf
+                0x000000002000094c                . = ALIGN (0x4)
+                0x000000002000094c                _ebss = .
+                0x000000002000094c                _ezero = .
+
+.stack          0x000000002000094c     0xc004 load address 0x0000000000009154
+                0x0000000020000950                . = ALIGN (0x8)
+ *fill*         0x000000002000094c        0x4 
+                0x0000000020000950                _sstack = .
+                0x000000002000c950                . = (. + STACK_SIZE)
+ *fill*         0x0000000020000950     0xc000 
+                0x000000002000c950                . = ALIGN (0x8)
+                0x000000002000c950                _estack = .
+                0x000000002000c950                . = ALIGN (0x4)
+                0x000000002000c950                _end = .
+OUTPUT(build/robohatmm151/update-bootloader-robohatmm151-v3.6.0-2-g4fdf0fe.elf elf32-littlearm)
+
+.debug_info     0x0000000000000000     0x8c85
+ .debug_info    0x0000000000000000     0x15c5 build/robohatmm151/flash_samd51.o
+ .debug_info    0x00000000000015c5     0x390c build/robohatmm151/init_samd51.o
+ .debug_info    0x0000000000004ed1      0xb72 build/robohatmm151/startup_samd51.o
+ .debug_info    0x0000000000005a43     0x1415 build/robohatmm151/utils.o
+ .debug_info    0x0000000000006e58     0x1d44 build/robohatmm151/selfmain.o
+ .debug_info    0x0000000000008b9c       0xe9 build/robohatmm151/selfdata.o
+
+.debug_abbrev   0x0000000000000000      0xeee
+ .debug_abbrev  0x0000000000000000      0x350 build/robohatmm151/flash_samd51.o
+ .debug_abbrev  0x0000000000000350      0x2f3 build/robohatmm151/init_samd51.o
+ .debug_abbrev  0x0000000000000643      0x15c build/robohatmm151/startup_samd51.o
+ .debug_abbrev  0x000000000000079f      0x36f build/robohatmm151/utils.o
+ .debug_abbrev  0x0000000000000b0e      0x366 build/robohatmm151/selfmain.o
+ .debug_abbrev  0x0000000000000e74       0x7a build/robohatmm151/selfdata.o
+
+.debug_loc      0x0000000000000000      0x909
+ .debug_loc     0x0000000000000000      0x55b build/robohatmm151/flash_samd51.o
+ .debug_loc     0x000000000000055b       0x3f build/robohatmm151/init_samd51.o
+ .debug_loc     0x000000000000059a       0x4b build/robohatmm151/startup_samd51.o
+ .debug_loc     0x00000000000005e5      0x166 build/robohatmm151/utils.o
+ .debug_loc     0x000000000000074b      0x1be build/robohatmm151/selfmain.o
+
+.debug_aranges  0x0000000000000000      0x140
+ .debug_aranges
+                0x0000000000000000       0x40 build/robohatmm151/flash_samd51.o
+ .debug_aranges
+                0x0000000000000040       0x28 build/robohatmm151/init_samd51.o
+ .debug_aranges
+                0x0000000000000068       0x28 build/robohatmm151/startup_samd51.o
+ .debug_aranges
+                0x0000000000000090       0x70 build/robohatmm151/utils.o
+ .debug_aranges
+                0x0000000000000100       0x28 build/robohatmm151/selfmain.o
+ .debug_aranges
+                0x0000000000000128       0x18 build/robohatmm151/selfdata.o
+
+.debug_ranges   0x0000000000000000      0x230
+ .debug_ranges  0x0000000000000000       0xf8 build/robohatmm151/flash_samd51.o
+ .debug_ranges  0x00000000000000f8       0x50 build/robohatmm151/init_samd51.o
+ .debug_ranges  0x0000000000000148       0x18 build/robohatmm151/startup_samd51.o
+ .debug_ranges  0x0000000000000160       0x98 build/robohatmm151/utils.o
+ .debug_ranges  0x00000000000001f8       0x38 build/robohatmm151/selfmain.o
+
+.debug_line     0x0000000000000000      0xbff
+ .debug_line    0x0000000000000000      0x290 build/robohatmm151/flash_samd51.o
+ .debug_line    0x0000000000000290      0x242 build/robohatmm151/init_samd51.o
+ .debug_line    0x00000000000004d2      0x123 build/robohatmm151/startup_samd51.o
+ .debug_line    0x00000000000005f5      0x2e4 build/robohatmm151/utils.o
+ .debug_line    0x00000000000008d9      0x285 build/robohatmm151/selfmain.o
+ .debug_line    0x0000000000000b5e       0xa1 build/robohatmm151/selfdata.o
+
+.debug_str      0x0000000000000000     0x2588
+ .debug_str     0x0000000000000000      0x8f8 build/robohatmm151/flash_samd51.o
+                                        0x9a1 (size before relaxing)
+ .debug_str     0x00000000000008f8     0x1042 build/robohatmm151/init_samd51.o
+                                       0x193d (size before relaxing)
+ .debug_str     0x000000000000193a      0xafa build/robohatmm151/startup_samd51.o
+                                        0xd42 (size before relaxing)
+ .debug_str     0x0000000000002434       0xc8 build/robohatmm151/utils.o
+                                        0x91d (size before relaxing)
+ .debug_str     0x00000000000024fc       0x6e build/robohatmm151/selfmain.o
+                                        0xbd3 (size before relaxing)
+ .debug_str     0x000000000000256a       0x1e build/robohatmm151/selfdata.o
+                                        0x1d8 (size before relaxing)
+
+.comment        0x0000000000000000       0x7f
+ .comment       0x0000000000000000       0x7f build/robohatmm151/flash_samd51.o
+                                         0x80 (size before relaxing)
+ .comment       0x000000000000007f       0x80 build/robohatmm151/init_samd51.o
+ .comment       0x000000000000007f       0x80 build/robohatmm151/startup_samd51.o
+ .comment       0x000000000000007f       0x80 build/robohatmm151/utils.o
+ .comment       0x000000000000007f       0x80 build/robohatmm151/selfmain.o
+ .comment       0x000000000000007f       0x80 build/robohatmm151/selfdata.o
+
+.ARM.attributes
+                0x0000000000000000       0x33
+ .ARM.attributes
+                0x0000000000000000       0x33 build/robohatmm151/flash_samd51.o
+ .ARM.attributes
+                0x0000000000000033       0x33 build/robohatmm151/init_samd51.o
+ .ARM.attributes
+                0x0000000000000066       0x33 build/robohatmm151/startup_samd51.o
+ .ARM.attributes
+                0x0000000000000099       0x33 build/robohatmm151/utils.o
+ .ARM.attributes
+                0x00000000000000cc       0x33 build/robohatmm151/selfmain.o
+ .ARM.attributes
+                0x00000000000000ff       0x33 build/robohatmm151/selfdata.o
+ .ARM.attributes
+                0x0000000000000132       0x2e /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+
+.debug_frame    0x0000000000000000      0x2c4
+ .debug_frame   0x0000000000000000       0xac build/robohatmm151/flash_samd51.o
+ .debug_frame   0x00000000000000ac       0x40 build/robohatmm151/init_samd51.o
+ .debug_frame   0x00000000000000ec       0x38 build/robohatmm151/startup_samd51.o
+ .debug_frame   0x0000000000000124      0x124 build/robohatmm151/utils.o
+ .debug_frame   0x0000000000000248       0x54 build/robohatmm151/selfmain.o
+ .debug_frame   0x000000000000029c       0x28 /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+
+Cross Reference Table
+
+Symbol                                            File
+AC_Handler                                        build/robohatmm151/startup_samd51.o
+ADC0_0_Handler                                    build/robohatmm151/startup_samd51.o
+ADC0_1_Handler                                    build/robohatmm151/startup_samd51.o
+ADC1_0_Handler                                    build/robohatmm151/startup_samd51.o
+ADC1_1_Handler                                    build/robohatmm151/startup_samd51.o
+AES_Handler                                       build/robohatmm151/startup_samd51.o
+BusFault_Handler                                  build/robohatmm151/startup_samd51.o
+DAC_0_Handler                                     build/robohatmm151/startup_samd51.o
+DAC_1_Handler                                     build/robohatmm151/startup_samd51.o
+DAC_2_Handler                                     build/robohatmm151/startup_samd51.o
+DAC_3_Handler                                     build/robohatmm151/startup_samd51.o
+DAC_4_Handler                                     build/robohatmm151/startup_samd51.o
+DMAC_0_Handler                                    build/robohatmm151/startup_samd51.o
+DMAC_1_Handler                                    build/robohatmm151/startup_samd51.o
+DMAC_2_Handler                                    build/robohatmm151/startup_samd51.o
+DMAC_3_Handler                                    build/robohatmm151/startup_samd51.o
+DMAC_4_Handler                                    build/robohatmm151/startup_samd51.o
+DebugMon_Handler                                  build/robohatmm151/startup_samd51.o
+Dummy_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_0_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_10_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_11_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_12_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_13_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_14_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_15_Handler                                    build/robohatmm151/startup_samd51.o
+EIC_1_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_2_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_3_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_4_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_5_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_6_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_7_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_8_Handler                                     build/robohatmm151/startup_samd51.o
+EIC_9_Handler                                     build/robohatmm151/startup_samd51.o
+EVSYS_0_Handler                                   build/robohatmm151/startup_samd51.o
+EVSYS_1_Handler                                   build/robohatmm151/startup_samd51.o
+EVSYS_2_Handler                                   build/robohatmm151/startup_samd51.o
+EVSYS_3_Handler                                   build/robohatmm151/startup_samd51.o
+EVSYS_4_Handler                                   build/robohatmm151/startup_samd51.o
+FREQM_Handler                                     build/robohatmm151/startup_samd51.o
+HardFault_Handler                                 build/robohatmm151/startup_samd51.o
+ICM_Handler                                       build/robohatmm151/startup_samd51.o
+MCLK_Handler                                      build/robohatmm151/startup_samd51.o
+MemManage_Handler                                 build/robohatmm151/startup_samd51.o
+NMI_Handler                                       build/robohatmm151/startup_samd51.o
+NVMCTRL_0_Handler                                 build/robohatmm151/startup_samd51.o
+NVMCTRL_1_Handler                                 build/robohatmm151/startup_samd51.o
+OSC32KCTRL_Handler                                build/robohatmm151/startup_samd51.o
+OSCCTRL_0_Handler                                 build/robohatmm151/startup_samd51.o
+OSCCTRL_1_Handler                                 build/robohatmm151/startup_samd51.o
+OSCCTRL_2_Handler                                 build/robohatmm151/startup_samd51.o
+OSCCTRL_3_Handler                                 build/robohatmm151/startup_samd51.o
+OSCCTRL_4_Handler                                 build/robohatmm151/startup_samd51.o
+PAC_Handler                                       build/robohatmm151/startup_samd51.o
+PCC_Handler                                       build/robohatmm151/startup_samd51.o
+PDEC_0_Handler                                    build/robohatmm151/startup_samd51.o
+PDEC_1_Handler                                    build/robohatmm151/startup_samd51.o
+PDEC_2_Handler                                    build/robohatmm151/startup_samd51.o
+PM_Handler                                        build/robohatmm151/startup_samd51.o
+PUKCC_Handler                                     build/robohatmm151/startup_samd51.o
+PendSV_Handler                                    build/robohatmm151/startup_samd51.o
+QSPI_Handler                                      build/robohatmm151/startup_samd51.o
+RAMECC_Handler                                    build/robohatmm151/startup_samd51.o
+RGBLED_set_color                                  build/robohatmm151/utils.o
+RTC_Handler                                       build/robohatmm151/startup_samd51.o
+Reset_Handler                                     build/robohatmm151/startup_samd51.o
+SDHC0_Handler                                     build/robohatmm151/startup_samd51.o
+SERCOM0_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM0_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM0_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM0_3_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM1_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM1_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM1_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM1_3_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM2_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM2_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM2_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM2_3_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM3_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM3_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM3_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM3_3_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM4_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM4_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM4_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM4_3_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM5_0_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM5_1_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM5_2_Handler                                 build/robohatmm151/startup_samd51.o
+SERCOM5_3_Handler                                 build/robohatmm151/startup_samd51.o
+SUPC_0_Handler                                    build/robohatmm151/startup_samd51.o
+SUPC_1_Handler                                    build/robohatmm151/startup_samd51.o
+SVC_Handler                                       build/robohatmm151/startup_samd51.o
+SysTick_Handler                                   build/robohatmm151/init_samd51.o
+TAL_0_Handler                                     build/robohatmm151/startup_samd51.o
+TAL_1_Handler                                     build/robohatmm151/startup_samd51.o
+TC0_Handler                                       build/robohatmm151/startup_samd51.o
+TC1_Handler                                       build/robohatmm151/startup_samd51.o
+TC2_Handler                                       build/robohatmm151/startup_samd51.o
+TC3_Handler                                       build/robohatmm151/startup_samd51.o
+TCC0_0_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_1_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_2_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_3_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_4_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_5_Handler                                    build/robohatmm151/startup_samd51.o
+TCC0_6_Handler                                    build/robohatmm151/startup_samd51.o
+TCC1_0_Handler                                    build/robohatmm151/startup_samd51.o
+TCC1_1_Handler                                    build/robohatmm151/startup_samd51.o
+TCC1_2_Handler                                    build/robohatmm151/startup_samd51.o
+TCC1_3_Handler                                    build/robohatmm151/startup_samd51.o
+TCC1_4_Handler                                    build/robohatmm151/startup_samd51.o
+TCC2_0_Handler                                    build/robohatmm151/startup_samd51.o
+TCC2_1_Handler                                    build/robohatmm151/startup_samd51.o
+TCC2_2_Handler                                    build/robohatmm151/startup_samd51.o
+TCC2_3_Handler                                    build/robohatmm151/startup_samd51.o
+TRNG_Handler                                      build/robohatmm151/startup_samd51.o
+USB_0_Handler                                     build/robohatmm151/startup_samd51.o
+USB_1_Handler                                     build/robohatmm151/startup_samd51.o
+USB_2_Handler                                     build/robohatmm151/startup_samd51.o
+USB_3_Handler                                     build/robohatmm151/startup_samd51.o
+UsageFault_Handler                                build/robohatmm151/startup_samd51.o
+WDT_Handler                                       build/robohatmm151/startup_samd51.o
+_erelocate                                        build/robohatmm151/startup_samd51.o
+_estack                                           build/robohatmm151/startup_samd51.o
+_etext                                            build/robohatmm151/startup_samd51.o
+_ezero                                            build/robohatmm151/startup_samd51.o
+_sfixed                                           build/robohatmm151/startup_samd51.o
+_srelocate                                        build/robohatmm151/startup_samd51.o
+_szero                                            build/robohatmm151/startup_samd51.o
+add_crc                                           build/robohatmm151/usart_sam_ba.o
+arrowLogo                                         build/robohatmm151/images.o
+b_sharp_received                                  build/robohatmm151/usart_sam_ba.o
+block_erased                                      build/robohatmm151/flash_samd51.o
+bootloader                                        build/robohatmm151/selfdata.o
+                                                  build/robohatmm151/selfmain.o
+bootloader_crcs                                   build/robohatmm151/selfdata.o
+buffer_rx_usart                                   build/robohatmm151/usart_sam_ba.o
+buffer_tx_usart                                   build/robohatmm151/usart_sam_ba.o
+copy_words                                        build/robohatmm151/flash_samd51.o
+delay                                             build/robohatmm151/utils.o
+                                                  build/robohatmm151/selfmain.o
+error_timeout                                     build/robohatmm151/usart_sam_ba.o
+exception_table                                   build/robohatmm151/startup_samd51.o
+fileLogo                                          build/robohatmm151/images.o
+flash_erase_block                                 build/robohatmm151/flash_samd51.o
+flash_erase_to_end                                build/robohatmm151/flash_samd51.o
+flash_write_row                                   build/robohatmm151/flash_samd51.o
+                                                  build/robohatmm151/selfmain.o
+flash_write_words                                 build/robohatmm151/flash_samd51.o
+                                                  build/robohatmm151/selfmain.o
+font8                                             build/robohatmm151/images.o
+getPacket                                         build/robohatmm151/usart_sam_ba.o
+idx_rx_read                                       build/robohatmm151/usart_sam_ba.o
+idx_rx_write                                      build/robohatmm151/usart_sam_ba.o
+idx_tx_read                                       build/robohatmm151/usart_sam_ba.o
+idx_tx_write                                      build/robohatmm151/usart_sam_ba.o
+led_init                                          build/robohatmm151/utils.o
+                                                  build/robohatmm151/selfmain.o
+led_signal                                        build/robohatmm151/utils.o
+led_tick                                          build/robohatmm151/utils.o
+                                                  build/robohatmm151/init_samd51.o
+led_tick_step                                     build/robohatmm151/utils.o
+main                                              build/robohatmm151/selfmain.o
+                                                  build/robohatmm151/startup_samd51.o
+memcpy                                            /usr/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/libg_nano.a(lib_a-memcpy-stub.o)
+                                                  build/robohatmm151/selfmain.o
+                                                  build/robohatmm151/flash_samd51.o
+mode_of_transfer                                  build/robohatmm151/usart_sam_ba.o
+pageBuf                                           build/robohatmm151/selfmain.o
+panic                                             build/robohatmm151/utils.o
+pendriveLogo                                      build/robohatmm151/images.o
+resetHorizon                                      build/robohatmm151/utils.o
+resetIntoApp                                      build/robohatmm151/utils.o
+                                                  build/robohatmm151/selfmain.o
+resetIntoBootloader                               build/robohatmm151/utils.o
+                                                  build/robohatmm151/selfmain.o
+row_same                                          build/robohatmm151/flash_samd51.o
+setBootProt                                       build/robohatmm151/selfmain.o
+size_of_data                                      build/robohatmm151/usart_sam_ba.o
+system_init                                       build/robohatmm151/init_samd51.o
+                                                  build/robohatmm151/selfmain.o
+timerHigh                                         build/robohatmm151/utils.o
+timerTick                                         build/robohatmm151/utils.o
+uart_basic_init                                   build/robohatmm151/usart_sam_ba.o
+uart_disable                                      build/robohatmm151/usart_sam_ba.o
+uart_read_byte                                    build/robohatmm151/usart_sam_ba.o
+uart_write_byte                                   build/robohatmm151/usart_sam_ba.o
+usart_close                                       build/robohatmm151/usart_sam_ba.o
+usart_getc                                        build/robohatmm151/usart_sam_ba.o
+usart_getdata                                     build/robohatmm151/usart_sam_ba.o
+usart_getdata_xmd                                 build/robohatmm151/usart_sam_ba.o
+usart_is_rx_ready                                 build/robohatmm151/usart_sam_ba.o
+usart_open                                        build/robohatmm151/usart_sam_ba.o
+usart_putc                                        build/robohatmm151/usart_sam_ba.o
+usart_putdata                                     build/robohatmm151/usart_sam_ba.o
+usart_putdata_xmd                                 build/robohatmm151/usart_sam_ba.o
+usart_readc                                       build/robohatmm151/usart_sam_ba.o
+usart_sharp_received                              build/robohatmm151/usart_sam_ba.o
+writeNum                                          build/robohatmm151/utils.o
