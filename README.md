@@ -132,7 +132,7 @@ Otherwise, you can use other SAMD21 board and an external `openocd` compatible
 debugger. IBDAP is cheap and seems to work just fine. Another option is to use
 Raspberry Pi and native bit-banging.
 
-`openocd` will flash 16k, meaning the beginning of user program (if any) will
+`openocd` will flash 16k, meaning that on SAMD21 the beginning of user program (if any) will
 be overwritten with `0xff`. This also means that after fresh flashing of bootloader
 no double-tap reset is necessary, as the bootloader will not try to start application
 at `0xffffffff`.
@@ -167,8 +167,8 @@ There is a number of configuration parameters at the top of `uf2.h` file.
 Adjust them to your liking.
 
 By default, you cannot enable all the features, as the bootloader would exceed
-the 8k allocated to it by Arduino etc. It will assert on startup that it's not bigger
-than 8k. Also, the linker script will not allow it.
+the 8k(SAMD21)/16k(SAMD51) allocated to it by Arduino etc. It will assert on startup that it's not bigger
+than 8k(SAMD21)/16k(SAMD51). Also, the linker script will not allow it.
 
 Three typical configurations are:
 
@@ -186,7 +186,7 @@ then CDC might work and MSC will not work;
 otherwise, if you have no drivers, MSC will work, and CDC will work on Windows 10 only.
 Thus, it's best to set the USB ID to one for which there are no drivers.
 
-The bootloader sits at 0x00000000, and the application starts at 0x00002000.
+The bootloader sits at 0x00000000, and the application starts at 0x00002000 (SAMD21) or 0x00004000 (SAMD51).
 
 ## Code of Conduct
 
