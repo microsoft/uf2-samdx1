@@ -41,21 +41,21 @@ const uint32_t config_data[] = {
     513675505, 539130489, // magic
     62, 100,  // used entries, total entries
     1, 0x2e, // PIN_ACCELEROMETER_INT = PB14
-    2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL
-    3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA
+    2, 0xd, // PIN_ACCELEROMETER_SCL = PIN_SCL (PA13)
+    3, 0xc, // PIN_ACCELEROMETER_SDA = PIN_SDA (PA12)
     4, 0x3ee, // PIN_BTN_A = P_1006
     5, 0x3ef, // PIN_BTN_B = P_1007
-    13, 0x17, // PIN_LED = PIN_D13
+    13, 0x17, // PIN_LED = PIN_D13 (PA23)
     14, 0x24, // PIN_LIGHT = PB04
     18, 0x36, // PIN_MISO = PB22
     19, 0x37, // PIN_MOSI = PB23
     20, 0xf, // PIN_NEOPIXEL = PA15
-    21, 0x11, // PIN_RX = PA17
+    21, 0x31, // PIN_RX = PB17
     23, 0x11, // PIN_SCK = PA17
     24, 0xd, // PIN_SCL = PA13
     25, 0xc, // PIN_SDA = PA12
     26, 0x1b, // PIN_SPEAKER_AMP = PA27
-    28, 0x10, // PIN_TX = PA16
+    28, 0x30, // PIN_TX = PB16
     32, 0x2d, // PIN_DISPLAY_SCK = PB13
     34, 0x2f, // PIN_DISPLAY_MOSI = PB15
     35, 0x2c, // PIN_DISPLAY_CS = PB12
