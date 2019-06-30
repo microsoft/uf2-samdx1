@@ -2,11 +2,10 @@
 
 #include "sam.h"
 
-#ifdef SAMD21
-#define BOOTLOADER_K 8
-#endif
-#ifdef SAMD51
-#define BOOTLOADER_K 16
+#if defined(SAMD21)
+    #define BOOTLOADER_K 8
+#elif defined(SAMD51)
+    #define BOOTLOADER_K 16
 #endif
 
 extern const uint8_t bootloader[];
@@ -14,40 +13,39 @@ extern const uint16_t bootloader_crcs[];
 
 uint8_t pageBuf[FLASH_ROW_SIZE];
 
-#ifdef SAMD21
-#define NVM_FUSE_ADDR NVMCTRL_AUX0_ADDRESS
-#define exec_cmd(cmd)                                                          \
-    do {                                                                       \
-        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;                            \
-        NVMCTRL->ADDR.reg = (uint32_t)NVMCTRL_USER / 2;                        \
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;                    \
-        while (NVMCTRL->INTFLAG.bit.READY == 0) {}                             \
-    } while (0)
+#if defined(SAMD21)
+    #define NVM_FUSE_ADDR   NVMCTRL_AUX0_ADDRESS
+    #define exec_cmdaddr(cmd,addr)                                \
+        do {                                                      \
+            NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;           \
+            NVMCTRL->ADDR.reg = (uint32_t)addr / 2                \
+            NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;   \
+            while (NVMCTRL->INTFLAG.bit.READY == 0) {}            \
+        } while (0)
+#elif defined(SAMD51)
+    #define NVM_FUSE_ADDR   NVMCTRL_FUSES_BOOTPROT_ADDR
+    #define exec_cmdaddr(cmd,addr)                                \
+        do {                                                      \
+            NVMCTRL->ADDR.reg = (uint32_t)addr;                   \
+            NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;   \
+            while (NVMCTRL->STATUS.bit.READY == 0) {}             \
+        } while (0)
 #endif
-#ifdef SAMD51
-#define NVM_FUSE_ADDR NVMCTRL_FUSES_BOOTPROT_ADDR
-#define exec_cmd(cmd)                                                          \
-    do {                                                                       \
-        NVMCTRL->ADDR.reg = (uint32_t)NVMCTRL_USER;                        \
-        NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;                    \
-        while (NVMCTRL->STATUS.bit.READY == 0) {}                              \
-    } while (0)
-#endif
+#define exec_cmd(cmd) exec_cmdaddr(cmd, NVMCTRL_USER)
 
 void setBootProt(int v) {
-    uint32_t fuses[2];
-
-    #ifdef SAMD21
-    while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY)) {}
+    #if defined(SAMD21)
+        uint32_t fuses[2];
+        while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY)) {}
+    #elif defined(SAMD51)
+        uint32_t fuses[128];    // 512 bytes (whole user page)
+        while (!NVMCTRL->STATUS.bit.READY) {}
     #endif
-    #ifdef SAMD51
-    while (NVMCTRL->STATUS.bit.READY == 0) {}
-    #endif
 
-    fuses[0] = *((uint32_t *)NVM_FUSE_ADDR);
-    fuses[1] = *(((uint32_t *)NVM_FUSE_ADDR) + 1);
+    memcpy(fuses, (uint32_t *)NVM_FUSE_ADDR, sizeof(fuses));
 
     bool repair_fuses = false;
+    uint32_t newfuses[2];
     // Check for damaged fuses. If the NVM user page was accidentally erased, there
     // will be 1's in wrong places. This would enable the watchdog timer and cause other
     // problems. So check for all ones outside of the SAMD21/51 BOOTPROT fields, or all ones
@@ -56,21 +54,22 @@ void setBootProt(int v) {
         repair_fuses = true;
 
         // These canonical fuse values taken from working Adafruit SAMD21 and SAMD51 boards.
-        #ifdef SAMD21
-        fuses[0] = 0xD8E0C7FA;
-        fuses[1] = 0xFFFFFC5D;
-        #endif
-        #ifdef SAMD51
-        fuses[0] = 0xF69A9239;
-        fuses[1] = 0xAEECFF80;
+        #if defined(SAMD21)
+            newfuses[0] = 0xD8E0C7FA;
+            newfuses[1] = 0xFFFFFC5D;
+        #elif defined(SAMD51)
+            newfuses[0] = 0xF69A9239;
+            newfuses[1] = 0xAEECFF80;
         #endif
     }
+    else
+        memcpy(newfuses, fuses, sizeof(newfuses));  // Keep current values
 
-    uint32_t bootprot = (fuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
+    uint32_t bootprot = (newfuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
 
     logval("repair_fuses", repair_fuses);
-    logval("fuse0", fuses[0]);
-    logval("fuse1", fuses[1]);
+    logval("fuse0", newfuses[0]);
+    logval("fuse1", newfuses[1]);
     logval("bootprot", bootprot);
     logval("needed", v);
 
@@ -79,30 +78,36 @@ void setBootProt(int v) {
         return;
     }
 
-    fuses[0] = (fuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
+    newfuses[0] = (newfuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
-    #ifdef SAMD21
-    NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
+    const bool format = ((newfuses[0] ^ fuses[0]) & newfuses[0]) || ((newfuses[1] ^ fuses[1]) & newfuses[1]);
 
-    exec_cmd(NVMCTRL_CTRLA_CMD_EAR);
-    exec_cmd(NVMCTRL_CTRLA_CMD_PBC);
+    memcpy(fuses, newfuses, sizeof(newfuses));  // Prepare page buffer with new fuses
+
+    #if defined(SAMD21)
+        NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
+
+        if (format)
+            exec_cmd(NVMCTRL_CTRLA_CMD_EAR);
+        exec_cmd(NVMCTRL_CTRLA_CMD_PBC);
+    #elif defined(SAMD51)
+        NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
+
+        if (format)
+            exec_cmd(NVMCTRL_CTRLB_CMD_EP);
+        exec_cmd(NVMCTRL_CTRLB_CMD_PBC);
     #endif
-    #ifdef SAMD51
-    NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
 
-    exec_cmd(NVMCTRL_CTRLB_CMD_EP);
-    exec_cmd(NVMCTRL_CTRLB_CMD_PBC);
-    #endif
-
-    *((uint32_t *)NVM_FUSE_ADDR) = fuses[0];
-    *(((uint32_t *)NVM_FUSE_ADDR) + 1) = fuses[1];
-
-    #ifdef SAMD21
-    exec_cmd(NVMCTRL_CTRLA_CMD_WAP);
-    #endif
-    #ifdef SAMD51
-    exec_cmd(NVMCTRL_CTRLB_CMD_WQW);
-    #endif
+    const size_t ei = format ? sizeof(fuses) : repair_fuses ? 8 : 4;    // 16 bytes are written in one shot but 'ei' will reflect what I'd really want to write
+    for (int i = 0; i < ei : 8; i += 16) {
+        uint32_t *const qwBlockAddr = (uint32_t *const)(NVM_FUSE_ADDR + i);
+        memcpy(qwBlockAddr, &fuses[ii + i / 4], 16);
+        #if defined(SAMD21)
+            exec_cmdaddr(NVMCTRL_CTRLA_CMD_WAP, qwBlockAddr);
+        #elif defined(SAMD51)
+            exec_cmdaddr(NVMCTRL_CTRLB_CMD_WQW, qwBlockAddr);
+        #endif
+    }
 
     resetIntoApp();
 }
