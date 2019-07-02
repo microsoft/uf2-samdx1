@@ -99,9 +99,9 @@ void setBootProt(int v) {
     #endif
 
     const size_t ei = format ? sizeof(fuses) : repair_fuses ? 8 : 4;    // 16 bytes are written in one shot but 'ei' will reflect what I'd really want to write
-    for (int i = 0; i < ei : 8; i += 16) {
+    for (int i = 0; i < ei; i += 16) {
         uint32_t *const qwBlockAddr = (uint32_t *const)(NVM_FUSE_ADDR + i);
-        memcpy(qwBlockAddr, &fuses[ii + i / 4], 16);
+        memcpy(qwBlockAddr, &fuses[i], 16);
         #if defined(SAMD21)
             exec_cmdaddr(NVMCTRL_CTRLA_CMD_WAP, qwBlockAddr);
         #elif defined(SAMD51)
