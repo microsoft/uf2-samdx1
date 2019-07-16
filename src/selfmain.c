@@ -87,19 +87,23 @@ void setBootProt(int v) {
     #if defined(SAMD21)
         NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
 
-        if (format)
+        if (format) {
             exec_cmd(NVMCTRL_CTRLA_CMD_EAR);
+        }
         exec_cmd(NVMCTRL_CTRLA_CMD_PBC);
     #elif defined(SAMD51)
         NVMCTRL->CTRLA.bit.WMODE = NVMCTRL_CTRLA_WMODE_MAN;
 
-        if (format)
+        if (format) {
             exec_cmd(NVMCTRL_CTRLB_CMD_EP);
+        }
         exec_cmd(NVMCTRL_CTRLB_CMD_PBC);
     #endif
 
-    const size_t ei = format ? sizeof(fuses) : repair_fuses ? 8 : 4;    // 16 bytes are written in one shot but 'ei' will reflect what I'd really want to write
-    for (int i = 0; i < ei; i += 16) {
+    // 'endWriteIndex' is initialized with bytes that should be written.
+    // N.B. every itearation write a quadword, hence may be written more bytes than requested
+    const size_t endWriteIndex = format ? sizeof(fuses) : repair_fuses ? 8 : 4;
+    for (int i = 0; i < endWriteIndex; i += 16) {
         uint32_t *const qwBlockAddr = (uint32_t *const)(NVM_FUSE_ADDR + i);
         memcpy(qwBlockAddr, &fuses[i], 16);
         #if defined(SAMD21)
