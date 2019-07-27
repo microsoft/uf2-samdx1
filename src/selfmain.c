@@ -3,9 +3,9 @@
 #include "sam.h"
 
 #if defined(SAMD21)
-    #define BOOTLOADER_K 8
+#define BOOTLOADER_K 8
 #elif defined(SAMD51)
-    #define BOOTLOADER_K 16
+#define BOOTLOADER_K 16
 #endif
 
 extern const uint8_t bootloader[];
@@ -14,62 +14,75 @@ extern const uint16_t bootloader_crcs[];
 uint8_t pageBuf[FLASH_ROW_SIZE];
 
 #if defined(SAMD21)
-    #define NVM_FUSE_ADDR   NVMCTRL_AUX0_ADDRESS
-    #define exec_cmdaddr(cmd,addr)                                \
-        do {                                                      \
-            NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;           \
-            NVMCTRL->ADDR.reg = (uint32_t)addr / 2                \
-            NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;   \
-            while (NVMCTRL->INTFLAG.bit.READY == 0) {}            \
-        } while (0)
+#define NVM_FUSE_ADDR NVMCTRL_AUX0_ADDRESS
+#define exec_cmdaddr(cmd, addr)                                                                    \
+    do {                                                                                           \
+        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;                                                \
+        NVMCTRL->ADDR.reg = (uint32_t)addr / 2 NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd; \
+        while (NVMCTRL->INTFLAG.bit.READY == 0) {                                                  \
+        }                                                                                          \
+    } while (0)
 #elif defined(SAMD51)
-    #define NVM_FUSE_ADDR   NVMCTRL_FUSES_BOOTPROT_ADDR
-    #define exec_cmdaddr(cmd,addr)                                \
-        do {                                                      \
-            NVMCTRL->ADDR.reg = (uint32_t)addr;                   \
-            NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;   \
-            while (NVMCTRL->STATUS.bit.READY == 0) {}             \
-        } while (0)
+#define NVM_FUSE_ADDR NVMCTRL_FUSES_BOOTPROT_ADDR
+#define exec_cmdaddr(cmd, addr)                                                                    \
+    do {                                                                                           \
+        NVMCTRL->ADDR.reg = (uint32_t)addr;                                                        \
+        NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;                                        \
+        while (NVMCTRL->STATUS.bit.READY == 0) {                                                   \
+        }                                                                                          \
+    } while (0)
 #endif
 #define exec_cmd(cmd) exec_cmdaddr(cmd, NVMCTRL_USER)
 
 void setBootProt(int v) {
     #if defined(SAMD21)
-        uint32_t fuses[2];
-        while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY)) {}
+        uint32_t fuses[2], 
+                 newfuses[2];
+        while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY)) {
+        }
     #elif defined(SAMD51)
-        uint32_t fuses[128];    // 512 bytes (whole user page)
-        while (!NVMCTRL->STATUS.bit.READY) {}
+        uint32_t fuses[128],    // 512 bytes (whole user page)
+                 newfuses[5];
+        while (!NVMCTRL->STATUS.bit.READY) {
+        }
     #endif
 
     memcpy(fuses, (uint32_t *)NVM_FUSE_ADDR, sizeof(fuses));
+    memcpy(newfuses, fuses, sizeof(newfuses)); // Start with new values equal to current
 
-    bool repair_fuses = false;
-    uint32_t newfuses[2];
     // Check for damaged fuses. If the NVM user page was accidentally erased, there
     // will be 1's in wrong places. This would enable the watchdog timer and cause other
     // problems. So check for all ones outside of the SAMD21/51 BOOTPROT fields, or all ones
     // in fuses[1]. If it appears the fuses page was erased, replace fuses with reasonable values.
-    if ((fuses[0] & 0x03fffff0) == 0x03fffff0 || fuses[1] == 0xffffffff) {
-        repair_fuses = true;
-
-        // These canonical fuse values taken from working Adafruit SAMD21 and SAMD51 boards.
+    bool repair_fuses = ((fuses[0] & 0x03fffff0) == 0x03fffff0 || fuses[1] == 0xffffffff);
+    #if defined(SAMD51)
+        // SAMD51 needs an additional check
+        repair_fuses |= (fuses[4] == 0xffffffff);
+    #endif
+    if (repair_fuses) {
+        // These canonical fuse values taken from working Adafruit boards.
         #if defined(SAMD21)
-            newfuses[0] = 0xD8E0C7FA;
+            newfuses[0] = 0xD8E0C7FF;
             newfuses[1] = 0xFFFFFC5D;
         #elif defined(SAMD51)
-            newfuses[0] = 0xF69A9239;
+            newfuses[0] = 0xFE9A9239;
             newfuses[1] = 0xAEECFF80;
+            newfuses[2] = 0xFFFFFFFF;
+            newfuses[3] = 0xFFFFFFFF;
+            newfuses[4] = 0x00804010;
         #endif
     }
-    else
-        memcpy(newfuses, fuses, sizeof(newfuses));  // Keep current values
 
     uint32_t bootprot = (newfuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
 
     logval("repair_fuses", repair_fuses);
     logval("fuse0", newfuses[0]);
     logval("fuse1", newfuses[1]);
+    #if defined(SAMD51)
+      logval("fuse2", newfuses[2]);
+      logval("fuse3", newfuses[3]);
+      logval("fuse4", newfuses[4]);
+    #endif
     logval("bootprot", bootprot);
     logval("needed", v);
 
@@ -80,9 +93,11 @@ void setBootProt(int v) {
 
     newfuses[0] = (newfuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
-    const bool format = ((newfuses[0] ^ fuses[0]) & newfuses[0]) || ((newfuses[1] ^ fuses[1]) & newfuses[1]);
+    const bool format = false;
+    for (int i = 0; i < sizeof(newfuses); ++i)
+        format |= ((newfuses[i] ^ fuses[i]) & newfuses[i]);
 
-    memcpy(fuses, newfuses, sizeof(newfuses));  // Prepare page buffer with new fuses
+    memcpy(fuses, newfuses, sizeof(newfuses)); // Update page buffer with new fuses
 
     #if defined(SAMD21)
         NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
@@ -102,7 +117,7 @@ void setBootProt(int v) {
 
     // 'endWriteIndex' is initialized with bytes that should be written.
     // N.B. every itearation write a quadword, hence may be written more bytes than requested
-    const size_t endWriteIndex = format ? sizeof(fuses) : repair_fuses ? 8 : 4;
+    const size_t endWriteIndex = format ? sizeof(fuses) : repair_fuses ? sizeof(newfuses) : 4;
     for (int i = 0; i < endWriteIndex; i += 16) {
         uint32_t *const qwBlockAddr = (uint32_t *const)(NVM_FUSE_ADDR + i);
         memcpy(qwBlockAddr, &fuses[i], 16);
@@ -132,11 +147,11 @@ int main(void) {
 
     logmsg("Before main loop");
 
-    #ifdef SAMD21
+#ifdef SAMD21
     // Disable BOOTPROT while updating bootloader.
     setBootProt(7); // 0k - See "Table 22-2 Boot Loader Size" in datasheet.
-    #endif
-    #ifdef SAMD51
+#endif
+#ifdef SAMD51
     // We only need to set the BOOTPROT once on the SAMD51. For updates, we can
     // temporarily turn the protection off instead.
     // setBootProt() will only write BOOTPROT if it is not already correct.
@@ -145,7 +160,7 @@ int main(void) {
     exec_cmd(NVMCTRL_CTRLB_CMD_SBPDIS);
     NVMCTRL->CTRLA.bit.CACHEDIS0 = true;
     NVMCTRL->CTRLA.bit.CACHEDIS1 = true;
-    #endif
+#endif
 
     int i;
 
@@ -188,10 +203,10 @@ int main(void) {
 
     LED_MSC_OFF();
 
-    #ifdef SAMD21
+#ifdef SAMD21
     // Re-enable BOOTPROT
     setBootProt(2); // 8k
-    #endif
+#endif
     // For the SAMD51, the boot protection will automatically be re-enabled on
     // reset.
 
