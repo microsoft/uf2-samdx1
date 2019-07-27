@@ -15,21 +15,22 @@ uint8_t pageBuf[FLASH_ROW_SIZE];
 
 #if defined(SAMD21)
 #define NVM_FUSE_ADDR NVMCTRL_AUX0_ADDRESS
-#define exec_cmdaddr(cmd, addr)                                                                    \
-    do {                                                                                           \
-        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;                                                \
-        NVMCTRL->ADDR.reg = (uint32_t)addr / 2 NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd; \
-        while (NVMCTRL->INTFLAG.bit.READY == 0) {                                                  \
-        }                                                                                          \
+#define exec_cmdaddr(cmd, addr)                                 \
+    do {                                                        \
+        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;             \
+        NVMCTRL->ADDR.reg = (uint32_t)addr / 2;                 \
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;     \
+        while (NVMCTRL->INTFLAG.bit.READY == 0) {               \
+        }                                                       \
     } while (0)
 #elif defined(SAMD51)
 #define NVM_FUSE_ADDR NVMCTRL_FUSES_BOOTPROT_ADDR
-#define exec_cmdaddr(cmd, addr)                                                                    \
-    do {                                                                                           \
-        NVMCTRL->ADDR.reg = (uint32_t)addr;                                                        \
-        NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;                                        \
-        while (NVMCTRL->STATUS.bit.READY == 0) {                                                   \
-        }                                                                                          \
+#define exec_cmdaddr(cmd, addr)                                 \
+    do {                                                        \
+        NVMCTRL->ADDR.reg = (uint32_t)addr;                     \
+        NVMCTRL->CTRLB.reg = NVMCTRL_CTRLB_CMDEX_KEY | cmd;     \
+        while (NVMCTRL->STATUS.bit.READY == 0) {                \
+        }                                                       \
     } while (0)
 #endif
 #define exec_cmd(cmd) exec_cmdaddr(cmd, NVMCTRL_USER)
