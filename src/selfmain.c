@@ -69,7 +69,6 @@ void setBootProt(int v) {
             newfuses[0] = 0xFE9A9239;
             newfuses[1] = 0xAEECFF80;
             newfuses[2] = 0xFFFFFFFF;
-            newfuses[3] = 0xFFFFFFFF;
             newfuses[4] = 0x00804010;
         #endif
     }
@@ -81,7 +80,6 @@ void setBootProt(int v) {
     logval("fuse1", newfuses[1]);
     #if defined(SAMD51)
       logval("fuse2", newfuses[2]);
-      logval("fuse3", newfuses[3]);
       logval("fuse4", newfuses[4]);
     #endif
     logval("bootprot", bootprot);
