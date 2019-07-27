@@ -7,12 +7,12 @@
 #define PRODUCT_NAME "Robo HAT MM1"
 #define VOLUME_LABEL "ROBOM4BOOT"
 #define INDEX_URL "https://roboticsmasters.co"
-#define BOARD_ID "SAMD51G19A-robohat-v7a"
+#define BOARD_ID "SAMD51G19A-robohat-v8"
 
 #define USB_VID 0x1209
 #define USB_PID 0x4D44
 
-#define LED_PIN PIN_PA21
+#define LED_PIN PIN_PB22
 
 #define BOOT_USART_MODULE                 SERCOM5
 #define BOOT_USART_MASK                   APBDMASK

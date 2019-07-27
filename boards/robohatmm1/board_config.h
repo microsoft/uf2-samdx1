@@ -5,7 +5,7 @@
 
 #define VENDOR_NAME "Robotics Masters"
 #define PRODUCT_NAME "Robo HAT MM1"
-#define VOLUME_LABEL "ROBOM4BOOT"
+#define VOLUME_LABEL "ROBOM0BOOT"
 #define INDEX_URL "https://roboticsmasters.co"
 #define BOARD_ID "SAMD21G18A-v4"
 
