@@ -92,7 +92,7 @@ void setBootProt(int v) {
 
     newfuses[0] = (newfuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
-    const bool format = false;
+    bool format = false;
     for (int i = 0; i < sizeof(newfuses); ++i)
         format |= ((newfuses[i] ^ fuses[i]) & newfuses[i]);
 
