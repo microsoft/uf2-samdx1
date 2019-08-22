@@ -93,7 +93,7 @@ void setBootProt(int v) {
     newfuses[0] = (newfuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
     bool format = false;
-    for (int i = 0; i < sizeof(newfuses); ++i)
+    for (int i = 0; i < sizeof(newfuses) / sizeof(newfuses[0]); ++i)
         format |= ((newfuses[i] ^ fuses[i]) & newfuses[i]);
 
     memcpy(fuses, newfuses, sizeof(newfuses)); // Update page buffer with new fuses
