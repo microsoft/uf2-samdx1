@@ -217,7 +217,7 @@ drop-pkg:
 	rm -rf build/uf2-samd21-$(UF2_VERSION_BASE)
 
 all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board || break; done
+	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board || break -1; done
 
 drop: all-boards drop-pkg
 
