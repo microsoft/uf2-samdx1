@@ -206,8 +206,10 @@ static void sendCmdSeq(const uint8_t *buf) {
 static uint32_t palXOR;
 
 static void setAddrWindow(int x, int y, int w, int h) {
-    uint8_t cmd0[] = {ST7735_RASET, 0, (uint8_t)x, 0, (uint8_t)(x + w - 1)};
-    uint8_t cmd1[] = {ST7735_CASET, 0, (uint8_t)y, 0, (uint8_t)(y + h - 1)};
+    w += x - 1;
+    h += y - 1;
+    uint8_t cmd0[] = {ST7735_RASET, 0, (uint8_t)x, (uint8_t)(w >> 8), (uint8_t)w};
+    uint8_t cmd1[] = {ST7735_CASET, 0, (uint8_t)y, (uint8_t)(h >> 8), (uint8_t)h};
     sendCmd(cmd1, sizeof(cmd1));
     sendCmd(cmd0, sizeof(cmd0));
 }
@@ -457,9 +459,12 @@ void screen_init() {
     uint32_t offY = (cfg0 >> 16) & 0xff;
     //uint32_t freq = (cfg2 & 0xff);
 
+    offX += (CFG(DISPLAY_WIDTH) - DISPLAY_WIDTH) / 2;
+    offY += (CFG(DISPLAY_HEIGHT) - DISPLAY_HEIGHT) / 2;
+
     // DMESG("configure screen: FRMCTR1=%p MADCTL=%p SPI at %dMHz", frmctr1, madctl, freq);
     configure(madctl, frmctr1);
-    setAddrWindow(offX, offY, CFG(DISPLAY_WIDTH), CFG(DISPLAY_HEIGHT));
+    setAddrWindow(offX, offY, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     memset(fb, 0, sizeof(fb));
 }
