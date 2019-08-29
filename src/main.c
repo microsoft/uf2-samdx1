@@ -80,11 +80,10 @@ static void check_start_application(void);
 static volatile bool main_b_cdc_enable = false;
 extern int8_t led_tick_step;
 
-#ifdef SAMD21
-#define RESET_CONTROLLER PM
-#endif
-#ifdef SAMD51
-#define RESET_CONTROLLER RSTC
+#if defined(SAMD21)
+    #define RESET_CONTROLLER PM
+#elif defined(SAMD51)
+    #define RESET_CONTROLLER RSTC
 #endif
 
 /**
@@ -121,10 +120,12 @@ static void check_start_application(void) {
 
     if (RESET_CONTROLLER->RCAUSE.bit.POR) {
         *DBL_TAP_PTR = 0;
-    } else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
+    }
+    else if (*DBL_TAP_PTR == DBL_TAP_MAGIC) {
         *DBL_TAP_PTR = 0;
         return; // stay in bootloader
-    } else {
+    }
+    else {
         if (*DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             *DBL_TAP_PTR = DBL_TAP_MAGIC;
             delay(500);
@@ -133,9 +134,7 @@ static void check_start_application(void) {
     }
 
     LED_MSC_OFF();
-#if defined(__SAMD21E18A__)
     RGBLED_set_color(COLOR_LEAVE);
-#endif
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);
@@ -160,7 +159,7 @@ int main(void) {
         while (1) {
         }
 
-#if (USB_VID == 0x239a) && (USB_PID == 0x0013) // Adafruit Metro M0
+#if USB_VID == 0x239a && USB_PID == 0x0013     // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.
     delay(15);
 #endif
