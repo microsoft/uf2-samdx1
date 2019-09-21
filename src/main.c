@@ -159,6 +159,15 @@ int main(void) {
         while (1) {
         }
 
+    // Disable the watchdog, in case the application set it.
+#if defined(SAMD21)
+    WDT->CTRL.reg = 0;
+    while(WDT->STATUS.bit.SYNCBUSY) {}
+#elif defined(SAMD51)
+    WDT->CTRLA.reg = 0;
+    while(WDT->SYNCBUSY.reg) {}
+#endif
+
 #if USB_VID == 0x239a && USB_PID == 0x0013     // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.
     delay(15);
