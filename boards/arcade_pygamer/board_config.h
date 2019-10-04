@@ -99,7 +99,7 @@ const uint32_t config_data[] = {
     200, 0x5, // NUM_NEOPIXELS = 5
     204, 0x80000, // FLASH_BYTES = 0x80000
     205, 0x30000, // RAM_BYTES = 0x30000
-    208, 0x18591ab9, // BOOTLOADER_BOARD_ID = 0x18591ab9
+    208, 0x239a003d, // BOOTLOADER_BOARD_ID = 0x239a003d
     209, 0x55114460, // UF2_FAMILY = ATSAMD51
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -110,4 +110,3 @@ const uint32_t config_data[] = {
 #endif
 
 #endif
-

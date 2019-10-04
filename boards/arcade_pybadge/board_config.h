@@ -76,7 +76,7 @@ const uint32_t config_data[] = {
     60, 0x17, // PIN_JACK_TX = PIN_D13
     65, 0x2, // PIN_JACK_SND = PIN_A0
     69, 0x3ed, // PIN_BTN_SOFT_RESET = P_1005
-    70, 0x32, // ACCELEROMETER_TYPE = LIS3DH
+    70, 0x30, // ACCELEROMETER_TYPE = 48
     71, 0x20, // PIN_BTNMX_LATCH = PB00
     72, 0x3f, // PIN_BTNMX_CLOCK = PB31
     73, 0x3e, // PIN_BTNMX_DATA = PB30
@@ -99,7 +99,7 @@ const uint32_t config_data[] = {
     200, 0x5, // NUM_NEOPIXELS = 5
     204, 0x80000, // FLASH_BYTES = 0x80000
     205, 0x30000, // RAM_BYTES = 0x30000
-    208, 0x18591ab9, // BOOTLOADER_BOARD_ID = 0x18591ab9
+    208, 0x239a0033, // BOOTLOADER_BOARD_ID = 0x239a0033
     209, 0x55114460, // UF2_FAMILY = ATSAMD51
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -110,4 +110,3 @@ const uint32_t config_data[] = {
 #endif
 
 #endif
-
