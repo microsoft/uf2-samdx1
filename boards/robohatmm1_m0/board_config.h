@@ -5,13 +5,13 @@
 
 #define VENDOR_NAME "Robotics Masters"
 #define PRODUCT_NAME "Robo HAT MM1"
-#define VOLUME_LABEL "ROBOBOOT"
+#define VOLUME_LABEL "ROBOM0BOOT"
 #define INDEX_URL "https://roboticsmasters.co"
-#define BOARD_ID "SAMD21G18A-v4"
+#define BOARD_ID "SAMD21G18A-RoboHATMM1-v24"
 
 #define USB_VID 0x1209
 #define USB_PID 0x4D44
 
-#define LED_PIN PIN_PA21
+#define LED_PIN PIN_PB22
 
 #endif
