@@ -7,7 +7,7 @@
 #define PRODUCT_NAME "Robo HAT MM1 M4"
 #define VOLUME_LABEL "ROBOM4BOOT"
 #define INDEX_URL "https://roboticsmasters.co"
-#define BOARD_ID "SAMD51G19A-robohat-v24-gps-adafruit"
+#define BOARD_ID "SAMD51G19A-RoboHATMM1-v24"
 
 #define USB_VID 0x1209
 #define USB_PID 0x4D44
