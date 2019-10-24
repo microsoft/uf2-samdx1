@@ -102,8 +102,9 @@ static const struct TextFile info[] = {
 // all directory entries must fit in a single sector
 // because otherwise current code overflows buffer
 #define DIRENTRIES_PER_SECTOR (512/sizeof(DirEntry))
+#if USE_FAT
 STATIC_ASSERT(NUM_DIRENTRIES < DIRENTRIES_PER_SECTOR * ROOT_DIR_SECTORS);
-
+#endif
 
 static const FAT_BootBlock BootBlock = {
     .JumpInstruction = {0xeb, 0x3c, 0x90},
@@ -112,7 +113,7 @@ static const FAT_BootBlock BootBlock = {
     .SectorsPerCluster = 1,
     .ReservedSectors = RESERVED_SECTORS,
     .FATCopies = 2,
-    .RootDirectoryEntries = (ROOT_DIR_SECTORS * 512 / DIRENTRIES_PER_SECTOR),
+    .RootDirectoryEntries = (ROOT_DIR_SECTORS * DIRENTRIES_PER_SECTOR),
     .TotalSectors16 = NUM_FAT_BLOCKS - 2,
     .MediaDescriptor = 0xF8,
     .SectorsPerFAT = SECTORS_PER_FAT,

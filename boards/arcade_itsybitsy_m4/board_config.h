@@ -3,7 +3,7 @@
 
 #define VENDOR_NAME "Adafruit Industries"
 #define PRODUCT_NAME "Itsy Arcade D51"
-#define VOLUME_LABEL "ARCD-D51"
+#define VOLUME_LABEL "ARCADE-D5"
 #define INDEX_URL "https://arcade.makecode.com/"
 #define BOARD_ID "SAMD51G19A-Itsy-Arcade-D51"
 
@@ -95,7 +95,7 @@ const uint32_t config_data[] = {
     201, 0x1, // NUM_DOTSTARS = 1
     204, 0x80000, // FLASH_BYTES = 0x80000
     205, 0x30000, // RAM_BYTES = 0x30000
-    208, 0x7a236324, // BOOTLOADER_BOARD_ID = 0x7a236324
+    208, 0x239a002b, // BOOTLOADER_BOARD_ID = 0x239a002b
     209, 0x55114460, // UF2_FAMILY = ATSAMD51
     210, 0x20, // PINS_PORT_SIZE = PA_32
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

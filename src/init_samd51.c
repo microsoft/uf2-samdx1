@@ -5,8 +5,8 @@ void system_init(void) {
     NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_RWS(0);
 
     // Output GCLK0 to Metro M4 D5. This way we can see if/when we mess it up.
-    PORT->Group[1].PINCFG[14].bit.PMUXEN = true;
-    PORT->Group[1].PMUX[7].bit.PMUXE = 12;
+    //PORT->Group[1].PINCFG[14].bit.PMUXEN = true;
+    //PORT->Group[1].PMUX[7].bit.PMUXE = 12;
 
     /* Software reset the module to ensure it is re-initialized correctly */
     /* Note: Due to synchronization, there is a delay from writing CTRL.SWRST until the reset is complete.

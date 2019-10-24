@@ -7,6 +7,11 @@
 #define DISPLAY_WIDTH 160
 #define DISPLAY_HEIGHT 128
 
+// Overlap 4x chars by this much.
+#define CHAR4_KERNING 2
+// Width of a single 4x char, adjusted by kerning
+#define CHAR4_KERNED_WIDTH  (6 * 4 - CHAR4_KERNING)
+
 #define ST7735_NOP 0x00
 #define ST7735_SWRESET 0x01
 #define ST7735_RDDID 0x04
@@ -201,8 +206,10 @@ static void sendCmdSeq(const uint8_t *buf) {
 static uint32_t palXOR;
 
 static void setAddrWindow(int x, int y, int w, int h) {
-    uint8_t cmd0[] = {ST7735_RASET, 0, (uint8_t)x, 0, (uint8_t)(x + w - 1)};
-    uint8_t cmd1[] = {ST7735_CASET, 0, (uint8_t)y, 0, (uint8_t)(y + h - 1)};
+    w += x - 1;
+    h += y - 1;
+    uint8_t cmd0[] = {ST7735_RASET, 0, (uint8_t)x, (uint8_t)(w >> 8), (uint8_t)w};
+    uint8_t cmd1[] = {ST7735_CASET, 0, (uint8_t)y, (uint8_t)(h >> 8), (uint8_t)h};
     sendCmd(cmd1, sizeof(cmd1));
     sendCmd(cmd0, sizeof(cmd0));
 }
@@ -244,7 +251,7 @@ extern const uint8_t pendriveLogo[];
 extern const uint8_t arrowLogo[];
 
 static void printch(int x, int y, int col, const uint8_t *fnt) {
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 6; ++i) {
         uint8_t *p = fb + (x + i) * DISPLAY_HEIGHT + y;
         uint8_t mask = 0x01;
         for (int j = 0; j < 8; ++j) {
@@ -258,7 +265,7 @@ static void printch(int x, int y, int col, const uint8_t *fnt) {
 }
 
 static void printch4(int x, int y, int col, const uint8_t *fnt) {
-    for (int i = 0; i < 8 * 4; ++i) {
+    for (int i = 0; i < 6 * 4; ++i) {
         uint8_t *p = fb + (x + i) * DISPLAY_HEIGHT + y;
         uint8_t mask = 0x01;
         for (int j = 0; j < 8; ++j) {
@@ -338,8 +345,8 @@ void print(int x, int y, int col, const char *text) {
         if (c >= 0x7f)
             c = '?';
         c -= ' ';
-        printch(x, y, col, &font8[c * 8]);
-        x += 8;
+        printch(x, y, col, &font8[c * 6]);
+        x += 6;
     }
 }
 
@@ -347,8 +354,12 @@ void print4(int x, int y, int col, const char *text) {
     while (*text) {
         char c = *text++;
         c -= ' ';
-        printch4(x, y, col, &font8[c * 8]);
-        x += 8 * 4;
+        printch4(x, y, col, &font8[c * 6]);
+        x += CHAR4_KERNED_WIDTH;
+        if (x + CHAR4_KERNED_WIDTH > DISPLAY_WIDTH) {
+            // Next char won't fit.
+            return;
+        }
     }
 }
 
@@ -394,17 +405,20 @@ void draw_drag() {
     drawBar(52, 55, 8);
     drawBar(107, 14, 4);
 
-    print4(40, 10, 1, "D51");
-    print(37, 43, 6, "UF2 " UF2_VERSION_BASE);
-    print(3, 110, 1, "arcade.makecode.com");
+    // Center PRODUCT_NAME and UF2_VERSION_BASE.
+    int name_x = (DISPLAY_WIDTH - (6 * 4 - CHAR4_KERNING) * (int) strlen(PRODUCT_NAME)) / 2;
+    print4(name_x >= 0 ? name_x : 0, 5, 1, PRODUCT_NAME);
+    int version_x = (DISPLAY_WIDTH - 6 * (int) strlen(UF2_VERSION_BASE)) / 2;
+    print(version_x >= 0 ? version_x : 0, 40, 6, UF2_VERSION_BASE);
+    print(23, 110, 1, "arcade.makecode.com");
 
 #define DRAG 70
 #define DRAGX 10
     printicon(DRAGX + 20, DRAG + 5, 1, fileLogo);
     printicon(DRAGX + 66, DRAG, 1, arrowLogo);
     printicon(DRAGX + 108, DRAG, 1, pendriveLogo);
-    print(2, DRAG - 12, 1, "arcade.uf2");
-    print(95, DRAG - 12, 1, "ARCD-D51");
+    print(10, DRAG - 12, 1, "arcade.uf2");
+    print(90, DRAG - 12, 1, VOLUME_LABEL);
 
     draw_screen();
 }
@@ -445,9 +459,12 @@ void screen_init() {
     uint32_t offY = (cfg0 >> 16) & 0xff;
     //uint32_t freq = (cfg2 & 0xff);
 
+    offX += (CFG(DISPLAY_WIDTH) - DISPLAY_WIDTH) / 2;
+    offY += (CFG(DISPLAY_HEIGHT) - DISPLAY_HEIGHT) / 2;
+
     // DMESG("configure screen: FRMCTR1=%p MADCTL=%p SPI at %dMHz", frmctr1, madctl, freq);
     configure(madctl, frmctr1);
-    setAddrWindow(offX, offY, CFG(DISPLAY_WIDTH), CFG(DISPLAY_HEIGHT));
+    setAddrWindow(offX, offY, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     memset(fb, 0, sizeof(fb));
 }

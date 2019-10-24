@@ -27,7 +27,7 @@
  *
  */
 
-#include "samd51.h"
+#include "sam.h"
 
 /* Initialize segments */
 extern uint32_t _sfixed;

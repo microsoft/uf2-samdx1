@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='ASCII'?>
+<package schemaVersion="1.0">
+  <content>
+    <fileset id="moduleheaders">
+      <includes pattern="component/*"/>
+      <includes pattern="instance/*"/>
+    </fileset>
+    <resources target="ATSAME54P20A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAME54P20A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAME54P20A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="same54.h"/>
+        <includes pattern="same54p20a.h"/>
+        <includes pattern="system_same54.h"/>
+        <includes pattern="pio/*same54p20a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAME54P20A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="gcc/startup_same54.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/same54p20a_flash.ld"/>
+        <includes pattern="gcc/same54p20a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="iar/startup_same54.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/same54p20a_flash.icf"/>
+        <includes pattern="iar/same54p20a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAME54P20A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAME54P20A.menu"/>
+        <includes pattern="config/flashloader/Atmel/same54p20a/same54p20a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/same54p20a/same54p20a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/same54p20a/same54p20a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAME54.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAME54P20A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAME54P19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAME54P19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAME54P19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="same54.h"/>
+        <includes pattern="same54p19a.h"/>
+        <includes pattern="system_same54.h"/>
+        <includes pattern="pio/*same54p19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAME54P19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="gcc/startup_same54.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/same54p19a_flash.ld"/>
+        <includes pattern="gcc/same54p19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="iar/startup_same54.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/same54p19a_flash.icf"/>
+        <includes pattern="iar/same54p19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAME54P19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAME54P19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/same54p19a/same54p19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/same54p19a/same54p19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/same54p19a/same54p19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAME54.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAME54P19A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAME54N20A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAME54N20A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAME54N20A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="same54.h"/>
+        <includes pattern="same54n20a.h"/>
+        <includes pattern="system_same54.h"/>
+        <includes pattern="pio/*same54n20a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAME54N20A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="gcc/startup_same54.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/same54n20a_flash.ld"/>
+        <includes pattern="gcc/same54n20a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="iar/startup_same54.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/same54n20a_flash.icf"/>
+        <includes pattern="iar/same54n20a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAME54N20A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAME54N20A.menu"/>
+        <includes pattern="config/flashloader/Atmel/same54n20a/same54n20a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/same54n20a/same54n20a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/same54n20a/same54n20a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAME54.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAME54N20A.ddf"/>
+      </resource>
+    </resources>
+    <resources target="ATSAME54N19A">
+      <resource type="atdf" subdir="atdf">
+        <includes pattern="ATSAME54N19A.atdf"/>
+      </resource>
+      <resource type="svd" subdir="svd">
+        <includes pattern="ATSAME54N19A.svd"/>
+      </resource>
+      <resource type="c.header" subdir="include">
+        <includes pattern="sam.h"/>
+        <includes pattern="same54.h"/>
+        <includes pattern="same54n19a.h"/>
+        <includes pattern="system_same54.h"/>
+        <includes pattern="pio/*same54n19a.h"/>
+        <includes pattern="component-version.h"/>
+        <includes fileset="moduleheaders"/>
+        <meta key="define" value="__SAME54N19A__"/>
+      </resource>
+      <resource type="c.source.exe.template" subdir="templates">
+        <includes pattern="main.c"/>
+      </resource>
+      <resource type="c.source.lib.template" subdir="templates">
+        <includes pattern="library.c"/>
+      </resource>
+      <resource type="cpp.source.exe.template" subdir="templates">
+        <includes pattern="main.cpp"/>
+      </resource>
+      <resource type="cpp.source.lib.template" subdir="templates">
+        <includes pattern="library.cpp"/>
+      </resource>
+      <resource type="gcc.source.startup" subdir="gcc">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="gcc/startup_same54.c"/>
+      </resource>
+      <resource type="gcc.linker" subdir="gcc">
+        <includes pattern="gcc/same54n19a_flash.ld"/>
+        <includes pattern="gcc/same54n19a_sram.ld"/>
+      </resource>
+      <resource type="iar.source.startup" subdir="iar">
+        <includes pattern="system_same54.c"/>
+        <includes pattern="iar/startup_same54.c"/>
+      </resource>
+      <resource type="iar.linker" subdir="iar">
+        <includes pattern="iar/same54n19a_flash.icf"/>
+        <includes pattern="iar/same54n19a_sram.icf"/>
+      </resource>
+      <resource type="iar.config" subdir="iar">
+        <includes pattern="config/devices/Atmel/**/ATSAME54N19A.i79"/>
+        <includes pattern="config/devices/Atmel/**/ATSAME54N19A.menu"/>
+        <includes pattern="config/flashloader/Atmel/same54n19a/same54n19a-flash.board"/>
+        <includes pattern="config/flashloader/Atmel/same54n19a/same54n19a-flash.flash"/>
+        <includes pattern="config/flashloader/Atmel/same54n19a/same54n19a-flash.out"/>
+        <includes optional="true" pattern="config/debugger/Atmel/Trace_SAME54.dmac"/>
+        <includes optional="true" pattern="config/debugger/Atmel/ATSAME54N19A.ddf"/>
+      </resource>
+    </resources>
+  </content>
+  <pdsc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<releases>
+			<release version="1.0.BUILDNUMBER">Initial version.</release>
+		</releases>
+	</pdsc>
+</package>
