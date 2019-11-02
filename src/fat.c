@@ -115,11 +115,11 @@ static const FAT_BootBlock BootBlock = {
     .FATCopies = 2,
     .RootDirectoryEntries = (ROOT_DIR_SECTORS * DIRENTRIES_PER_SECTOR),
     .TotalSectors16 = NUM_FAT_BLOCKS - 2,
-    .MediaDescriptor = 0xF8,
+    .MediaDescriptor = 0xf0, // typical for unpartitioned disks
     .SectorsPerFAT = SECTORS_PER_FAT,
     .SectorsPerTrack = 1,
     .Heads = 1,
-    .PhysicalDriveNum = 0x80, // to match MediaDescriptor of 0xF8
+    .PhysicalDriveNum = 0x00, // to match MediaDescriptor of 0xf0
     .ExtendedBootSig = 0x29,
     .VolumeSerialNumber = 0x00420042,
     .VolumeLabel = VOLUME_LABEL,
@@ -152,7 +152,7 @@ void read_block(uint32_t block_no, uint8_t *data) {
             sectionIdx -= SECTORS_PER_FAT; // second FAT is same as the first...
 #if USE_FAT
         if (sectionIdx == 0) {
-            data[0] = 0xf0;
+            data[0] = 0xf0; // must match MediaDescriptor
             // WARNING -- code presumes only one NULL .content for .UF2 file
             //            and all non-NULL .content fit in one sector
             //            and requires it be the last element of the array
