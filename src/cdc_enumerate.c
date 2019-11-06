@@ -384,6 +384,10 @@ static void load_serial_number(char serial_number[SERIAL_NUMBER_LENGTH]) {
     uint32_t* addresses[4] = {(uint32_t *) 0x0080A00C, (uint32_t *) 0x0080A040,
                               (uint32_t *) 0x0080A044, (uint32_t *) 0x0080A048};
     #endif
+    #ifdef SAML21
+    uint32_t* addresses[4] = {(uint32_t *) 0x0080A00C, (uint32_t *) 0x0080A040,
+                              (uint32_t *) 0x0080A044, (uint32_t *) 0x0080A048};
+    #endif
     #ifdef SAMD51
     uint32_t* addresses[4] = {(uint32_t *) 0x008061FC, (uint32_t *) 0x00806010,
                               (uint32_t *) 0x00806014, (uint32_t *) 0x00806018};
@@ -463,6 +467,13 @@ void AT91F_InitUSB(void) {
     /* Enable USB clock */
     #ifdef SAMD21
     PM->APBBMASK.reg |= PM_APBBMASK_USB;
+    #define DM_PIN PIN_PA24G_USB_DM
+    #define DM_MUX MUX_PA24G_USB_DM
+    #define DP_PIN PIN_PA25G_USB_DP
+    #define DP_MUX MUX_PA25G_USB_DP
+    #endif
+    #ifdef SAML21
+    MCLK->APBBMASK.reg |= MCLK_APBBMASK_USB;
     #define DM_PIN PIN_PA24G_USB_DM
     #define DM_MUX MUX_PA24G_USB_DM
     #define DP_PIN PIN_PA25G_USB_DP
