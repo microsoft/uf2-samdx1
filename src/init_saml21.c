@@ -34,7 +34,7 @@ void system_init(void) {
   //GCLK->GENDIV.reg = GCLK_GENDIV_ID(2);  // Read GENERATOR_ID - GCLK_GEN_2
   //gclk_sync();
 
-  GCLK->GENCTRL[3u].reg = GCLK_GENCTRL_DIV(2) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
+  GCLK->GENCTRL->reg = GCLK_GENCTRL_DIV(2) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
   gclk_sync();
 
   // Turn on DFLL with USB correction and sync to internal 8 mhz oscillator
@@ -67,16 +67,16 @@ void system_init(void) {
   dfll_sync();
   OSCCTRL->DFLLCTRL.reg |= OSCCTRL_DFLLCTRL_ENABLE ;
   dfll_sync();
-//DUDAS!! 320
-  /*GCLK_PCHCTRL_Type clkctrl={0};
+
+  GCLK_PCHCTRL_Type clkctrl={0};
   uint16_t temp;
-  GCLK->CLKCTRL.bit.ID = 2; // GCLK_ID - DFLL48M Reference
-  temp = GCLK->CLKCTRL.reg;
-  clkctrl.bit.CLKEN = 1;
+  clkctrl.bit.GEN = 2;
+  //GCLK->CLKCTRL.bit.ID = 2; // GCLK_ID - DFLL48M Reference
+  temp = GCLK->PCHCTRL->reg;
+  clkctrl.bit.CHEN = 1;
   clkctrl.bit.WRTLOCK = 0;
-  clkctrl.bit.GEN = GCLK_CLKCTRL_GEN_GCLK0_Val;
-  GCLK->CLKCTRL.reg = (clkctrl.reg | temp);
-*/
+  GCLK->PCHCTRL->reg = (clkctrl.reg | temp);
+
 #else
 
     OSCCTRL->XOSC32K.reg =
@@ -119,7 +119,7 @@ void system_init(void) {
     //gclk_sync();
 
     // Add GCLK_GENCTRL_OE below to output GCLK0 on the SWCLK pin.
-    GCLK->GENCTRL[0u].reg =
+    GCLK->GENCTRL->reg =
         GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
     gclk_sync();
 
