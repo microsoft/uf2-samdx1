@@ -59,11 +59,13 @@ INCLUDES = -I. -I./inc -I./inc/preprocessor
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include -Ilib/usb_msc
 INCLUDES += -I$(BUILD_PATH)
 
-
 ifeq ($(CHIP_FAMILY), saml21)
 INCLUDES += -Ilib/saml21/saml21b/include/
 endif
 
+ifeq ($(CHIP_FAMILY), samd21)
+INCLUDES += -Ilib/samd21/samd21a/include/
+endif
 
 ifeq ($(CHIP_FAMILY), samd51)
 ifeq ($(findstring SAME54,$(CHIP_VARIANT)),SAME54)
