@@ -253,10 +253,7 @@ void padded_memcpy(char *dst, const char *src, int len);
 #define DBL_TAP_MAGIC_QUICK_BOOT 0xf02669ef
 
 #if USE_SINGLE_RESET
-#ifdef SAMD21
-#define SINGLE_RESET() (*((uint32_t *)0x20B4) == 0x87eeb07c)
-#endif
-#ifdef SAML21
+#if defined(SAMD21) || defined(SAML21)
 #define SINGLE_RESET() (*((uint32_t *)0x20B4) == 0x87eeb07c)
 #endif
 #ifdef SAMD51
@@ -298,13 +295,7 @@ void handoverPrep(void);
 #define CONCAT_0(a, b) CONCAT_1(a, b)
 #define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }
 
-#ifdef SAMD21
-STATIC_ASSERT(FLASH_ROW_SIZE == FLASH_PAGE_SIZE * 4);
-STATIC_ASSERT(FLASH_ROW_SIZE == NVMCTRL_ROW_SIZE);
-STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
-#endif
-
-#ifdef SAML21
+#if defined(SAMD21) || defined(SAML21)
 STATIC_ASSERT(FLASH_ROW_SIZE == FLASH_PAGE_SIZE * 4);
 STATIC_ASSERT(FLASH_ROW_SIZE == NVMCTRL_ROW_SIZE);
 STATIC_ASSERT(FLASH_NUM_ROWS * 4 == FLASH_NB_OF_PAGES);
