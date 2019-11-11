@@ -52,7 +52,7 @@ endif
 LDFLAGS= $(COMMON_FLAGS) \
 -Wall -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--unresolved-symbols=report-all -Wl,--warn-common \
 -Wl,--warn-section-align \
--save-temps -nostartfiles \
+-save-temps \
 --specs=nano.specs --specs=nosys.specs
 BUILD_PATH=build/$(BOARD)
 INCLUDES = -I. -I./inc -I./inc/preprocessor
