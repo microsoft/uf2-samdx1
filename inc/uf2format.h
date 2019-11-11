@@ -13,7 +13,7 @@
 #endif
 #ifdef SAML21
 #define APP_START_ADDRESS 0x00002000
-#define UF2_FAMILY 0x68ed2b88
+#define UF2_FAMILY 0x1851780a
 #endif
 #ifdef SAMD51
 #define APP_START_ADDRESS 0x00004000
