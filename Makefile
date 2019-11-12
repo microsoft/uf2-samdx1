@@ -54,6 +54,9 @@ LDFLAGS= $(COMMON_FLAGS) \
 -Wl,--warn-section-align \
 -save-temps \
 --specs=nano.specs --specs=nosys.specs
+ifneq ($(CHIP_FAMILY), saml21)
+LDFLAGS += -nostartfiles
+endif
 BUILD_PATH=build/$(BOARD)
 INCLUDES = -I. -I./inc -I./inc/preprocessor
 INCLUDES += -I./boards/$(BOARD) -Ilib/cmsis/CMSIS/Include -Ilib/usb_msc
