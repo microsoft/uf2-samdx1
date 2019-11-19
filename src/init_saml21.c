@@ -60,10 +60,9 @@ void system_init(void) {
   OSCCTRL->DFLLVAL.reg = dfllval_conf.reg;
   OSCCTRL->DFLLCTRL.reg = 0;
   dfll_sync();
-  OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_MODE |
-                          OSCCTRL_DFLLCTRL_CCDIS |
-                          OSCCTRL_DFLLCTRL_USBCRM | /* USB correction */
-                          OSCCTRL_DFLLCTRL_BPLCKC;
+  OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_CCDIS |
+                          OSCCTRL_DFLLCTRL_MODE |  /* Closed loop mode */
+                          OSCCTRL_DFLLCTRL_USBCRM; /* USB correction */
   dfll_sync();
   OSCCTRL->DFLLCTRL.reg |= OSCCTRL_DFLLCTRL_ENABLE ;
   dfll_sync();
@@ -71,7 +70,6 @@ void system_init(void) {
   GCLK_PCHCTRL_Type clkctrl={0};
   uint16_t temp;
   clkctrl.bit.GEN = 2;
-  //GCLK->CLKCTRL.bit.ID = 2; // GCLK_ID - DFLL48M Reference
   temp = GCLK->PCHCTRL->reg;
   clkctrl.bit.CHEN = 1;
   clkctrl.bit.WRTLOCK = 0;
