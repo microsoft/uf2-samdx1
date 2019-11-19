@@ -42,7 +42,7 @@ void system_init(void) {
   dfll_sync();
 
   OSCCTRL_DFLLVAL_Type dfllval_conf = {0};
-  uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP4)
+  uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP5)
 		       + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32))
 		     >> (NVM_SW_CALIB_DFLL48M_COARSE_VAL % 32))
     & ((1 << 6) - 1);
