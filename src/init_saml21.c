@@ -8,7 +8,7 @@
 volatile bool g_interrupt_enabled = true;
 
 static void gclk_sync(void) {
-    while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_MASK)
+    while (OSCCTRL->DPLLSYNCBUSY.reg & OSCCTRL_DPLLSYNCBUSY_MASK)
         ;
 }
 
