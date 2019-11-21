@@ -25,6 +25,8 @@ void system_init(void) {
 
   NVMCTRL->CTRLB.bit.RWS = 1;
 
+  NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS_DUAL ; // two wait states
+
 #if defined(CRYSTALLESS)
   /* Note that after reset, the L21 starts with the OSC16M set to 4MHz, NOT the DFLL@48MHz as stated in some documentation. */
   /* Modify FSEL value of OSC16M to have 8MHz */
@@ -34,7 +36,7 @@ void system_init(void) {
   //GCLK->GENDIV.reg = GCLK_GENDIV_ID(2);  // Read GENERATOR_ID - GCLK_GEN_2
   //gclk_sync();
 
-  GCLK->GENCTRL->reg = GCLK_GENCTRL_DIV(2) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
+  GCLK->GENCTRL->reg = GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
   gclk_sync();
 
   // Turn on DFLL with USB correction and sync to internal 8 mhz oscillator
