@@ -10,7 +10,7 @@
 #define BOARD_ID "SAMD21E18A-NDBIT6"
 
 #define USB_VID 0x239A
-#define USB_PID 0x0066
+#define USB_PID 0x0065
 
 #define LED_PIN PIN_PA23
 

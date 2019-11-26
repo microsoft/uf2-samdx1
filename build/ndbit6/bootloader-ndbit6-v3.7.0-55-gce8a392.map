@@ -1,0 +1,1049 @@
+Archive member included to satisfy reference by file (symbol)
+
+/Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+                              build/ndbit6/hid.o (__gnu_thumb1_case_uqi)
+/Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+                              build/ndbit6/cdc_enumerate.o (memcpy)
+/Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+                              build/ndbit6/cdc_enumerate.o (memset)
+/Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+                              build/ndbit6/cdc_enumerate.o (strlen)
+
+Allocating common symbols
+Common symbol       size              file
+
+b_sharp_received    0x1               build/ndbit6/usart_sam_ba.o
+timerHigh           0x4               build/ndbit6/utils.o
+j                   0x1               build/ndbit6/sam_ba_monitor.o
+idx_rx_write        0x1               build/ndbit6/usart_sam_ba.o
+size_of_data        0x2               build/ndbit6/usart_sam_ba.o
+ctrlOutCache        0x44              build/ndbit6/cdc_enumerate.o
+length              0x4               build/ndbit6/sam_ba_monitor.o
+ptr                 0x4               build/ndbit6/sam_ba_monitor.o
+command             0x1               build/ndbit6/sam_ba_monitor.o
+resetHorizon        0x4               build/ndbit6/utils.o
+idx_tx_read         0x1               build/ndbit6/usart_sam_ba.o
+i                   0x4               build/ndbit6/sam_ba_monitor.o
+buffer_tx_usart     0x80              build/ndbit6/usart_sam_ba.o
+error_timeout       0x1               build/ndbit6/usart_sam_ba.o
+usb_endpoint_table  0x100             build/ndbit6/cdc_enumerate.o
+data                0x41              build/ndbit6/sam_ba_monitor.o
+mode_of_transfer    0x1               build/ndbit6/usart_sam_ba.o
+ptr_data            0x4               build/ndbit6/sam_ba_monitor.o
+idx_rx_read         0x1               build/ndbit6/usart_sam_ba.o
+sp                  0x4               build/ndbit6/sam_ba_monitor.o
+current_number      0x4               build/ndbit6/sam_ba_monitor.o
+idx_tx_write        0x1               build/ndbit6/usart_sam_ba.o
+endpointCache       0x220             build/ndbit6/cdc_enumerate.o
+u32tmp              0x4               build/ndbit6/sam_ba_monitor.o
+buffer_rx_usart     0x80              build/ndbit6/usart_sam_ba.o
+
+Discarded input sections
+
+ .text          0x0000000000000000        0x0 build/ndbit6/flash_samd21.o
+ .data          0x0000000000000000        0x0 build/ndbit6/flash_samd21.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/flash_samd21.o
+ .text.flash_write
+                0x0000000000000000       0x88 build/ndbit6/flash_samd21.o
+ .text          0x0000000000000000        0x0 build/ndbit6/init_samd21.o
+ .data          0x0000000000000000        0x0 build/ndbit6/init_samd21.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/init_samd21.o
+ .data.g_interrupt_enabled
+                0x0000000000000000        0x1 build/ndbit6/init_samd21.o
+ .text          0x0000000000000000        0x0 build/ndbit6/startup_samd21.o
+ .data          0x0000000000000000        0x0 build/ndbit6/startup_samd21.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/startup_samd21.o
+ .text          0x0000000000000000        0x0 build/ndbit6/usart_sam_ba.o
+ .data          0x0000000000000000        0x0 build/ndbit6/usart_sam_ba.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/usart_sam_ba.o
+ .text.usart_open
+                0x0000000000000000       0xbc build/ndbit6/usart_sam_ba.o
+ .text.usart_close
+                0x0000000000000000       0x10 build/ndbit6/usart_sam_ba.o
+ .text.usart_putc
+                0x0000000000000000       0x14 build/ndbit6/usart_sam_ba.o
+ .text.usart_is_rx_ready
+                0x0000000000000000       0x10 build/ndbit6/usart_sam_ba.o
+ .text.usart_getc
+                0x0000000000000000       0x18 build/ndbit6/usart_sam_ba.o
+ .text.usart_sharp_received
+                0x0000000000000000       0x1a build/ndbit6/usart_sam_ba.o
+ .text.usart_readc
+                0x0000000000000000       0x20 build/ndbit6/usart_sam_ba.o
+ .text.usart_putdata
+                0x0000000000000000       0x1a build/ndbit6/usart_sam_ba.o
+ .text.usart_getdata
+                0x0000000000000000        0xe build/ndbit6/usart_sam_ba.o
+ .text.getbytes
+                0x0000000000000000       0x68 build/ndbit6/usart_sam_ba.o
+ .text.getPacket
+                0x0000000000000000       0x70 build/ndbit6/usart_sam_ba.o
+ .text.usart_putdata_xmd
+                0x0000000000000000      0x110 build/ndbit6/usart_sam_ba.o
+ .text.usart_getdata_xmd
+                0x0000000000000000       0xa4 build/ndbit6/usart_sam_ba.o
+ COMMON         0x0000000000000000      0x109 build/ndbit6/usart_sam_ba.o
+ .text          0x0000000000000000        0x0 build/ndbit6/screen.o
+ .data          0x0000000000000000        0x0 build/ndbit6/screen.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/screen.o
+ .debug_info    0x0000000000000000      0x8f9 build/ndbit6/screen.o
+ .debug_abbrev  0x0000000000000000      0x197 build/ndbit6/screen.o
+ .debug_aranges
+                0x0000000000000000       0x18 build/ndbit6/screen.o
+ .debug_line    0x0000000000000000      0x1c7 build/ndbit6/screen.o
+ .debug_str     0x0000000000000000      0x5df build/ndbit6/screen.o
+ .comment       0x0000000000000000       0x80 build/ndbit6/screen.o
+ .ARM.attributes
+                0x0000000000000000       0x32 build/ndbit6/screen.o
+ .text          0x0000000000000000        0x0 build/ndbit6/images.o
+ .data          0x0000000000000000        0x0 build/ndbit6/images.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/images.o
+ .rodata.arrowLogo
+                0x0000000000000000       0x39 build/ndbit6/images.o
+ .rodata.fileLogo
+                0x0000000000000000       0x4a build/ndbit6/images.o
+ .rodata.font8  0x0000000000000000      0x240 build/ndbit6/images.o
+ .rodata.pendriveLogo
+                0x0000000000000000       0x3e build/ndbit6/images.o
+ .debug_info    0x0000000000000000      0x11f build/ndbit6/images.o
+ .debug_abbrev  0x0000000000000000       0x66 build/ndbit6/images.o
+ .debug_aranges
+                0x0000000000000000       0x18 build/ndbit6/images.o
+ .debug_line    0x0000000000000000      0x108 build/ndbit6/images.o
+ .debug_str     0x0000000000000000      0x1d0 build/ndbit6/images.o
+ .comment       0x0000000000000000       0x80 build/ndbit6/images.o
+ .ARM.attributes
+                0x0000000000000000       0x32 build/ndbit6/images.o
+ .text          0x0000000000000000        0x0 build/ndbit6/utils.o
+ .data          0x0000000000000000        0x0 build/ndbit6/utils.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/utils.o
+ .text.panic    0x0000000000000000        0x2 build/ndbit6/utils.o
+ .text          0x0000000000000000        0x0 build/ndbit6/cdc_enumerate.o
+ .data          0x0000000000000000        0x0 build/ndbit6/cdc_enumerate.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/cdc_enumerate.o
+ .text.reset_ep
+                0x0000000000000000       0x24 build/ndbit6/cdc_enumerate.o
+ .text.stall_ep
+                0x0000000000000000       0x2c build/ndbit6/cdc_enumerate.o
+ .text.cdc_is_rx_ready
+                0x0000000000000000       0x20 build/ndbit6/cdc_enumerate.o
+ .text          0x0000000000000000        0x0 build/ndbit6/fat.o
+ .data          0x0000000000000000        0x0 build/ndbit6/fat.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/fat.o
+ .text          0x0000000000000000        0x0 build/ndbit6/main.o
+ .data          0x0000000000000000        0x0 build/ndbit6/main.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/main.o
+ .text          0x0000000000000000        0x0 build/ndbit6/msc.o
+ .data          0x0000000000000000        0x0 build/ndbit6/msc.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/msc.o
+ .text.msc_reset
+                0x0000000000000000       0x1c build/ndbit6/msc.o
+ .text.udd_ep_set_halt
+                0x0000000000000000       0x10 build/ndbit6/msc.o
+ .bss.mscReset  0x0000000000000000        0x1 build/ndbit6/msc.o
+ .text          0x0000000000000000        0x0 build/ndbit6/sam_ba_monitor.o
+ .data          0x0000000000000000        0x0 build/ndbit6/sam_ba_monitor.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/sam_ba_monitor.o
+ .text.sam_ba_monitor_init
+                0x0000000000000000        0x2 build/ndbit6/sam_ba_monitor.o
+ .text.sam_ba_putdata_term
+                0x0000000000000000        0x8 build/ndbit6/sam_ba_monitor.o
+ .text          0x0000000000000000        0x0 build/ndbit6/uart_driver.o
+ .data          0x0000000000000000        0x0 build/ndbit6/uart_driver.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/uart_driver.o
+ .text.uart_get_sercom_index
+                0x0000000000000000       0x2c build/ndbit6/uart_driver.o
+ .text.uart_basic_init
+                0x0000000000000000       0x58 build/ndbit6/uart_driver.o
+ .text.uart_disable
+                0x0000000000000000       0x10 build/ndbit6/uart_driver.o
+ .text.uart_write_byte
+                0x0000000000000000        0xc build/ndbit6/uart_driver.o
+ .text.uart_read_byte
+                0x0000000000000000       0x28 build/ndbit6/uart_driver.o
+ .text.uart_write_buffer_polled
+                0x0000000000000000       0x20 build/ndbit6/uart_driver.o
+ .text.uart_read_buffer_polled
+                0x0000000000000000       0x3c build/ndbit6/uart_driver.o
+ .rodata        0x0000000000000000       0x10 build/ndbit6/uart_driver.o
+ .bss.uart_drv_error_flag
+                0x0000000000000000        0x1 build/ndbit6/uart_driver.o
+ .debug_info    0x0000000000000000     0x265e build/ndbit6/uart_driver.o
+ .debug_abbrev  0x0000000000000000      0x2ab build/ndbit6/uart_driver.o
+ .debug_loc     0x0000000000000000      0x135 build/ndbit6/uart_driver.o
+ .debug_aranges
+                0x0000000000000000       0x50 build/ndbit6/uart_driver.o
+ .debug_ranges  0x0000000000000000       0x40 build/ndbit6/uart_driver.o
+ .debug_line    0x0000000000000000      0x325 build/ndbit6/uart_driver.o
+ .debug_str     0x0000000000000000      0xdf9 build/ndbit6/uart_driver.o
+ .comment       0x0000000000000000       0x80 build/ndbit6/uart_driver.o
+ .debug_frame   0x0000000000000000       0xb0 build/ndbit6/uart_driver.o
+ .ARM.attributes
+                0x0000000000000000       0x32 build/ndbit6/uart_driver.o
+ .text          0x0000000000000000        0x0 build/ndbit6/hid.o
+ .data          0x0000000000000000        0x0 build/ndbit6/hid.o
+ .bss           0x0000000000000000        0x0 build/ndbit6/hid.o
+ .data          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+ .bss           0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+ .text          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .data          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .bss           0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .text          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+ .data          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+ .bss           0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+ .data          0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+ .bss           0x0000000000000000        0x0 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+rom              0x0000000000000000 0x0000000000002000 xr
+ram              0x0000000020000000 0x0000000000008000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/ndbit6/flash_samd21.o
+LOAD build/ndbit6/init_samd21.o
+LOAD build/ndbit6/startup_samd21.o
+LOAD build/ndbit6/usart_sam_ba.o
+LOAD build/ndbit6/screen.o
+LOAD build/ndbit6/images.o
+LOAD build/ndbit6/utils.o
+LOAD build/ndbit6/cdc_enumerate.o
+LOAD build/ndbit6/fat.o
+LOAD build/ndbit6/main.o
+LOAD build/ndbit6/msc.o
+LOAD build/ndbit6/sam_ba_monitor.o
+LOAD build/ndbit6/uart_driver.o
+LOAD build/ndbit6/hid.o
+START GROUP
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libc_nano.a
+END GROUP
+START GROUP
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libc_nano.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libnosys.a
+END GROUP
+START GROUP
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libc_nano.a
+LOAD /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libnosys.a
+END GROUP
+                0x0000000000002000                STACK_SIZE = DEFINED (STACK_SIZE)?STACK_SIZE:DEFINED (__stack_size__)?__stack_size__:0x2000
+
+.text           0x0000000000000000     0x1ca8
+                0x0000000000000000                . = ALIGN (0x4)
+                0x0000000000000000                _sfixed = .
+ *(.vectors .vectors.*)
+ .vectors       0x0000000000000000       0xb4 build/ndbit6/startup_samd21.o
+                0x0000000000000000                exception_table
+ *(.text .text.* .gnu.linkonce.t.*)
+ .text.flash_erase_row
+                0x00000000000000b4       0x28 build/ndbit6/flash_samd21.o
+                0x00000000000000b4                flash_erase_row
+ .text.flash_erase_to_end
+                0x00000000000000dc       0x1c build/ndbit6/flash_samd21.o
+                0x00000000000000dc                flash_erase_to_end
+ .text.copy_words
+                0x00000000000000f8       0x14 build/ndbit6/flash_samd21.o
+                0x00000000000000f8                copy_words
+ .text.flash_write_words
+                0x000000000000010c       0x54 build/ndbit6/flash_samd21.o
+                0x000000000000010c                flash_write_words
+ .text.flash_write_row
+                0x0000000000000160       0x2e build/ndbit6/flash_samd21.o
+                0x0000000000000160                flash_write_row
+ *fill*         0x000000000000018e        0x2 
+ .text.gclk_sync
+                0x0000000000000190       0x10 build/ndbit6/init_samd21.o
+ .text.dfll_sync
+                0x00000000000001a0       0x10 build/ndbit6/init_samd21.o
+ .text.system_init
+                0x00000000000001b0       0xcc build/ndbit6/init_samd21.o
+                0x00000000000001b0                system_init
+ .text.SysTick_Handler
+                0x000000000000027c        0x8 build/ndbit6/init_samd21.o
+                0x000000000000027c                SysTick_Handler
+ .text.Dummy_Handler
+                0x0000000000000284        0x2 build/ndbit6/startup_samd21.o
+                0x0000000000000284                SYSCTRL_Handler
+                0x0000000000000284                AC_Handler
+                0x0000000000000284                PendSV_Handler
+                0x0000000000000284                NMI_Handler
+                0x0000000000000284                SERCOM1_Handler
+                0x0000000000000284                ADC_Handler
+                0x0000000000000284                TCC1_Handler
+                0x0000000000000284                SERCOM2_Handler
+                0x0000000000000284                TCC0_Handler
+                0x0000000000000284                RTC_Handler
+                0x0000000000000284                EIC_Handler
+                0x0000000000000284                WDT_Handler
+                0x0000000000000284                TC4_Handler
+                0x0000000000000284                USB_Handler
+                0x0000000000000284                TC3_Handler
+                0x0000000000000284                Dummy_Handler
+                0x0000000000000284                PM_Handler
+                0x0000000000000284                SVC_Handler
+                0x0000000000000284                TCC2_Handler
+                0x0000000000000284                EVSYS_Handler
+                0x0000000000000284                SERCOM3_Handler
+                0x0000000000000284                I2S_Handler
+                0x0000000000000284                NVMCTRL_Handler
+                0x0000000000000284                SERCOM0_Handler
+                0x0000000000000284                DAC_Handler
+                0x0000000000000284                PTC_Handler
+                0x0000000000000284                TC5_Handler
+                0x0000000000000284                DMAC_Handler
+ .text.HardFault_Handler
+                0x0000000000000286        0x2 build/ndbit6/startup_samd21.o
+                0x0000000000000286                HardFault_Handler
+ .text.Reset_Handler
+                0x0000000000000288       0xb0 build/ndbit6/startup_samd21.o
+                0x0000000000000288                Reset_Handler
+ .text.add_crc  0x0000000000000338       0x54 build/ndbit6/usart_sam_ba.o
+                0x0000000000000338                add_crc
+ .text.delay    0x000000000000038c       0x10 build/ndbit6/utils.o
+                0x000000000000038c                delay
+ .text.writeNum
+                0x000000000000039c       0x3c build/ndbit6/utils.o
+                0x000000000000039c                writeNum
+ .text.resetIntoApp
+                0x00000000000003d8       0x28 build/ndbit6/utils.o
+                0x00000000000003d8                resetIntoApp
+ .text.timerTick
+                0x0000000000000400       0x40 build/ndbit6/utils.o
+                0x0000000000000400                timerTick
+ .text.resetIntoBootloader
+                0x0000000000000440       0x28 build/ndbit6/utils.o
+                0x0000000000000440                resetIntoBootloader
+ .text.led_tick
+                0x0000000000000468       0x80 build/ndbit6/utils.o
+                0x0000000000000468                led_tick
+ .text.led_signal
+                0x00000000000004e8       0x2c build/ndbit6/utils.o
+                0x00000000000004e8                led_signal
+ .text.led_init
+                0x0000000000000514       0x10 build/ndbit6/utils.o
+                0x0000000000000514                led_init
+ .text.RGBLED_set_color
+                0x0000000000000524        0x2 build/ndbit6/utils.o
+                0x0000000000000524                RGBLED_set_color
+ *fill*         0x0000000000000526        0x2 
+ .text.AT91F_InitUSB
+                0x0000000000000528      0x108 build/ndbit6/cdc_enumerate.o
+                0x0000000000000528                AT91F_InitUSB
+ .text.USB_ReadCore
+                0x0000000000000630       0xe0 build/ndbit6/cdc_enumerate.o
+                0x0000000000000630                USB_ReadCore
+ .text.USB_Read
+                0x0000000000000710        0xa build/ndbit6/cdc_enumerate.o
+                0x0000000000000710                USB_Read
+ .text.USB_ReadBlocking
+                0x000000000000071a       0x22 build/ndbit6/cdc_enumerate.o
+                0x000000000000071a                USB_ReadBlocking
+ .text.USB_WriteCore
+                0x000000000000073c       0x94 build/ndbit6/cdc_enumerate.o
+                0x000000000000073c                USB_WriteCore
+ .text.USB_Write
+                0x00000000000007d0        0xa build/ndbit6/cdc_enumerate.o
+                0x00000000000007d0                USB_Write
+ *fill*         0x00000000000007da        0x2 
+ .text.sendCtrl
+                0x00000000000007dc       0x1c build/ndbit6/cdc_enumerate.o
+ .text.AT91F_USB_SendZlp
+                0x00000000000007f8       0x10 build/ndbit6/cdc_enumerate.o
+                0x00000000000007f8                AT91F_USB_SendZlp
+ .text.USB_Ok   0x0000000000000808      0x4fc build/ndbit6/cdc_enumerate.o
+                0x0000000000000808                USB_Ok
+ .text.usb_init
+                0x0000000000000d04       0x20 build/ndbit6/cdc_enumerate.o
+                0x0000000000000d04                usb_init
+ .text.cdc_write_buf
+                0x0000000000000d24        0xe build/ndbit6/cdc_enumerate.o
+                0x0000000000000d24                cdc_write_buf
+ .text.cdc_write_buf_xmd
+                0x0000000000000d32        0xe build/ndbit6/cdc_enumerate.o
+                0x0000000000000d32                cdc_write_buf_xmd
+ .text.cdc_read_buf
+                0x0000000000000d40       0x1e build/ndbit6/cdc_enumerate.o
+                0x0000000000000d40                cdc_read_buf
+ .text.cdc_read_buf_xmd
+                0x0000000000000d5e       0x22 build/ndbit6/cdc_enumerate.o
+                0x0000000000000d5e                cdc_read_buf_xmd
+ .text.padded_memcpy
+                0x0000000000000d80       0x20 build/ndbit6/fat.o
+                0x0000000000000d80                padded_memcpy
+ .text.read_block
+                0x0000000000000da0      0x170 build/ndbit6/fat.o
+                0x0000000000000da0                read_block
+ .text.write_block
+                0x0000000000000f10       0xe8 build/ndbit6/fat.o
+                0x0000000000000f10                write_block
+ .text.startup.main
+                0x0000000000000ff8      0x13c build/ndbit6/main.o
+                0x0000000000000ff8                main
+ .text.udi_msc_clear_sense
+                0x0000000000001134       0x1c build/ndbit6/msc.o
+ .text.handover_flash
+                0x0000000000001150       0x34 build/ndbit6/msc.o
+ .text.try_read_cbw
+                0x0000000000001184       0x2c build/ndbit6/msc.o
+                0x0000000000001184                try_read_cbw
+ .text.udi_msc_csw_send
+                0x00000000000011b0       0x14 build/ndbit6/msc.o
+                0x00000000000011b0                udi_msc_csw_send
+ .text.udi_msc_csw_process
+                0x00000000000011c4       0x38 build/ndbit6/msc.o
+ .text.udi_msc_data_send
+                0x00000000000011fc       0x6c build/ndbit6/msc.o
+ .text.udi_msc_spc_mode_sense
+                0x0000000000001268       0x70 build/ndbit6/msc.o
+ .text.udi_msc_sbc_trans
+                0x00000000000012d8       0xc4 build/ndbit6/msc.o
+ .text.process_msc
+                0x000000000000139c      0x14c build/ndbit6/msc.o
+                0x000000000000139c                process_msc
+ .text.handoverPrep
+                0x00000000000014e8       0x24 build/ndbit6/msc.o
+                0x00000000000014e8                handoverPrep
+ .text.handover
+                0x000000000000150c       0xe4 build/ndbit6/msc.o
+ .text.call_applet
+                0x00000000000015f0       0x24 build/ndbit6/sam_ba_monitor.o
+                0x00000000000015f0                call_applet
+ .text.put_uint32
+                0x0000000000001614       0x16 build/ndbit6/sam_ba_monitor.o
+                0x0000000000001614                put_uint32
+ *fill*         0x000000000000162a        0x2 
+ .text.sam_ba_monitor_run
+                0x000000000000162c      0x258 build/ndbit6/sam_ba_monitor.o
+                0x000000000000162c                sam_ba_monitor_run
+ .text.recv_hf2
+                0x0000000000001884       0x56 build/ndbit6/hid.o
+                0x0000000000001884                recv_hf2
+ .text.send_hf2
+                0x00000000000018da       0x46 build/ndbit6/hid.o
+                0x00000000000018da                send_hf2
+ .text.send_hf2_response
+                0x0000000000001920       0x14 build/ndbit6/hid.o
+                0x0000000000001920                send_hf2_response
+ .text.process_core
+                0x0000000000001934       0xfc build/ndbit6/hid.o
+                0x0000000000001934                process_core
+ .text.process_hid
+                0x0000000000001a30       0x28 build/ndbit6/hid.o
+                0x0000000000001a30                process_hid
+ .text.hidHandoverLoop
+                0x0000000000001a58       0x24 build/ndbit6/hid.o
+                0x0000000000001a58                hidHandoverLoop
+ .text          0x0000000000001a7c       0x14 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+                0x0000000000001a7c                __gnu_thumb1_case_uqi
+ .text.memcpy   0x0000000000001a90       0x12 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+                0x0000000000001a90                memcpy
+ .text.memset   0x0000000000001aa2       0x10 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+                0x0000000000001aa2                memset
+ .text          0x0000000000001ab2        0xe /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+                0x0000000000001ab2                strlen
+ *(.glue_7t)
+ .glue_7t       0x0000000000001ac0        0x0 linker stubs
+ *(.glue_7)
+ .glue_7        0x0000000000001ac0        0x0 linker stubs
+ *(.rodata .rodata* .gnu.linkonce.r.*)
+ .rodata        0x0000000000001ac0       0x10 build/ndbit6/cdc_enumerate.o
+ .rodata.devDescriptor
+                0x0000000000001ad0       0x12 build/ndbit6/cdc_enumerate.o
+                0x0000000000001ad0                devDescriptor
+ *fill*         0x0000000000001ae2        0x2 
+ .rodata.hidDescriptor
+                0x0000000000001ae4       0x21 build/ndbit6/cdc_enumerate.o
+                0x0000000000001ae4                hidDescriptor
+ .rodata.str1.1
+                0x0000000000001b05       0x10 build/ndbit6/cdc_enumerate.o
+ *fill*         0x0000000000001b15        0x3 
+ .rodata.string_descriptors
+                0x0000000000001b18       0x10 build/ndbit6/cdc_enumerate.o
+ .rodata.BootBlock
+                0x0000000000001b28       0x3e build/ndbit6/fat.o
+ .rodata.indexFile
+                0x0000000000001b66       0x6f build/ndbit6/fat.o
+                0x0000000000001b66                indexFile
+ *fill*         0x0000000000001bd5        0x3 
+ .rodata.info   0x0000000000001bd8       0x30 build/ndbit6/fat.o
+ .rodata.infoUf2File
+                0x0000000000001c08       0x57 build/ndbit6/fat.o
+                0x0000000000001c08                infoUf2File
+ .rodata        0x0000000000001c5f        0xc build/ndbit6/msc.o
+ .rodata.process_msc.str1.1
+                0x0000000000001c6b        0x7 build/ndbit6/msc.o
+ .rodata.fullVersion
+                0x0000000000001c6b       0x2a build/ndbit6/sam_ba_monitor.o
+ .rodata.sam_ba_monitor_run.str1.1
+                0x0000000000001c95       0x10 build/ndbit6/sam_ba_monitor.o
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+                0x0000000000001ca8                . = ALIGN (0x4)
+ *fill*         0x0000000000001ca5        0x3 
+ *(.init)
+                0x0000000000001ca8                . = ALIGN (0x4)
+                0x0000000000001ca8                __preinit_array_start = .
+ *(.preinit_array)
+                0x0000000000001ca8                __preinit_array_end = .
+                0x0000000000001ca8                . = ALIGN (0x4)
+                0x0000000000001ca8                __init_array_start = .
+ *(SORT(.init_array.*))
+ *(.init_array)
+                0x0000000000001ca8                __init_array_end = .
+                0x0000000000001ca8                . = ALIGN (0x4)
+ *crtbegin.o(.ctors)
+ *(EXCLUDE_FILE(*crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ *crtend.o(.ctors)
+                0x0000000000001ca8                . = ALIGN (0x4)
+                0x0000000000001ca8                _efixed = .
+                [!provide]                        PROVIDE (__exidx_start, .)
+
+.vfp11_veneer   0x0000000000001ca8        0x0
+ .vfp11_veneer  0x0000000000001ca8        0x0 linker stubs
+
+.v4_bx          0x0000000000001ca8        0x0
+ .v4_bx         0x0000000000001ca8        0x0 linker stubs
+
+.iplt           0x0000000000001ca8        0x0
+ .iplt          0x0000000000001ca8        0x0 build/ndbit6/flash_samd21.o
+
+.igot.plt       0x0000000000001ca8        0x0
+ .igot.plt      0x0000000000001ca8        0x0 build/ndbit6/flash_samd21.o
+
+.rel.dyn        0x0000000000001ca8        0x0
+ .rel.iplt      0x0000000000001ca8        0x0 build/ndbit6/flash_samd21.o
+
+.ARM.exidx
+ *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+                [!provide]                        PROVIDE (__exidx_end, .)
+                0x0000000000001ca8                . = ALIGN (0x4)
+                0x0000000000001ca8                _etext = .
+
+.relocate       0x0000000020000000      0x1cc load address 0x0000000000001ca8
+                0x0000000020000000                . = ALIGN (0x4)
+                0x0000000020000000                _srelocate = .
+ *(.ramfunc .ramfunc.*)
+ *(.data .data.*)
+ .data.led_tick_step
+                0x0000000020000000        0x1 build/ndbit6/utils.o
+                0x0000000020000000                led_tick_step
+ .data.limit    0x0000000020000001        0x1 build/ndbit6/utils.o
+ *fill*         0x0000000020000002        0x2 
+ .data.bosDescriptor
+                0x0000000020000004       0x39 build/ndbit6/cdc_enumerate.o
+ *fill*         0x000000002000003d        0x3 
+ .data.cfgDescriptor
+                0x0000000020000040       0x99 build/ndbit6/cdc_enumerate.o
+                0x0000000020000040                cfgDescriptor
+ *fill*         0x00000000200000d9        0x3 
+ .data.hidCfgDescriptor
+                0x00000000200000dc        0x9 build/ndbit6/cdc_enumerate.o
+                0x00000000200000dc                hidCfgDescriptor
+ *fill*         0x00000000200000e5        0x3 
+ .data.line_coding
+                0x00000000200000e8        0x8 build/ndbit6/cdc_enumerate.o
+ .data.msOS20Descriptor
+                0x00000000200000f0       0xaa build/ndbit6/cdc_enumerate.o
+ .data.udi_msc_csw
+                0x000000002000019a        0xd build/ndbit6/msc.o
+ *fill*         0x00000000200001a7        0x1 
+ .data.udi_msc_inquiry_data.12006
+                0x00000000200001a8       0x24 build/ndbit6/msc.o
+                0x00000000200001cc                . = ALIGN (0x4)
+                0x00000000200001cc                _erelocate = .
+
+.bss            0x00000000200001cc      0xc08 load address 0x0000000000001e74
+                0x00000000200001cc                . = ALIGN (0x4)
+                0x00000000200001cc                _sbss = .
+                0x00000000200001cc                _szero = .
+ *(.bss .bss.*)
+ .bss.crcCache  0x00000000200001cc      0x200 build/ndbit6/usart_sam_ba.o
+ .bss.now       0x00000000200003cc        0x4 build/ndbit6/utils.o
+ .bss.signal_end
+                0x00000000200003d0        0x4 build/ndbit6/utils.o
+ .bss.timerLow  0x00000000200003d4        0x4 build/ndbit6/utils.o
+ .bss.currentConfiguration
+                0x00000000200003d8        0x1 build/ndbit6/cdc_enumerate.o
+ .bss.serial_number
+                0x00000000200003d9       0x21 build/ndbit6/cdc_enumerate.o
+ .bss.wLength   0x00000000200003fa        0x2 build/ndbit6/cdc_enumerate.o
+ .bss.main_b_cdc_enable
+                0x00000000200003fc        0x1 build/ndbit6/main.o
+ *fill*         0x00000000200003fd        0x3 
+ .bss.block_buffer
+                0x0000000020000400      0x200 build/ndbit6/msc.o
+ .bss.sense.12029
+                0x0000000020000600       0x14 build/ndbit6/msc.o
+ .bss.udi_msc_capacity.12039
+                0x0000000020000614        0x8 build/ndbit6/msc.o
+ .bss.udi_msc_cbw
+                0x000000002000061c       0x1f build/ndbit6/msc.o
+ .bss.udi_msc_sense
+                0x000000002000063b       0x12 build/ndbit6/msc.o
+ *fill*         0x000000002000064d        0x3 
+ .bss.usbWriteState
+                0x0000000020000650       0x98 build/ndbit6/msc.o
+ .bss.b_sam_ba_interface_usart
+                0x00000000200006e8        0x1 build/ndbit6/sam_ba_monitor.o
+                0x00000000200006e8                b_sam_ba_interface_usart
+ *fill*         0x00000000200006e9        0x3 
+ .bss.src_buff_addr.11451
+                0x00000000200006ec        0x4 build/ndbit6/sam_ba_monitor.o
+ .bss.hidbufData
+                0x00000000200006f0      0x188 build/ndbit6/hid.o
+ .bss.webbufData
+                0x0000000020000878      0x188 build/ndbit6/hid.o
+ *(COMMON)
+ COMMON         0x0000000020000a00        0x8 build/ndbit6/utils.o
+                0x0000000020000a00                timerHigh
+                0x0000000020000a04                resetHorizon
+ COMMON         0x0000000020000a08      0x364 build/ndbit6/cdc_enumerate.o
+                0x0000000020000a08                ctrlOutCache
+                0x0000000020000a4c                usb_endpoint_table
+                0x0000000020000b4c                endpointCache
+ COMMON         0x0000000020000d6c       0x68 build/ndbit6/sam_ba_monitor.o
+                0x0000000020000d6c                j
+                0x0000000020000d70                length
+                0x0000000020000d74                ptr
+                0x0000000020000d78                command
+                0x0000000020000d7c                i
+                0x0000000020000d80                data
+                0x0000000020000dc4                ptr_data
+                0x0000000020000dc8                sp
+                0x0000000020000dcc                current_number
+                0x0000000020000dd0                u32tmp
+                0x0000000020000dd4                . = ALIGN (0x4)
+                0x0000000020000dd4                _ebss = .
+                0x0000000020000dd4                _ezero = .
+
+.stack          0x0000000020000dd4     0x2004 load address 0x0000000000002a7c
+                0x0000000020000dd8                . = ALIGN (0x8)
+ *fill*         0x0000000020000dd4        0x4 
+                0x0000000020000dd8                _sstack = .
+                0x0000000020002dd8                . = (. + STACK_SIZE)
+ *fill*         0x0000000020000dd8     0x2000 
+                0x0000000020002dd8                . = ALIGN (0x8)
+                0x0000000020002dd8                _estack = .
+                0x0000000020002dd8                . = ALIGN (0x4)
+                0x0000000020002dd8                _end = .
+                0x0000000000001ff0                _binfo_start = 0x1ff0
+
+.binfo          0x0000000000001ff0       0x10
+ *(.binfo)
+ .binfo         0x0000000000001ff0       0x10 build/ndbit6/msc.o
+                0x0000000000001ff0                binfo
+OUTPUT(build/ndbit6/bootloader-ndbit6-v3.7.0-55-gce8a392.elf elf32-littlearm)
+
+.debug_info     0x0000000000000000    0x1818b
+ .debug_info    0x0000000000000000      0xfa5 build/ndbit6/flash_samd21.o
+ .debug_info    0x0000000000000fa5     0x232f build/ndbit6/init_samd21.o
+ .debug_info    0x00000000000032d4     0x35cc build/ndbit6/startup_samd21.o
+ .debug_info    0x00000000000068a0     0x3d09 build/ndbit6/usart_sam_ba.o
+ .debug_info    0x000000000000a5a9     0x1235 build/ndbit6/utils.o
+ .debug_info    0x000000000000b7de     0x4431 build/ndbit6/cdc_enumerate.o
+ .debug_info    0x000000000000fc0f      0xfca build/ndbit6/fat.o
+ .debug_info    0x0000000000010bd9     0x1c90 build/ndbit6/main.o
+ .debug_info    0x0000000000012869     0x38d5 build/ndbit6/msc.o
+ .debug_info    0x000000000001613e      0xe02 build/ndbit6/sam_ba_monitor.o
+ .debug_info    0x0000000000016f40     0x124b build/ndbit6/hid.o
+
+.debug_abbrev   0x0000000000000000     0x26ee
+ .debug_abbrev  0x0000000000000000      0x2b8 build/ndbit6/flash_samd21.o
+ .debug_abbrev  0x00000000000002b8      0x32a build/ndbit6/init_samd21.o
+ .debug_abbrev  0x00000000000005e2      0x25b build/ndbit6/startup_samd21.o
+ .debug_abbrev  0x000000000000083d      0x487 build/ndbit6/usart_sam_ba.o
+ .debug_abbrev  0x0000000000000cc4      0x366 build/ndbit6/utils.o
+ .debug_abbrev  0x000000000000102a      0x485 build/ndbit6/cdc_enumerate.o
+ .debug_abbrev  0x00000000000014af      0x30a build/ndbit6/fat.o
+ .debug_abbrev  0x00000000000017b9      0x35d build/ndbit6/main.o
+ .debug_abbrev  0x0000000000001b16      0x4ca build/ndbit6/msc.o
+ .debug_abbrev  0x0000000000001fe0      0x380 build/ndbit6/sam_ba_monitor.o
+ .debug_abbrev  0x0000000000002360      0x38e build/ndbit6/hid.o
+
+.debug_loc      0x0000000000000000     0x283e
+ .debug_loc     0x0000000000000000      0x3b9 build/ndbit6/flash_samd21.o
+ .debug_loc     0x00000000000003b9       0x78 build/ndbit6/init_samd21.o
+ .debug_loc     0x0000000000000431       0x2b build/ndbit6/startup_samd21.o
+ .debug_loc     0x000000000000045c      0x7e9 build/ndbit6/usart_sam_ba.o
+ .debug_loc     0x0000000000000c45       0xed build/ndbit6/utils.o
+ .debug_loc     0x0000000000000d32      0xb0e build/ndbit6/cdc_enumerate.o
+ .debug_loc     0x0000000000001840      0x4a7 build/ndbit6/fat.o
+ .debug_loc     0x0000000000001ce7       0x6e build/ndbit6/main.o
+ .debug_loc     0x0000000000001d55      0x4a0 build/ndbit6/msc.o
+ .debug_loc     0x00000000000021f5      0x1b7 build/ndbit6/sam_ba_monitor.o
+ .debug_loc     0x00000000000023ac      0x492 build/ndbit6/hid.o
+
+.debug_aranges  0x0000000000000000      0x390
+ .debug_aranges
+                0x0000000000000000       0x48 build/ndbit6/flash_samd21.o
+ .debug_aranges
+                0x0000000000000048       0x38 build/ndbit6/init_samd21.o
+ .debug_aranges
+                0x0000000000000080       0x30 build/ndbit6/startup_samd21.o
+ .debug_aranges
+                0x00000000000000b0       0x88 build/ndbit6/usart_sam_ba.o
+ .debug_aranges
+                0x0000000000000138       0x68 build/ndbit6/utils.o
+ .debug_aranges
+                0x00000000000001a0       0x98 build/ndbit6/cdc_enumerate.o
+ .debug_aranges
+                0x0000000000000238       0x30 build/ndbit6/fat.o
+ .debug_aranges
+                0x0000000000000268       0x20 build/ndbit6/main.o
+ .debug_aranges
+                0x0000000000000288       0x80 build/ndbit6/msc.o
+ .debug_aranges
+                0x0000000000000308       0x40 build/ndbit6/sam_ba_monitor.o
+ .debug_aranges
+                0x0000000000000348       0x48 build/ndbit6/hid.o
+
+.debug_ranges   0x0000000000000000      0x5b0
+ .debug_ranges  0x0000000000000000       0xa0 build/ndbit6/flash_samd21.o
+ .debug_ranges  0x00000000000000a0       0x48 build/ndbit6/init_samd21.o
+ .debug_ranges  0x00000000000000e8       0x20 build/ndbit6/startup_samd21.o
+ .debug_ranges  0x0000000000000108       0x78 build/ndbit6/usart_sam_ba.o
+ .debug_ranges  0x0000000000000180       0x78 build/ndbit6/utils.o
+ .debug_ranges  0x00000000000001f8       0xd8 build/ndbit6/cdc_enumerate.o
+ .debug_ranges  0x00000000000002d0       0xf8 build/ndbit6/fat.o
+ .debug_ranges  0x00000000000003c8       0x28 build/ndbit6/main.o
+ .debug_ranges  0x00000000000003f0       0xd8 build/ndbit6/msc.o
+ .debug_ranges  0x00000000000004c8       0x60 build/ndbit6/sam_ba_monitor.o
+ .debug_ranges  0x0000000000000528       0x88 build/ndbit6/hid.o
+
+.debug_line     0x0000000000000000     0x2848
+ .debug_line    0x0000000000000000      0x301 build/ndbit6/flash_samd21.o
+ .debug_line    0x0000000000000301      0x307 build/ndbit6/init_samd21.o
+ .debug_line    0x0000000000000608      0x21c build/ndbit6/startup_samd21.o
+ .debug_line    0x0000000000000824      0x495 build/ndbit6/usart_sam_ba.o
+ .debug_line    0x0000000000000cb9      0x382 build/ndbit6/utils.o
+ .debug_line    0x000000000000103b      0x5ac build/ndbit6/cdc_enumerate.o
+ .debug_line    0x00000000000015e7      0x372 build/ndbit6/fat.o
+ .debug_line    0x0000000000001959      0x31b build/ndbit6/main.o
+ .debug_line    0x0000000000001c74      0x52f build/ndbit6/msc.o
+ .debug_line    0x00000000000021a3      0x35a build/ndbit6/sam_ba_monitor.o
+ .debug_line    0x00000000000024fd      0x34b build/ndbit6/hid.o
+
+.debug_str      0x0000000000000000     0x3e5f
+ .debug_str     0x0000000000000000      0x735 build/ndbit6/flash_samd21.o
+                                        0x818 (size before relaxing)
+ .debug_str     0x0000000000000735      0x6da build/ndbit6/init_samd21.o
+                                        0xe8e (size before relaxing)
+ .debug_str     0x0000000000000e0f      0xed1 build/ndbit6/startup_samd21.o
+                                       0x135f (size before relaxing)
+ .debug_str     0x0000000000001ce0      0xc48 build/ndbit6/usart_sam_ba.o
+                                       0x13e3 (size before relaxing)
+ .debug_str     0x0000000000002928       0xc3 build/ndbit6/utils.o
+                                        0x883 (size before relaxing)
+ .debug_str     0x00000000000029eb      0x423 build/ndbit6/cdc_enumerate.o
+                                       0x162e (size before relaxing)
+ .debug_str     0x0000000000002e0e      0x29f build/ndbit6/fat.o
+                                        0x8f1 (size before relaxing)
+ .debug_str     0x00000000000030ad      0x12e build/ndbit6/main.o
+                                        0xbd8 (size before relaxing)
+ .debug_str     0x00000000000031db      0x9dc build/ndbit6/msc.o
+                                       0x18b5 (size before relaxing)
+ .debug_str     0x0000000000003bb7       0xa9 build/ndbit6/sam_ba_monitor.o
+                                        0x7ab (size before relaxing)
+ .debug_str     0x0000000000003c60      0x1ff build/ndbit6/hid.o
+                                        0x8dc (size before relaxing)
+
+.comment        0x0000000000000000       0x7f
+ .comment       0x0000000000000000       0x7f build/ndbit6/flash_samd21.o
+                                         0x80 (size before relaxing)
+ .comment       0x000000000000007f       0x80 build/ndbit6/init_samd21.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/startup_samd21.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/usart_sam_ba.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/utils.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/cdc_enumerate.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/fat.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/main.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/msc.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/sam_ba_monitor.o
+ .comment       0x000000000000007f       0x80 build/ndbit6/hid.o
+
+.ARM.attributes
+                0x0000000000000000       0x30
+ .ARM.attributes
+                0x0000000000000000       0x32 build/ndbit6/flash_samd21.o
+ .ARM.attributes
+                0x0000000000000032       0x32 build/ndbit6/init_samd21.o
+ .ARM.attributes
+                0x0000000000000064       0x32 build/ndbit6/startup_samd21.o
+ .ARM.attributes
+                0x0000000000000096       0x32 build/ndbit6/usart_sam_ba.o
+ .ARM.attributes
+                0x00000000000000c8       0x32 build/ndbit6/utils.o
+ .ARM.attributes
+                0x00000000000000fa       0x32 build/ndbit6/cdc_enumerate.o
+ .ARM.attributes
+                0x000000000000012c       0x32 build/ndbit6/fat.o
+ .ARM.attributes
+                0x000000000000015e       0x32 build/ndbit6/main.o
+ .ARM.attributes
+                0x0000000000000190       0x32 build/ndbit6/msc.o
+ .ARM.attributes
+                0x00000000000001c2       0x32 build/ndbit6/sam_ba_monitor.o
+ .ARM.attributes
+                0x00000000000001f4       0x32 build/ndbit6/hid.o
+ .ARM.attributes
+                0x0000000000000226       0x1e /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+ .ARM.attributes
+                0x0000000000000244       0x2c /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .ARM.attributes
+                0x0000000000000270       0x2c /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+ .ARM.attributes
+                0x000000000000029c       0x1c /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+
+.debug_frame    0x0000000000000000      0x938
+ .debug_frame   0x0000000000000000       0xb0 build/ndbit6/flash_samd21.o
+ .debug_frame   0x00000000000000b0       0x68 build/ndbit6/init_samd21.o
+ .debug_frame   0x0000000000000118       0x4c build/ndbit6/startup_samd21.o
+ .debug_frame   0x0000000000000164      0x184 build/ndbit6/usart_sam_ba.o
+ .debug_frame   0x00000000000002e8       0xd0 build/ndbit6/utils.o
+ .debug_frame   0x00000000000003b8      0x1d0 build/ndbit6/cdc_enumerate.o
+ .debug_frame   0x0000000000000588       0x68 build/ndbit6/fat.o
+ .debug_frame   0x00000000000005f0       0x34 build/ndbit6/main.o
+ .debug_frame   0x0000000000000624      0x174 build/ndbit6/msc.o
+ .debug_frame   0x0000000000000798       0x98 build/ndbit6/sam_ba_monitor.o
+ .debug_frame   0x0000000000000830       0xc0 build/ndbit6/hid.o
+ .debug_frame   0x00000000000008f0       0x28 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+ .debug_frame   0x0000000000000918       0x20 /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+
+Cross Reference Table
+
+Symbol                                            File
+AC_Handler                                        build/ndbit6/startup_samd21.o
+ADC_Handler                                       build/ndbit6/startup_samd21.o
+AT91F_InitUSB                                     build/ndbit6/cdc_enumerate.o
+AT91F_USB_SendZlp                                 build/ndbit6/cdc_enumerate.o
+DAC_Handler                                       build/ndbit6/startup_samd21.o
+DMAC_Handler                                      build/ndbit6/startup_samd21.o
+Dummy_Handler                                     build/ndbit6/startup_samd21.o
+EIC_Handler                                       build/ndbit6/startup_samd21.o
+EVSYS_Handler                                     build/ndbit6/startup_samd21.o
+HardFault_Handler                                 build/ndbit6/startup_samd21.o
+I2S_Handler                                       build/ndbit6/startup_samd21.o
+NMI_Handler                                       build/ndbit6/startup_samd21.o
+NVMCTRL_Handler                                   build/ndbit6/startup_samd21.o
+PM_Handler                                        build/ndbit6/startup_samd21.o
+PTC_Handler                                       build/ndbit6/startup_samd21.o
+PendSV_Handler                                    build/ndbit6/startup_samd21.o
+RGBLED_set_color                                  build/ndbit6/utils.o
+                                                  build/ndbit6/sam_ba_monitor.o
+                                                  build/ndbit6/main.o
+RTC_Handler                                       build/ndbit6/startup_samd21.o
+Reset_Handler                                     build/ndbit6/startup_samd21.o
+SERCOM0_Handler                                   build/ndbit6/startup_samd21.o
+SERCOM1_Handler                                   build/ndbit6/startup_samd21.o
+SERCOM2_Handler                                   build/ndbit6/startup_samd21.o
+SERCOM3_Handler                                   build/ndbit6/startup_samd21.o
+SVC_Handler                                       build/ndbit6/startup_samd21.o
+SYSCTRL_Handler                                   build/ndbit6/startup_samd21.o
+SysTick_Handler                                   build/ndbit6/init_samd21.o
+TC3_Handler                                       build/ndbit6/startup_samd21.o
+TC4_Handler                                       build/ndbit6/startup_samd21.o
+TC5_Handler                                       build/ndbit6/startup_samd21.o
+TCC0_Handler                                      build/ndbit6/startup_samd21.o
+TCC1_Handler                                      build/ndbit6/startup_samd21.o
+TCC2_Handler                                      build/ndbit6/startup_samd21.o
+USB_Handler                                       build/ndbit6/startup_samd21.o
+USB_Ok                                            build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/msc.o
+                                                  build/ndbit6/main.o
+USB_Read                                          build/ndbit6/cdc_enumerate.o
+USB_ReadBlocking                                  build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/msc.o
+USB_ReadCore                                      build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+USB_Write                                         build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/msc.o
+USB_WriteCore                                     build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+WDT_Handler                                       build/ndbit6/startup_samd21.o
+__gnu_thumb1_case_uqi                             /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/thumb/v6-m/libgcc.a(_thumb1_case_uqi.o)
+                                                  build/ndbit6/hid.o
+_erelocate                                        build/ndbit6/startup_samd21.o
+_estack                                           build/ndbit6/startup_samd21.o
+_etext                                            build/ndbit6/startup_samd21.o
+_ezero                                            build/ndbit6/startup_samd21.o
+_sfixed                                           build/ndbit6/startup_samd21.o
+_srelocate                                        build/ndbit6/startup_samd21.o
+_szero                                            build/ndbit6/startup_samd21.o
+add_crc                                           build/ndbit6/usart_sam_ba.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/sam_ba_monitor.o
+arrowLogo                                         build/ndbit6/images.o
+b_sam_ba_interface_usart                          build/ndbit6/sam_ba_monitor.o
+b_sharp_received                                  build/ndbit6/usart_sam_ba.o
+binfo                                             build/ndbit6/msc.o
+buffer_rx_usart                                   build/ndbit6/usart_sam_ba.o
+buffer_tx_usart                                   build/ndbit6/usart_sam_ba.o
+call_applet                                       build/ndbit6/sam_ba_monitor.o
+cdc_is_rx_ready                                   build/ndbit6/cdc_enumerate.o
+cdc_read_buf                                      build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/sam_ba_monitor.o
+cdc_read_buf_xmd                                  build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/sam_ba_monitor.o
+cdc_write_buf                                     build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/sam_ba_monitor.o
+cdc_write_buf_xmd                                 build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/sam_ba_monitor.o
+cfgDescriptor                                     build/ndbit6/cdc_enumerate.o
+command                                           build/ndbit6/sam_ba_monitor.o
+copy_words                                        build/ndbit6/flash_samd21.o
+                                                  build/ndbit6/hid.o
+ctrlOutCache                                      build/ndbit6/cdc_enumerate.o
+current_number                                    build/ndbit6/sam_ba_monitor.o
+data                                              build/ndbit6/sam_ba_monitor.o
+delay                                             build/ndbit6/utils.o
+                                                  build/ndbit6/main.o
+devDescriptor                                     build/ndbit6/cdc_enumerate.o
+endpointCache                                     build/ndbit6/cdc_enumerate.o
+error_timeout                                     build/ndbit6/usart_sam_ba.o
+exception_table                                   build/ndbit6/startup_samd21.o
+fileLogo                                          build/ndbit6/images.o
+flash_erase_row                                   build/ndbit6/flash_samd21.o
+flash_erase_to_end                                build/ndbit6/flash_samd21.o
+                                                  build/ndbit6/sam_ba_monitor.o
+flash_write                                       build/ndbit6/flash_samd21.o
+flash_write_row                                   build/ndbit6/flash_samd21.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/fat.o
+flash_write_words                                 build/ndbit6/flash_samd21.o
+                                                  build/ndbit6/sam_ba_monitor.o
+font8                                             build/ndbit6/images.o
+g_interrupt_enabled                               build/ndbit6/init_samd21.o
+getPacket                                         build/ndbit6/usart_sam_ba.o
+handoverPrep                                      build/ndbit6/msc.o
+                                                  build/ndbit6/hid.o
+hidCfgDescriptor                                  build/ndbit6/cdc_enumerate.o
+hidDescriptor                                     build/ndbit6/cdc_enumerate.o
+hidHandoverLoop                                   build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+i                                                 build/ndbit6/sam_ba_monitor.o
+idx_rx_read                                       build/ndbit6/usart_sam_ba.o
+idx_rx_write                                      build/ndbit6/usart_sam_ba.o
+idx_tx_read                                       build/ndbit6/usart_sam_ba.o
+idx_tx_write                                      build/ndbit6/usart_sam_ba.o
+indexFile                                         build/ndbit6/fat.o
+infoUf2File                                       build/ndbit6/fat.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+j                                                 build/ndbit6/sam_ba_monitor.o
+led_init                                          build/ndbit6/utils.o
+                                                  build/ndbit6/main.o
+led_signal                                        build/ndbit6/utils.o
+                                                  build/ndbit6/sam_ba_monitor.o
+                                                  build/ndbit6/msc.o
+led_tick                                          build/ndbit6/utils.o
+                                                  build/ndbit6/init_samd21.o
+led_tick_step                                     build/ndbit6/utils.o
+                                                  build/ndbit6/main.o
+length                                            build/ndbit6/sam_ba_monitor.o
+main                                              build/ndbit6/main.o
+                                                  build/ndbit6/startup_samd21.o
+memcpy                                            /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memcpy-stub.o)
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/sam_ba_monitor.o
+                                                  build/ndbit6/msc.o
+                                                  build/ndbit6/fat.o
+                                                  build/ndbit6/cdc_enumerate.o
+memset                                            /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-memset.o)
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+                                                  build/ndbit6/fat.o
+                                                  build/ndbit6/cdc_enumerate.o
+mode_of_transfer                                  build/ndbit6/usart_sam_ba.o
+mscReset                                          build/ndbit6/msc.o
+msc_reset                                         build/ndbit6/msc.o
+padded_memcpy                                     build/ndbit6/fat.o
+                                                  build/ndbit6/msc.o
+panic                                             build/ndbit6/utils.o
+pendriveLogo                                      build/ndbit6/images.o
+process_core                                      build/ndbit6/hid.o
+process_hid                                       build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+process_msc                                       build/ndbit6/msc.o
+                                                  build/ndbit6/sam_ba_monitor.o
+ptr                                               build/ndbit6/sam_ba_monitor.o
+ptr_data                                          build/ndbit6/sam_ba_monitor.o
+put_uint32                                        build/ndbit6/sam_ba_monitor.o
+read_block                                        build/ndbit6/fat.o
+                                                  build/ndbit6/msc.o
+recv_hf2                                          build/ndbit6/hid.o
+resetHorizon                                      build/ndbit6/utils.o
+                                                  build/ndbit6/main.o
+                                                  build/ndbit6/fat.o
+resetIntoApp                                      build/ndbit6/utils.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+resetIntoBootloader                               build/ndbit6/utils.o
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/msc.o
+reset_ep                                          build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/msc.o
+sam_ba_monitor_init                               build/ndbit6/sam_ba_monitor.o
+sam_ba_monitor_run                                build/ndbit6/sam_ba_monitor.o
+                                                  build/ndbit6/main.o
+sam_ba_putdata_term                               build/ndbit6/sam_ba_monitor.o
+send_hf2                                          build/ndbit6/hid.o
+send_hf2_response                                 build/ndbit6/hid.o
+size_of_data                                      build/ndbit6/usart_sam_ba.o
+sp                                                build/ndbit6/sam_ba_monitor.o
+stall_ep                                          build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/msc.o
+strlen                                            /Users/hailinjiang/opt/armDev/gcc-arm-none-eabi-6-2017-q2-update/bin/../lib/gcc/arm-none-eabi/6.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/libg_nano.a(lib_a-strlen.o)
+                                                  build/ndbit6/hid.o
+                                                  build/ndbit6/fat.o
+                                                  build/ndbit6/cdc_enumerate.o
+system_init                                       build/ndbit6/init_samd21.o
+                                                  build/ndbit6/main.o
+timerHigh                                         build/ndbit6/utils.o
+                                                  build/ndbit6/main.o
+                                                  build/ndbit6/fat.o
+timerTick                                         build/ndbit6/utils.o
+                                                  build/ndbit6/cdc_enumerate.o
+try_read_cbw                                      build/ndbit6/msc.o
+u32tmp                                            build/ndbit6/sam_ba_monitor.o
+uart_basic_init                                   build/ndbit6/uart_driver.o
+                                                  build/ndbit6/usart_sam_ba.o
+uart_disable                                      build/ndbit6/uart_driver.o
+                                                  build/ndbit6/usart_sam_ba.o
+uart_drv_error_flag                               build/ndbit6/uart_driver.o
+uart_get_sercom_index                             build/ndbit6/uart_driver.o
+                                                  build/ndbit6/usart_sam_ba.o
+uart_read_buffer_polled                           build/ndbit6/uart_driver.o
+uart_read_byte                                    build/ndbit6/uart_driver.o
+                                                  build/ndbit6/usart_sam_ba.o
+uart_write_buffer_polled                          build/ndbit6/uart_driver.o
+uart_write_byte                                   build/ndbit6/uart_driver.o
+                                                  build/ndbit6/usart_sam_ba.o
+udd_ep_set_halt                                   build/ndbit6/msc.o
+udi_msc_csw_send                                  build/ndbit6/msc.o
+usart_close                                       build/ndbit6/usart_sam_ba.o
+usart_getc                                        build/ndbit6/usart_sam_ba.o
+usart_getdata                                     build/ndbit6/usart_sam_ba.o
+usart_getdata_xmd                                 build/ndbit6/usart_sam_ba.o
+usart_is_rx_ready                                 build/ndbit6/usart_sam_ba.o
+usart_open                                        build/ndbit6/usart_sam_ba.o
+usart_putc                                        build/ndbit6/usart_sam_ba.o
+usart_putdata                                     build/ndbit6/usart_sam_ba.o
+usart_putdata_xmd                                 build/ndbit6/usart_sam_ba.o
+usart_readc                                       build/ndbit6/usart_sam_ba.o
+usart_sharp_received                              build/ndbit6/usart_sam_ba.o
+usb_endpoint_table                                build/ndbit6/cdc_enumerate.o
+usb_init                                          build/ndbit6/cdc_enumerate.o
+                                                  build/ndbit6/main.o
+writeNum                                          build/ndbit6/utils.o
+                                                  build/ndbit6/sam_ba_monitor.o
+                                                  build/ndbit6/cdc_enumerate.o
+write_block                                       build/ndbit6/fat.o
+                                                  build/ndbit6/msc.o
