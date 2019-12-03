@@ -1,5 +1,5 @@
 #include "uf2.h"
-#define SYSCTRL_FUSES_OSC32K_CAL_ADDR   (NVMCTRL_OTP4 + 4)
+#define SYSCTRL_FUSES_OSC32K_CAL_ADDR   (NVMCTRL_OTP5 + 4)
 #define SYSCTRL_FUSES_OSC32K_CAL_Pos   6
 #define 	SYSCTRL_FUSES_OSC32K_ADDR   SYSCTRL_FUSES_OSC32K_CAL_ADDR
 #define 	SYSCTRL_FUSES_OSC32K_Pos   SYSCTRL_FUSES_OSC32K_CAL_Pos
@@ -17,16 +17,21 @@ static void dfll_sync(void) {
         ;
 }
 
-#define NVM_SW_CALIB_DFLL48M_COARSE_VAL   58
-#define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
+#define NVM_SW_CALIB_DFLL48M_COARSE_VAL   26
+//#define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
 
 
 void system_init(void) {
 
   NVMCTRL->CTRLB.bit.RWS = 1;
 
-  NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS_DUAL ; // two wait states
-
+  //NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS_DUAL ; // two wait states
+/*
+  PM->INTFLAG.reg = PM_INTFLAG_PLRDY; //clear flag
+  PM->PLCFG.reg |= PM_PLCFG_PLSEL_PL2 ;	// must set to highest performance level
+  while ( (PM->INTFLAG.reg & PM_INTFLAG_PLRDY) != PM_INTFLAG_PLRDY );
+  PM->INTFLAG.reg = PM_INTFLAG_PLRDY; //clear flag
+*/
 #if defined(CRYSTALLESS)
   /* Note that after reset, the L21 starts with the OSC16M set to 4MHz, NOT the DFLL@48MHz as stated in some documentation. */
   /* Modify FSEL value of OSC16M to have 8MHz */
@@ -36,7 +41,7 @@ void system_init(void) {
   //GCLK->GENDIV.reg = GCLK_GENDIV_ID(2);  // Read GENERATOR_ID - GCLK_GEN_2
   //gclk_sync();
 
-  GCLK->GENCTRL->reg = GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
+  GCLK->GENCTRL[3u].reg = GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
   gclk_sync();
 
   // Turn on DFLL with USB correction and sync to internal 8 mhz oscillator
@@ -69,6 +74,11 @@ void system_init(void) {
   OSCCTRL->DFLLCTRL.reg |= OSCCTRL_DFLLCTRL_ENABLE ;
   dfll_sync();
 
+  /*GCLK->GENCTRL[0u].reg =
+        GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
+    gclk_sync();
+
+
   GCLK_PCHCTRL_Type clkctrl={0};
   uint16_t temp;
   clkctrl.bit.GEN = 2;
@@ -76,6 +86,7 @@ void system_init(void) {
   clkctrl.bit.CHEN = 1;
   clkctrl.bit.WRTLOCK = 0;
   GCLK->PCHCTRL->reg = (clkctrl.reg | temp);
+*/
 
 #else
 
@@ -88,7 +99,7 @@ void system_init(void) {
     //GCLK->GENDIV.reg = GCLK_GENDIV_ID(1);
     //gclk_sync();
 
-    GCLK->GENCTRL.reg = GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_SRC_XOSC32K | GCLK_GENCTRL_GENEN;
+    GCLK->GENCTRL[0u].reg = GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_SRC_XOSC32K | GCLK_GENCTRL_GENEN;
     gclk_sync();
 
     GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(0) | GCLK_CLKCTRL_GEN_GCLK1 | GCLK_CLKCTRL_CLKEN;
@@ -112,11 +123,10 @@ void system_init(void) {
 
     // Configure DFLL48M as source for GCLK_GEN 0
     //GCLK->GENDIV.reg = GCLK_GENDIV_ID(0);
-    //gclk_sync();
 
     // Add GCLK_GENCTRL_OE below to output GCLK0 on the SWCLK pin.
-    GCLK->GENCTRL->reg =
-        GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
+    GCLK->GENCTRL[0u].reg =
+        GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
     gclk_sync();
 
     SysTick_Config(1000);
