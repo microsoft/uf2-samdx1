@@ -79,35 +79,33 @@ void system_init(void) {
 
 #else
 
-    OSCCTRL->XOSC32K.reg =
-        SYSCTRL_XOSC32K_STARTUP(4) | SYSCTRL_XOSC32K_XTALEN | SYSCTRL_XOSC32K_EN32K | OSC32KCTRL_XOSC32K_EN1K;
-    OSCCTRL->XOSC32K.bit.ENABLE = 1;
-    while ((OSC32KCTRL->STATUS.reg & OSC32KCTRL_STATUS_XOSC32KRDY) == 0) /* Wait for oscillator stabilization */
-        ;
-
-    //GCLK->GENDIV.reg = GCLK_GENDIV_ID(1);
-    //gclk_sync();
-
-    GCLK->GENCTRL[0u].reg = GCLK_GENCTRL_ID(2) | GCLK_GENCTRL_SRC_XOSC32K | GCLK_GENCTRL_GENEN;
+    OSCCTRL->XOSCCTRL.reg = (OSCCTRL_XOSCCTRL_STARTUP( 8u ) | OSCCTRL_XOSCCTRL_GAIN( 4u ) | OSCCTRL_XOSCCTRL_XTALEN | OSCCTRL_XOSCCTRL_ENABLE) ;	// startup time is 8ms
+    while ( (OSCCTRL->STATUS.reg & OSCCTRL_STATUS_XOSCRDY) == 0 );	/* Wait for oscillator stabilization */
+    
+    OSCCTRL->XOSCCTRL.reg |= OSCCTRL_XOSCCTRL_AMPGC ;	// set only after startup time
     gclk_sync();
 
-    GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(0) | GCLK_CLKCTRL_GEN_GCLK1 | GCLK_CLKCTRL_CLKEN;
+    /* Put Generic Clock Generator 1 as source for Generic Clock Multiplexer 1 (FDPLL reference) */
+    GCLK->PCHCTRL[GENERIC_CLOCK_MULTIPLEXER_FDPLL].reg = ( GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK1 );
+    while ( (GCLK->PCHCTRL[GENERIC_CLOCK_MULTIPLEXER_FDPLL].reg & GCLK_PCHCTRL_CHEN) != GCLK_PCHCTRL_CHEN );	// wait for sync
+    
+    /* Configure PLL */
+    OSCCTRL->DPLLRATIO.reg = ( OSCCTRL_DPLLRATIO_LDR(DPLLRATIO_LDR) | OSCCTRL_DPLLRATIO_LDRFRAC(DPLLRATIO_LDRFRAC) ) ;  /* set PLL multiplier */
+    dfll_sync();
+
+    OSCCTRL->DPLLCTRLB.reg = OSCCTRL_DPLLCTRLB_REFCLK(2) ;  /* select GCLK input */
+
+    OSCCTRL->DPLLPRESC.reg = 0;
+    dfll_sync();
+
+    OSCCTRL->DPLLCTRLA.reg = OSCCTRL_DPLLCTRLA_ENABLE ;
+    dfll_sync();
+
+    while ( (OSCCTRL->DPLLSTATUS.reg & OSCCTRL_DPLLSTATUS_CLKRDY) != OSCCTRL_DPLLSTATUS_CLKRDY );
+
+    /* Switch Generic Clock Generator 0 to PLL. Divide by two and the CPU will run at 48MHz */
+    GCLK->GENCTRL[0u].reg = ( GCLK_GENCTRL_DIV(2) | GCLK_GENCTRL_SRC_DPLL96M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN );
     gclk_sync();
-
-    OSCCTRL->DFLLCTRL.bit.ONDEMAND = 0;
-    dfll_sync();
-
-    OSCCTRL->DFLLMUL.reg = OSCCTRL_DFLLMUL_CSTEP(31) | SYSCTRL_DFLLMUL_FSTEP(511) |
-                           OSCCTRL_DFLLMUL_MUL((CPU_FREQUENCY / (32 * 1024)));
-    dfll_sync();
-
-    OSCCTRL->DFLLCTRL.reg |=
-        OSCCTRL_DFLLCTRL_MODE | OSCCTRL_DFLLCTRL_WAITLOCK | OSCCTRL_DFLLCTRL_QLDIS;
-    dfll_sync();
-
-    OSCCTRL->DFLLCTRL.reg |= OSCCTRL_DFLLCTRL_ENABLE;
-    dfll_sync();
-
 #endif
 
     // Add GCLK_GENCTRL_OE below to output GCLK0 on the SWCLK pin.
