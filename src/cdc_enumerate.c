@@ -499,8 +499,8 @@ void AT91F_InitUSB(void) {
     while (GCLK->STATUS.bit.SYNCBUSY) {}
     #endif
     #ifdef SAML21
-    GCLK->PCHCTRL[4].reg = ( GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0 );
-    while ( (GCLK->PCHCTRL[4].reg & GCLK_PCHCTRL_CHEN) == 0 );        // wait for sync
+    GCLK->PCHCTRL[USB_GCLK_ID].reg = ( GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0 );
+    while ( (GCLK->PCHCTRL[USB_GCLK_ID].reg & GCLK_PCHCTRL_CHEN) == 0 );        // wait for sync
     #endif
     #ifdef SAMD51
     GCLK->PCHCTRL[USB_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK0_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);

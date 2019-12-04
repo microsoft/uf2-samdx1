@@ -1,7 +1,7 @@
 #ifndef BOARD_CONFIG_H
 #define BOARD_CONFIG_H
 
-#define __SAML21J18B__ 1
+#define CRYSTALLESS    1
 
 #define VENDOR_NAME "Electronic Cats"
 #define PRODUCT_NAME "BASTWAN Board"

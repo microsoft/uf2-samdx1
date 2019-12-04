@@ -18,37 +18,33 @@ static void dfll_sync(void) {
 }
 
 #define NVM_SW_CALIB_DFLL48M_COARSE_VAL   26
-//#define NVM_SW_CALIB_DFLL48M_FINE_VAL     64
 
 
 void system_init(void) {
 
-  NVMCTRL->CTRLB.bit.RWS = 1;
+  //NVMCTRL->CTRLB.bit.RWS = 1;
 
-  //NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS_DUAL ; // two wait states
-/*
+  NVMCTRL->CTRLB.bit.MANW = 1;
+
+  NVMCTRL->CTRLB.reg |= NVMCTRL_CTRLB_RWS_DUAL ; // two wait states
+  
+  /* Turn on the digital interface clock */
+  MCLK->APBAMASK.reg |= MCLK_APBAMASK_GCLK ;
+
   PM->INTFLAG.reg = PM_INTFLAG_PLRDY; //clear flag
   PM->PLCFG.reg |= PM_PLCFG_PLSEL_PL2 ;	// must set to highest performance level
   while ( (PM->INTFLAG.reg & PM_INTFLAG_PLRDY) != PM_INTFLAG_PLRDY );
   PM->INTFLAG.reg = PM_INTFLAG_PLRDY; //clear flag
-*/
+
+  GCLK->CTRLA.reg = GCLK_CTRLA_SWRST ;
+
+  while ( (GCLK->CTRLA.reg & GCLK_CTRLA_SWRST) && (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_MASK) );	/* Wait for reset to complete */
+
 #if defined(CRYSTALLESS)
-  /* Note that after reset, the L21 starts with the OSC16M set to 4MHz, NOT the DFLL@48MHz as stated in some documentation. */
-  /* Modify FSEL value of OSC16M to have 8MHz */
-  OSCCTRL->OSC16MCTRL.bit.FSEL = OSCCTRL_OSC16MCTRL_FSEL_8_Val;
-
-  /* Configure OSC8M as source for GCLK_GEN 2 */
-  //GCLK->GENDIV.reg = GCLK_GENDIV_ID(2);  // Read GENERATOR_ID - GCLK_GEN_2
-  //gclk_sync();
-
-  GCLK->GENCTRL[3u].reg = GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
-  gclk_sync();
-
-  // Turn on DFLL with USB correction and sync to internal 8 mhz oscillator
-  OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_ENABLE;
+  
+  OSCCTRL->DFLLCTRL.bit.ONDEMAND = 0 ;
   dfll_sync();
 
-  OSCCTRL_DFLLVAL_Type dfllval_conf = {0};
   uint32_t coarse =( *((uint32_t *)(NVMCTRL_OTP5)
 		       + (NVM_SW_CALIB_DFLL48M_COARSE_VAL / 32))
 		     >> (NVM_SW_CALIB_DFLL48M_COARSE_VAL % 32))
@@ -56,37 +52,30 @@ void system_init(void) {
   if (coarse == 0x3f) {
     coarse = 0x1f;
   }
-  dfllval_conf.bit.COARSE  = coarse;
-  // TODO(tannewt): Load this from a well known flash location so that it can be
-  // calibrated during testing.
-  dfllval_conf.bit.FINE    = 0x1ff;
+
+  OSCCTRL->DFLLVAL.reg = OSCCTRL_DFLLVAL_COARSE(coarse) | OSCCTRL_DFLLVAL_FINE(512);
 
   OSCCTRL->DFLLMUL.reg = OSCCTRL_DFLLMUL_CSTEP( 0x1f / 4 ) | // Coarse step is 31, half of the max value
                          OSCCTRL_DFLLMUL_FSTEP( 10 ) |
-                         48000;
-  OSCCTRL->DFLLVAL.reg = dfllval_conf.reg;
-  OSCCTRL->DFLLCTRL.reg = 0;
-  dfll_sync();
-  OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_CCDIS |
+                         OSCCTRL_DFLLMUL_MUL(48000);
+ 
+  OSCCTRL->DFLLCTRL.reg = OSCCTRL_DFLLCTRL_USBCRM | /* USB correction */
                           OSCCTRL_DFLLCTRL_MODE |  /* Closed loop mode */
-                          OSCCTRL_DFLLCTRL_USBCRM; /* USB correction */
+                          OSCCTRL_DFLLCTRL_CCDIS;
   dfll_sync();
+  
+  /* Enable the DFLL */
   OSCCTRL->DFLLCTRL.reg |= OSCCTRL_DFLLCTRL_ENABLE ;
   dfll_sync();
 
-  /*GCLK->GENCTRL[0u].reg =
-        GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
-    gclk_sync();
+  /* Switch Generic Clock Generator 0 to DFLL48M. CPU will run at 48MHz */
+  GCLK->GENCTRL[0u].reg = GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_DFLL48M | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN;
+  gclk_sync();
 
-
-  GCLK_PCHCTRL_Type clkctrl={0};
-  uint16_t temp;
-  clkctrl.bit.GEN = 2;
-  temp = GCLK->PCHCTRL->reg;
-  clkctrl.bit.CHEN = 1;
-  clkctrl.bit.WRTLOCK = 0;
-  GCLK->PCHCTRL->reg = (clkctrl.reg | temp);
-*/
+  /* Note that after reset, the L21 starts with the OSC16M set to 4MHz, NOT the DFLL@48MHz as stated in some documentation. */
+  /* Modify FSEL value of OSC16M to have 8MHz */
+  OSCCTRL->OSC16MCTRL.bit.FSEL = OSCCTRL_OSC16MCTRL_FSEL_8_Val;
+  gclk_sync();
 
 #else
 
@@ -121,13 +110,11 @@ void system_init(void) {
 
 #endif
 
-    // Configure DFLL48M as source for GCLK_GEN 0
-    //GCLK->GENDIV.reg = GCLK_GENDIV_ID(0);
-
     // Add GCLK_GENCTRL_OE below to output GCLK0 on the SWCLK pin.
-    GCLK->GENCTRL[0u].reg =
-        GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN;
+    GCLK->GENCTRL[3u].reg = (GCLK_GENCTRL_DIV(1) | GCLK_GENCTRL_SRC_OSC16M | GCLK_GENCTRL_GENEN);
     gclk_sync();
+
+    MCLK->CPUDIV.reg  = MCLK_CPUDIV_CPUDIV_DIV1 ;
 
     SysTick_Config(1000);
 
