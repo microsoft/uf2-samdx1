@@ -7,8 +7,8 @@
 #define PRODUCT_NAME "BASTWAN Board"
 #define VOLUME_LABEL "BASTWAN"
 
-#define USB_VID 0x03EB   // Atmel
-#define USB_PID 0x2402   // Generic HID device
+#define USB_VID 0x1209
+#define USB_PID 0xBAB7  
 
 #define BOARD_ID "BAST-WAN"
 
