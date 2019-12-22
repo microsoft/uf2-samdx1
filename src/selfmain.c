@@ -117,16 +117,18 @@ void setBootProt(int v) {
     // 'endWriteIndex' is initialized with bytes that should be written.
     // N.B. every itearation write a quadword, hence may be written more bytes than requested
     const size_t endWriteIndex = format ? sizeof(fuses) : repair_fuses ? sizeof(newfuses) : 4;
+
+#if defined(SAMD21)
+    uint32_t *const qwBlockAddr = (uint32_t *const)NVM_FUSE_ADDR;
+    memcpy(qwBlockAddr, fuses, endWriteIndex);
+    exec_cmdaddr(NVMCTRL_CTRLA_CMD_WAP, qwBlockAddr);
+#elif defined(SAMD51)
     for (int i = 0; i < endWriteIndex; i += 16) {
         uint32_t *const qwBlockAddr = (uint32_t *const)(NVM_FUSE_ADDR + i);
         memcpy(qwBlockAddr, &fuses[i], 16);
-        #if defined(SAMD21)
-            exec_cmdaddr(NVMCTRL_CTRLA_CMD_WAP, qwBlockAddr);
-        #elif defined(SAMD51)
-            exec_cmdaddr(NVMCTRL_CTRLB_CMD_WQW, qwBlockAddr);
-        #endif
+	exec_cmdaddr(NVMCTRL_CTRLB_CMD_WQW, qwBlockAddr);
     }
-
+#endif
     resetIntoApp();
 }
 
