@@ -8,3 +8,7 @@ node_modules
 scripts/clean-ifaces/*.plist
 .vscode/c_cpp_properties.json
 TAGS
+
+**/.DS_STORE
+**/*.iml
+**/.idea
