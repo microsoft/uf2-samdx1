@@ -1,3 +1,7 @@
+#if !defined(__SAMD21__)
+#error "update_bootloader*.ino is only available for SAMD21 boards"
+#endif
+
 #define BOOTLOADER_K 8
 
 static uint16_t crcCache[256];

@@ -207,8 +207,11 @@ drop-board: all
 	mkdir -p build/drop/$(BOARD)
 	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/
 	cp $(EXECUTABLE) build/drop/$(BOARD)/
+# .ino works only for SAMD21 right now; suppress for SAMD51
+ifeq ($(CHIP_FAMILY),samd21)
 	cp $(SELF_EXECUTABLE_INO) build/drop/$(BOARD)/
 	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/
+endif
 
 drop-pkg:
 	mv build/drop build/uf2-samd21-$(UF2_VERSION_BASE)
