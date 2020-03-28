@@ -8,7 +8,7 @@
 volatile bool g_interrupt_enabled = true;
 
 // SAMD51 starts at 1MHz by default.
-uint32_t current_cpu_frequency = 1000000;
+uint32_t current_cpu_frequency_MHz = 1;
 
 static void gclk_sync(void) {
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY)
@@ -129,7 +129,7 @@ void system_init(void) {
     // Set the port mux mask for odd processor pin numbers, PA30 = 30 is even number, PMUXE = PMUX Even
     // PORT->Group[0].PMUX[30 / 2].reg |= PORT_PMUX_PMUXE_H;
 
-    current_cpu_frequency = 48000000;
+    current_cpu_frequency_MHz = 48;
 
 }
 

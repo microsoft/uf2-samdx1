@@ -1,7 +1,7 @@
 #include "uf2.h"
 
 // SAMD51 starts at 48MHz by default.
-uint32_t current_cpu_frequency = 48000000;
+uint32_t current_cpu_frequency_MHz = 48;
 
 void system_init(void) {
     // Automatic wait states.
@@ -82,7 +82,7 @@ void system_init(void) {
     MCLK->CPUDIV.reg = MCLK_CPUDIV_DIV_DIV1;
 
     SysTick_Config(1000);
-    current_cpu_frequency = 48000000;
+    current_cpu_frequency_MHz = 48;
 }
 
 void SysTick_Handler(void) { LED_TICK(); }
