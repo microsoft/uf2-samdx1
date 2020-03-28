@@ -1,3 +1,7 @@
+#if defined(__SAMD51__)
+#error "update_bootloader*.ino is not available for SAMD51 boards"
+#endif
+
 #define BOOTLOADER_K 8
 
 static uint16_t crcCache[256];
