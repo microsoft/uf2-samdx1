@@ -260,6 +260,8 @@ void padded_memcpy(char *dst, const char *src, int len);
 
 void resetIntoApp(void);
 void resetIntoBootloader(void);
+uint32_t current_cpu_frequency;
+volatile bool led_tick_on;
 void system_init(void);
 
 #define LED_TICK led_tick

@@ -68,7 +68,7 @@
  *
  * Applications compiled to be executed along with the bootloader will start at
  * 0x2000 (samd21) or 0x4000 (samd51)
- * The bootloader doesn't changes the VTOR register, application code is 
+ * The bootloader doesn't changes the VTOR register, application code is
  * taking care of this.
  *
  */
@@ -166,7 +166,30 @@ int main(void) {
 #elif defined(SAMD51)
     WDT->CTRLA.reg = 0;
     while(WDT->SYNCBUSY.reg) {}
+
+    // Enable 2.7V brownout detection. The default fuse value is 1.7
+    // Set brownout detection to ~2.7V. Default from factory is 1.7V,
+    // which is too low for proper operation of external SPI flash chips (they are 2.7-3.6V).
+    // Also without this higher level, the SAMD51 will write zeros to flash intermittently.
+    // Disable while changing level.
+    SUPC->BOD33.bit.ENABLE = 0;
+    SUPC->BOD33.bit.LEVEL = 200;  // 2.7V: 1.5V + LEVEL * 6mV.
+    // Don't reset right now.
+    SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_NONE_Val;
+    SUPC->BOD33.bit.ENABLE = 1; // enable brown-out detection
+
+    while (SUPC->STATUS.bit.BOD33DET) {
+        // Wait for voltage to rise above BOD33 value.
+    }
+    // Wait 100ms for voltage to stabilize.
+    delay(100);
+
+    // Now enable reset if voltage falls below minimum.
+    SUPC->BOD33.bit.ENABLE = 0;
+    SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_RESET_Val;
+    SUPC->BOD33.bit.ENABLE = 1;
 #endif
+
 
 #if USB_VID == 0x239a && USB_PID == 0x0013     // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.

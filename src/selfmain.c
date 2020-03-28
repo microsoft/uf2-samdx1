@@ -37,7 +37,7 @@ uint8_t pageBuf[FLASH_ROW_SIZE];
 
 void setBootProt(int v) {
     #if defined(SAMD21)
-        uint32_t fuses[2], 
+        uint32_t fuses[2],
                  newfuses[2];
         while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY)) {
         }

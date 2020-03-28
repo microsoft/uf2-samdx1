@@ -5,16 +5,23 @@ static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
 
 void delay(uint32_t ms) {
-// SAMD21 starts up at 1mhz by default.
+// These multipliers were determined empirically and are only approximate.
+// SAMD21 starts up at 1MHz by default.
 #ifdef SAMD21
-    ms <<= 8;
+    uint32_t count = ms * 167 * (current_cpu_frequency / 1000000);
 #endif
-// SAMD51 starts up at 48mhz by default.
 #ifdef SAMD51
-    ms <<= 12;
+    // SAMD51 starts up at 48MHz by default, and we set the clock to
+    // 48MHz, so we don't need to adjust for current_cpu_frequency.
+    uint32_t count = ms * 6000;
+    // On SAMD51, before the 1ms SysTick interrupts are set up, the
+    // timing loop will run about twice as fast, so double the count.
+    if (led_tick_on) {
+        count *= 2;
+    }
 #endif
-    for (int i = 1; i < ms; ++i) {
-        asm("nop");
+    for (int i = 1; i < count; ++i) {
+        asm volatile("");
     }
 }
 
@@ -108,9 +115,11 @@ void logval(const char *lbl, uint32_t v) {
 static uint32_t now;
 static uint32_t signal_end;
 int8_t led_tick_step = 1;
+volatile bool led_tick_on = false;
 static uint8_t limit = 200;
 
 void led_tick() {
+    led_tick_on = true;
     now++;
     if (signal_end) {
         if (now == signal_end - 1000) {
