@@ -4,6 +4,13 @@
 
 #define BOOTLOADER_K 8
 
+// Error indications:
+// 2 quick flashes repeated forever: Flash page size wrong
+// 3: checksum error
+// 4: write verify failed
+//
+// Success: 5 slower flashes, then switch to BOOT drive
+
 static uint16_t crcCache[256];
 
 #define CRC16POLY 0x1021
