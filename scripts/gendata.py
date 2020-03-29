@@ -28,7 +28,7 @@ selfdata_c_path = os.path.join(os.path.dirname(bin_name), "selfdata.c")
 with open(selfdata_c_path, "w") as output:
     output.write("#include <stdint.h>\n")
     output.write("const uint8_t bootloader[{}] ".format(bootloader_size) +
-                 "__attribute__ ((aligned (4))) = {")
+                 "__attribute__ ((aligned (4))) = {\n")
     crcs = []
     crc = 0
     for row in range(bootloader_size / 16):
