@@ -290,6 +290,12 @@ void delay(uint32_t ms);
 void hidHandoverLoop(int ep);
 void handoverPrep(void);
 
+// Useful for debugging.
+#ifdef BLINK_DEBUG
+void blink_n(uint32_t pin, uint32_t n, uint32_t interval);
+void blink_n_forever(uint32_t pin, uint32_t n, uint32_t interval);
+#endif
+
 #define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)
 #define STATIC_ASSERT(e) enum { CONCAT_0(_static_assert_, __LINE__) = 1 / ((e) ? 1 : 0) }

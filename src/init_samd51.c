@@ -82,7 +82,8 @@ void system_init(void) {
     MCLK->CPUDIV.reg = MCLK_CPUDIV_DIV_DIV1;
 
     SysTick_Config(1000);
-    current_cpu_frequency_MHz = 48;
+    // No change from initial frequency.
+    // current_cpu_frequency_MHz = 48;
 }
 
 void SysTick_Handler(void) { LED_TICK(); }

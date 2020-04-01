@@ -29,11 +29,11 @@
 
 /**
  * --------------------
- * SAM-BA Implementation on SAMD21
+ * SAM-BA Implementation on SAMD21 and SAMD51
  * --------------------
  * Requirements to use SAM-BA :
  *
- * Supported communication interfaces :
+ * Supported communication interfaces (SAMD21):
  * --------------------
  *
  * SERCOM5 : RX:PB23 TX:PB22
@@ -68,8 +68,6 @@
  *
  * Applications compiled to be executed along with the bootloader will start at
  * 0x2000 (samd21) or 0x4000 (samd51)
- * The bootloader doesn't changes the VTOR register, application code is
- * taking care of this.
  *
  */
 
@@ -110,7 +108,7 @@ static void check_start_application(void) {
         if (RESET_CONTROLLER->RCAUSE.bit.POR || *DBL_TAP_PTR != DBL_TAP_MAGIC_QUICK_BOOT) {
             // the second tap on reset will go into app
             *DBL_TAP_PTR = DBL_TAP_MAGIC_QUICK_BOOT;
-            // this will be cleared after succesful USB enumeration
+            // this will be cleared after successful USB enumeration
             // this is around 1.5s
             resetHorizon = timerHigh + 50;
             return;
@@ -150,7 +148,7 @@ extern char _etext;
 extern char _end;
 
 /**
- *  \brief SAMD21 SAM-BA Main loop.
+ *  \brief  SAM-BA Main loop.
  *  \return Unused (ANSI-C compatibility).
  */
 int main(void) {
@@ -181,15 +179,23 @@ int main(void) {
     while (SUPC->STATUS.bit.BOD33DET) {
         // Wait for voltage to rise above BOD33 value.
     }
-    // Wait 100ms for voltage to stabilize.
-    delay(100);
+
+    // If we are starting from a power-on or a brownout,
+    // wait for the voltage to stabilize. Don't do this on an
+    // external reset because it interferes with the timing of double-click.
+    // "BODVDD" means BOD33.
+    if (RSTC->RCAUSE.bit.POR || RSTC->RCAUSE.bit.BODVDD) {
+        do {
+            // Check again in 100ms.
+            delay(100);
+        } while (SUPC->STATUS.bit.BOD33DET);
+    }
 
     // Now enable reset if voltage falls below minimum.
     SUPC->BOD33.bit.ENABLE = 0;
     SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_RESET_Val;
     SUPC->BOD33.bit.ENABLE = 1;
 #endif
-
 
 #if USB_VID == 0x239a && USB_PID == 0x0013     // Adafruit Metro M0
     // Delay a bit so SWD programmer can have time to attach.

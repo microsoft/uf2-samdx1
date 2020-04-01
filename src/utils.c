@@ -4,26 +4,47 @@
 static uint32_t timerLow;
 uint32_t timerHigh, resetHorizon;
 
-void delay(uint32_t ms) {
-// These multipliers were determined empirically and are only approximate.
-// SAMD21 starts up at 1MHz by default.
+void __attribute__ ((noinline)) delay(uint32_t ms) {
+    // These multipliers were determined empirically and are only approximate.
+    // After the pulsing LED is enabled (led_tick_on), the multipliers need to change
+    // due to the interrupt overhead of the pulsing.
+    // SAMD21 starts up at 1MHz by default.
 #ifdef SAMD21
-    uint32_t count = ms * 167 * (current_cpu_frequency_MHz);
+    uint32_t count = ms * (current_cpu_frequency_MHz) * (led_tick_on ? 149: 167);
 #endif
 #ifdef SAMD51
     // SAMD51 starts up at 48MHz by default, and we set the clock to
     // 48MHz, so we don't need to adjust for current_cpu_frequency_MHz.
-    uint32_t count = ms * 6000;
-    // On SAMD51, before the 1ms SysTick interrupts are set up, the
-    // timing loop will run about twice as fast, so double the count.
-    if (led_tick_on) {
-        count *= 2;
-    }
+    uint32_t count = ms * (led_tick_on ? 6353 : 6826);
 #endif
-    for (int i = 1; i < count; ++i) {
+    for (uint32_t i = 1; i < count; ++i) {
         asm volatile("");
     }
 }
+
+// Useful for debugging.
+// PIN_PA19 is D12 on Metro M0, D11 on Metro M4
+#ifdef BLINK_DEBUG
+void blink_n(uint32_t pin, uint32_t n, uint32_t interval) {
+    // Start out off.
+    PINOP(pin, DIRSET);
+    PINOP(pin, OUTCLR);
+    delay(interval);
+    for (int i = 0; i < n; ++i) {
+        PINOP(pin, OUTSET);
+        delay(interval);
+        PINOP(pin, OUTCLR);
+        delay(interval);
+    }
+}
+
+void blink_n_forever(uint32_t pin, uint32_t n, uint32_t interval) {
+    while(1) {
+        blink_n(pin, n, interval);
+        delay(interval*5);
+    }
+}
+#endif
 
 void timerTick(void) {
     if (timerLow-- == 0) {
