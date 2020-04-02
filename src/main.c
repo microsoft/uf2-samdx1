@@ -170,15 +170,19 @@ int main(void) {
     // which is too low for proper operation of external SPI flash chips (they are 2.7-3.6V).
     // Also without this higher level, the SAMD51 will write zeros to flash intermittently.
     // Disable while changing level.
+
     SUPC->BOD33.bit.ENABLE = 0;
+    while (!SUPC->STATUS.bit.B33SRDY) {}  // Wait for BOD33 to synchronize.
     SUPC->BOD33.bit.LEVEL = 200;  // 2.7V: 1.5V + LEVEL * 6mV.
     // Don't reset right now.
     SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_NONE_Val;
     SUPC->BOD33.bit.ENABLE = 1; // enable brown-out detection
 
-    while (SUPC->STATUS.bit.BOD33DET) {
-        // Wait for voltage to rise above BOD33 value.
-    }
+    // Wait for BOD33 peripheral to be ready.
+    while (!SUPC->STATUS.bit.BOD33RDY) {}
+
+    // Wait for voltage to rise above BOD33 value.
+    while (SUPC->STATUS.bit.BOD33DET) {}
 
     // If we are starting from a power-on or a brownout,
     // wait for the voltage to stabilize. Don't do this on an
@@ -193,6 +197,7 @@ int main(void) {
 
     // Now enable reset if voltage falls below minimum.
     SUPC->BOD33.bit.ENABLE = 0;
+    while (!SUPC->STATUS.bit.B33SRDY) {}  // Wait for BOD33 to synchronize.
     SUPC->BOD33.bit.ACTION = SUPC_BOD33_ACTION_RESET_Val;
     SUPC->BOD33.bit.ENABLE = 1;
 #endif
