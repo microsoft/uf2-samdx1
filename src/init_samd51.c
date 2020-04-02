@@ -1,12 +1,15 @@
 #include "uf2.h"
 
+// SAMD51 starts at 48MHz by default.
+uint32_t current_cpu_frequency_MHz = 48;
+
 void system_init(void) {
-    /* Set 1 Flash Wait State for 48MHz */
-    NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_RWS(0);
+    // Automatic wait states.
+    NVMCTRL->CTRLA.bit.AUTOWS = 1;
 
     // Output GCLK0 to Metro M4 D5. This way we can see if/when we mess it up.
-    //PORT->Group[1].PINCFG[14].bit.PMUXEN = true;
-    //PORT->Group[1].PMUX[7].bit.PMUXE = 12;
+    // PORT->Group[1].PINCFG[14].bit.PMUXEN = true;
+    // PORT->Group[1].PMUX[7].bit.PMUXE = 12;
 
     /* Software reset the module to ensure it is re-initialized correctly */
     /* Note: Due to synchronization, there is a delay from writing CTRL.SWRST until the reset is complete.
@@ -79,6 +82,8 @@ void system_init(void) {
     MCLK->CPUDIV.reg = MCLK_CPUDIV_DIV_DIV1;
 
     SysTick_Config(1000);
+    // No change from initial frequency.
+    // current_cpu_frequency_MHz = 48;
 }
 
 void SysTick_Handler(void) { LED_TICK(); }

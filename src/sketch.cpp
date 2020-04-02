@@ -1,4 +1,15 @@
+#if defined(__SAMD51__)
+#error "update_bootloader*.ino is not available for SAMD51 boards"
+#endif
+
 #define BOOTLOADER_K 8
+
+// Error indications:
+// 2 quick flashes repeated forever: Flash page size wrong
+// 3: checksum error
+// 4: write verify failed
+//
+// Success: 5 slower flashes, then switch to BOOT drive
 
 static uint16_t crcCache[256];
 
@@ -23,8 +34,6 @@ uint16_t add_crc(uint8_t ch, unsigned short crc0) {
     return ((crc0 << 8) ^ crcCache[((crc0 >> 8) ^ ch) & 0xff]) & 0xffff;
 }
 
-uint8_t pageBuf[FLASH_ROW_SIZE];
-
 #define NVM_USER_MEMORY ((volatile uint16_t *)NVMCTRL_USER)
 
 static inline void wait_ready(void) {
@@ -32,37 +41,35 @@ static inline void wait_ready(void) {
     }
 }
 
-void flash_erase_row(uint32_t *dst) {
-    wait_ready();
-    NVMCTRL->STATUS.reg = NVMCTRL_STATUS_MASK;
-
-    // Execute "ER" Erase Row
-    NVMCTRL->ADDR.reg = (uint32_t)dst / 2;
-    NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_ER;
+void exec_cmd(uint32_t cmd, const uint32_t *addr) {
+    NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;
+    NVMCTRL->ADDR.reg = (uint32_t)addr / 2;
+    NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;
     wait_ready();
 }
 
-void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
-    // Set automatic page write
-    NVMCTRL->CTRLB.bit.MANW = 0;
+void flash_erase_row(uint32_t *dst) {
+    wait_ready();
+    // Execute "ER" Erase Row
+    exec_cmd(NVMCTRL_CTRLA_CMD_ER, dst);
+}
 
+void flash_write_words(uint32_t *dst, uint32_t *src, uint32_t n_words) {
     while (n_words > 0) {
         uint32_t len = min(FLASH_PAGE_SIZE >> 2, n_words);
         n_words -= len;
 
         // Execute "PBC" Page Buffer Clear
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
-        wait_ready();
+        const uint32_t* dst_start = dst;
+        exec_cmd(NVMCTRL_CTRLA_CMD_PBC, dst);
 
-        // make sure there are no other memory writes here
-        // otherwise we get lock-ups
-
-        while (len--)
+        // Write data to page buffer.
+        while (len--) {
             *dst++ = *src++;
+        }
 
         // Execute "WP" Write Page
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WP;
-        wait_ready();
+        exec_cmd(NVMCTRL_CTRLA_CMD_WP, dst_start);
     }
 }
 
@@ -71,48 +78,58 @@ void flash_write_row(uint32_t *dst, uint32_t *src) {
     flash_write_words(dst, src, FLASH_ROW_SIZE / 4);
 }
 
-#define exec_cmd(cmd)                                                                              \
-    do {                                                                                           \
-        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;                                                \
-        NVMCTRL->ADDR.reg = (uint32_t)NVMCTRL_USER / 2;                                            \
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | cmd;                                        \
-        while (NVMCTRL->INTFLAG.bit.READY == 0)                                                    \
-            ;                                                                                      \
-    } while (0)
-
 void setBootProt(int v) {
+    uint32_t *NVM_FUSES = (uint32_t *)NVMCTRL_AUX0_ADDRESS;
+
     uint32_t fuses[2];
 
-    while (!(NVMCTRL->INTFLAG.reg & NVMCTRL_INTFLAG_READY))
-        ;
-
-    fuses[0] = *((uint32_t *)NVMCTRL_AUX0_ADDRESS);
-    fuses[1] = *(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1);
+    fuses[0] = NVM_FUSES[0];
+    fuses[1] = NVM_FUSES[1];
 
     uint32_t bootprot = (fuses[0] & NVMCTRL_FUSES_BOOTPROT_Msk) >> NVMCTRL_FUSES_BOOTPROT_Pos;
 
-    if (bootprot == v)
+    if (bootprot == v) {
         return;
+    }
 
     fuses[0] = (fuses[0] & ~NVMCTRL_FUSES_BOOTPROT_Msk) | (v << NVMCTRL_FUSES_BOOTPROT_Pos);
 
-    NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
+    wait_ready();
+    exec_cmd(NVMCTRL_CTRLA_CMD_EAR, (uint32_t *)NVMCTRL_USER);
+    exec_cmd(NVMCTRL_CTRLA_CMD_PBC, (uint32_t *)NVMCTRL_USER);
 
-    exec_cmd(NVMCTRL_CTRLA_CMD_EAR);
-    exec_cmd(NVMCTRL_CTRLA_CMD_PBC);
+    NVM_FUSES[0] = fuses[0];
+    NVM_FUSES[1] = fuses[1];
 
-    *((uint32_t *)NVMCTRL_AUX0_ADDRESS) = fuses[0];
-    *(((uint32_t *)NVMCTRL_AUX0_ADDRESS) + 1) = fuses[1];
-
-    exec_cmd(NVMCTRL_CTRLA_CMD_WAP);
+    exec_cmd(NVMCTRL_CTRLA_CMD_WAP, (uint32_t *)NVMCTRL_USER);
 
     NVIC_SystemReset();
 }
 
-void mydelay(int ms) {
+// We can't use regular loop_delay() because it uses interrupts, which we turn off.
+void loop_delay(int ms) {
     ms <<= 13;
     while (ms--) {
         asm("nop");
+    }
+}
+
+void blink_n(int n, int interval) {
+    // Start out off.
+    digitalWrite(LED_BUILTIN, LOW);
+    loop_delay(interval);
+    for (int i = 0; i < n; ++i) {
+        digitalWrite(LED_BUILTIN, HIGH);
+        loop_delay(interval);
+        digitalWrite(LED_BUILTIN, LOW);
+        loop_delay(interval);
+    }
+}
+
+void blink_n_forever(int n, int interval) {
+    while(1) {
+        blink_n(n, interval);
+        loop_delay(interval*5);
     }
 }
 
@@ -120,51 +137,56 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    if (8 << NVMCTRL->PARAM.bit.PSZ != FLASH_PAGE_SIZE)
-        while (1) {
-        }
+    if (8 << NVMCTRL->PARAM.bit.PSZ != FLASH_PAGE_SIZE) {
+        blink_n_forever(2, 200);
+    }
+
+    NVMCTRL->CTRLB.bit.MANW = 1;
+    NVMCTRL->CTRLB.bit.CACHEDIS = 1;
 
     __disable_irq();
 
-    setBootProt(7); // 0k
+    // This will cause a reset and re-enter the program if a change was necessary.
+    // If no change was necessary we'll fall through.
+    setBootProt(7); // 0kB; disable BOOTPROT while writing.
 
     const uint8_t *ptr = bootloader;
-    int i;
 
-    for (i = 0; i < BOOTLOADER_K; ++i) {
+    for (int i = 0; i < BOOTLOADER_K; ++i) {
         int crc = 0;
         for (int j = 0; j < 1024; ++j) {
             crc = add_crc(*ptr++, crc);
         }
         if (bootloader_crcs[i] != crc) {
-            while (1) {
-            }
+            blink_n_forever(3, 200);
         }
     }
 
-    for (i = 0; i < BOOTLOADER_K * 1024; i += FLASH_ROW_SIZE) {
-        memcpy(pageBuf, &bootloader[i], FLASH_ROW_SIZE);
-        flash_write_row((uint32_t *)(void *)i, (uint32_t *)(void *)pageBuf);
+    // Writing starts at 0x0, so flash_addr can be used as an index into bootloader[].
+    for (int flash_addr = 0; flash_addr < BOOTLOADER_K * 1024; flash_addr += FLASH_ROW_SIZE) {
+        flash_write_row((uint32_t *)flash_addr, (uint32_t *)&bootloader[flash_addr]);
+        if (memcmp((const void *)flash_addr, &bootloader[flash_addr], FLASH_ROW_SIZE) != 0) {
+            // Write verify failed.
+            blink_n_forever(4, 200);
+        }
     }
 
     // re-base int vector back to bootloader, so that the flash erase below doesn't write over the
     // vectors
     SCB->VTOR = 0;
 
-    // erase first row of this updater app, so the bootloader doesn't start us again
-    flash_erase_row((uint32_t *)(void *)(BOOTLOADER_K * 1024));
+    blink_n(5, 750);
 
-    for (i = 0; i < 5; ++i) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        mydelay(100);
-        digitalWrite(LED_BUILTIN, LOW);
-        mydelay(200);
-    }
+    // Write zeros to the stack location and reset handler location so the
+    // bootloader doesn't run us a second time. We don't need to erase to write
+    // zeros. The remainder of the write unit will be set to 1s which should
+    // preserve the existing values but it's not critical.
+    uint32_t zeros[2] = {0, 0};
+    flash_write_words((uint32_t *)(BOOTLOADER_K * 1024), zeros, 2);
 
-    setBootProt(2); // 8k
+    setBootProt(2); // 8kB
 
-    while (1) {
-    }
 }
 
-void loop() {}
+void loop() {
+}

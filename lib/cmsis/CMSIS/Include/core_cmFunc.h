@@ -453,7 +453,8 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_MSP(void)
  */
 __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
 {
-  __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) : "sp");
+// : "sp" removed from clobber list to avoid gcc 9 warning.
+  __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack));
 }
 
 

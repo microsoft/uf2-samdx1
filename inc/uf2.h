@@ -260,6 +260,8 @@ void padded_memcpy(char *dst, const char *src, int len);
 
 void resetIntoApp(void);
 void resetIntoBootloader(void);
+extern uint32_t current_cpu_frequency_MHz;
+extern volatile bool led_tick_on;
 void system_init(void);
 
 #define LED_TICK led_tick
@@ -287,6 +289,12 @@ void timerTick(void);
 void delay(uint32_t ms);
 void hidHandoverLoop(int ep);
 void handoverPrep(void);
+
+// Useful for debugging.
+#ifdef BLINK_DEBUG
+void blink_n(uint32_t pin, uint32_t n, uint32_t interval);
+void blink_n_forever(uint32_t pin, uint32_t n, uint32_t interval);
+#endif
 
 #define CONCAT_1(a, b) a##b
 #define CONCAT_0(a, b) CONCAT_1(a, b)
