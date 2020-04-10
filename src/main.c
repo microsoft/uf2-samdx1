@@ -157,11 +157,39 @@ int main(void) {
         while (1) {
         }
 
-    // Disable the watchdog, in case the application set it.
 #if defined(SAMD21)
+    // If fuses have been reset to all ones, the watchdog ALWAYS-ON is
+    // set, so we can't turn off the watchdog.  Set the fuse to a
+    // reasonable value and reset. This is a mini version of the fuse
+    // reset code in selfmain.c.
+    if (((uint32_t *)NVMCTRL_AUX0_ADDRESS)[0] == 0xffffffff) {
+        // Clear any error flags.
+        NVMCTRL->STATUS.reg |= NVMCTRL_STATUS_MASK;
+        // Turn off cache and put in manual mode.
+        NVMCTRL->CTRLB.reg = NVMCTRL->CTRLB.reg | NVMCTRL_CTRLB_CACHEDIS | NVMCTRL_CTRLB_MANW;
+        // Set address to write.
+        NVMCTRL->ADDR.reg = NVMCTRL_AUX0_ADDRESS / 2;
+        // Erase auxiliary row.
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_EAR;
+	while (!(NVMCTRL->INTFLAG.bit.READY)) {}
+        // Clear page buffer.
+        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_PBC;
+	while (!(NVMCTRL->INTFLAG.bit.READY)) {}
+        // Reasonable fuse values, including 8k BOOTPROT.
+        ((uint32_t *)NVMCTRL_AUX0_ADDRESS)[0] = 0xD8E0C7FA;
+        ((uint32_t *)NVMCTRL_AUX0_ADDRESS)[1] = 0xFFFFFC5D;
+        // Write the fuses
+	NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD_WAP;
+	while (!(NVMCTRL->INTFLAG.bit.READY)) {}
+        resetIntoBootloader();
+    }
+
+    // Disable the watchdog, in case the application set it.
     WDT->CTRL.reg = 0;
     while(WDT->STATUS.bit.SYNCBUSY) {}
+
 #elif defined(SAMD51)
+    // Disable the watchdog, in case the application set it.
     WDT->CTRLA.reg = 0;
     while(WDT->SYNCBUSY.reg) {}
 
