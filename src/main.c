@@ -132,7 +132,11 @@ static void check_start_application(void) {
     }
 
     LED_MSC_OFF();
+
+#if defined(BOARD_RGBLED_CLOCK_PIN)
+    // This won't work for neopixel, because we're running at 1MHz or thereabouts...
     RGBLED_set_color(COLOR_LEAVE);
+#endif
 
     /* Rebase the Stack Pointer */
     __set_MSP(*(uint32_t *)APP_START_ADDRESS);
