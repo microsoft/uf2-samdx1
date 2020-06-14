@@ -31,7 +31,7 @@ with open(selfdata_c_path, "w") as output:
                  "__attribute__ ((aligned (4))) = {\n")
     crcs = []
     crc = 0
-    for row in range(bootloader_size / 16):
+    for row in range(bootloader_size // 16):
         # Save the crc every 1k.
         if row % (1024 / 16) == 0 and row > 0:
             crcs.append(crc)
