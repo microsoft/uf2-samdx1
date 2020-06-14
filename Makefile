@@ -170,7 +170,7 @@ $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 		 -T$(SELF_LINKER_SCRIPT) \
 		 -Wl,-Map,$(BUILD_PATH)/update-$(NAME).map -o $(BUILD_PATH)/update-$(NAME).elf $(SELF_OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/update-$(NAME).elf $(BUILD_PATH)/update-$(NAME).bin
-	python2 lib/uf2/utils/uf2conv.py -b $(BOOTLOADER_SIZE) -c -o $@ $(BUILD_PATH)/update-$(NAME).bin
+	python3 lib/uf2/utils/uf2conv.py -b $(BOOTLOADER_SIZE) -c -o $@ $(BUILD_PATH)/update-$(NAME).bin
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h) $(BUILD_PATH)/uf2_version.h
 	echo "$<"
@@ -180,7 +180,7 @@ $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
 	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.py src/sketch.cpp
-	python2 scripts/gendata.py $(BOOTLOADER_SIZE) $(EXECUTABLE)
+	python3 scripts/gendata.py $(BOOTLOADER_SIZE) $(EXECUTABLE)
 
 clean:
 	rm -rf build
