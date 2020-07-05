@@ -115,6 +115,8 @@ void usart_open() {
     clkctrl.bit.WRTLOCK = false;
     clkctrl.bit.GEN = GCLK_CLKCTRL_GEN_GCLK0_Val;
     GCLK->CLKCTRL.reg = (clkctrl.reg | temp);
+    /* Baud rate 115200 - clock 8MHz -> BAUD value-50436 */
+    uart_basic_init(BOOT_USART_MODULE, 50436, BOOT_USART_PAD_SETTINGS);
     #endif
 
     #ifdef SAMD51
@@ -122,10 +124,11 @@ void usart_open() {
     GCLK->PCHCTRL[BOOT_GCLK_ID_SLOW].reg = GCLK_PCHCTRL_GEN_GCLK3_Val | (1 << GCLK_PCHCTRL_CHEN_Pos);
 
     MCLK->BOOT_USART_MASK.reg |= BOOT_USART_BUS_CLOCK_INDEX ;
+    /* Baud rate 115200 - clock 48MHz -> BAUD value-63018 */
+    uart_basic_init(BOOT_USART_MODULE, 63018, BOOT_USART_PAD_SETTINGS);
     #endif
 
-    /* Baud rate 115200 - clock 8MHz -> BAUD value-50436 */
-    uart_basic_init(BOOT_USART_MODULE, 50436, BOOT_USART_PAD_SETTINGS);
+
 
     // Initialize flag
     b_sharp_received = false;
@@ -158,9 +161,6 @@ int usart_putc(int value) {
 
 int usart_getc(void) {
     uint16_t retval;
-    // Wait until input buffer is filled
-    while (!(usart_is_rx_ready()))
-        ;
     retval = (uint16_t)uart_read_byte(BOOT_USART_MODULE);
     // usart_read_wait(&usart_sam_ba, &retval);
     return (int)retval;
@@ -423,6 +423,13 @@ uint32_t usart_getdata_xmd(void *data, uint32_t length) {
     uint32_t b_run, nbr_of_timeout = 100;
     uint8_t sno = 0x01;
     uint32_t data_transfered = 0;
+    uint16_t crc = 0; 
+
+    for (int i =0; i < 128; i++)
+    {
+	    crc = add_crc(i, crc); // warm up crc function very slow on first run
+    }
+
 
     // Copied from legacy source code ... might need some tweaking
     uint32_t loops_per_second =
@@ -444,7 +451,10 @@ uint32_t usart_getdata_xmd(void *data, uint32_t length) {
         usart_putc('C');
         timeout = loops_per_second;
         while (!(usart_is_rx_ready()) && timeout)
+	{
             timeout--;
+	    __asm__ volatile(""); //  How to prevent GCC from optimizing out a busy wait loop
+	}
         if (timeout)
             break;
 
