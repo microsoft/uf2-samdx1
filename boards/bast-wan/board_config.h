@@ -7,8 +7,8 @@
 #define PRODUCT_NAME "BASTWAN Board"
 #define VOLUME_LABEL "BASTWAN"
 
-#define USB_VID 0x0ACE
-#define USB_PID 0x4260 
+#define USB_VID 0x04D8
+#define USB_PID 0xEB68 
 
 #define BOARD_ID "BAST-WAN"
 
