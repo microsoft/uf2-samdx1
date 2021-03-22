@@ -8,7 +8,7 @@
 #define VOLUME_LABEL "HUNTERNFC"
 
 #define USB_VID 0x1209  
-#define USB_PID 0x1337
+#define USB_PID 0x7150
 
 #define BOARD_ID "huntercat-nfc"
 
