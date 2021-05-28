@@ -18,14 +18,16 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        9. Apr 2014
- * $Revision:    V2.01
+ * $Date:        24. Nov 2014
+ * $Revision:    V2.02
  *
  * Project:      USART (Universal Synchronous Asynchronous Receiver Transmitter)
  *               Driver definitions
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.02
+ *    Corrected ARM_USART_CPOL_Pos and ARM_USART_CPHA_Pos definitions 
  *  Version 2.01
  *    Removed optional argument parameter from Signal Event
  *  Version 2.00
@@ -56,7 +58,7 @@
 
 #include "Driver_Common.h"
 
-#define ARM_USART_API_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)  /* API version */
+#define ARM_USART_API_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,02)  /* API version */
 
 
 /****** USART Control Codes *****/
@@ -105,13 +107,13 @@
 #define ARM_USART_FLOW_CONTROL_RTS_CTS      (3UL << ARM_USART_FLOW_CONTROL_Pos) ///< RTS/CTS Flow Control
 
 /*----- USART Control Codes: Mode Parameters: Clock Polarity (Synchronous mode) -----*/
-#define ARM_USART_CPOL_Pos                   17
+#define ARM_USART_CPOL_Pos                   18
 #define ARM_USART_CPOL_Msk                  (1UL << ARM_USART_CPOL_Pos)
 #define ARM_USART_CPOL0                     (0UL << ARM_USART_CPOL_Pos)         ///< CPOL = 0 (default)
 #define ARM_USART_CPOL1                     (1UL << ARM_USART_CPOL_Pos)         ///< CPOL = 1
 
 /*----- USART Control Codes: Mode Parameters: Clock Phase (Synchronous mode) -----*/
-#define ARM_USART_CPHA_Pos                   18
+#define ARM_USART_CPHA_Pos                   19
 #define ARM_USART_CPHA_Msk                  (1UL << ARM_USART_CPHA_Pos)
 #define ARM_USART_CPHA0                     (0UL << ARM_USART_CPHA_Pos)         ///< CPHA = 0 (default)
 #define ARM_USART_CPHA1                     (1UL << ARM_USART_CPHA_Pos)         ///< CPHA = 1

@@ -1,8 +1,6 @@
 #include "Driver_SPI.h"
 
-#include "RTE_Components.h"
-
-#define ARM_SPI_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 00) /* driver version */
+#define ARM_SPI_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
 static const ARM_DRIVER_VERSION DriverVersion = {
@@ -118,11 +116,9 @@ void ARM_SPI_SignalEvent(uint32_t event)
     // function body
 }
 
-// end group SPI_control
-
 // End SPI Interface
 
-ARM_DRIVER_SPI Driver_SPI1 = {
+ARM_DRIVER_SPI Driver_SPI = {
     ARM_SPI_GetVersion,
     ARM_SPI_GetCapabilities,
     ARM_SPI_Initialize,
@@ -135,4 +131,3 @@ ARM_DRIVER_SPI Driver_SPI1 = {
     ARM_SPI_Control,
     ARM_SPI_GetStatus
 };
-

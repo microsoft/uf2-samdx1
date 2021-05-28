@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------
 * Copyright (C) 2010-2014 ARM Limited. All rights reserved.
 *
-* $Date:        12. March 2014
-* $Revision: 	V1.4.4
+* $Date:        19. March 2015
+* $Revision: 	V.1.4.5
 *
 * Project: 	    CMSIS DSP Library
 * Title:	    arm_rfft_f32.c
@@ -270,11 +270,7 @@ float32_t * p, float32_t * pOut)
  * transform.
  * \par Q15 and Q31
  * The real algorithms are defined in a similar manner and utilize N/2 complex
- * transforms behind the scenes.  In the case of fixed-point data, a radix-4
- * complex transform is performed and this limits the allows sequence lengths to
- * 128, 512, and 2048 samples.
- * \par
- * TBD.  We need to document input and output order of data.
+ * transforms behind the scenes.  
  * \par
  * The complex transforms used internally include scaling to prevent fixed-point
  * overflows.  The overall scaling equals 1/(fftLen/2).

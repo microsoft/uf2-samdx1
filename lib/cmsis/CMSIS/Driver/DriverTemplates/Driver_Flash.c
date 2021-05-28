@@ -1,10 +1,6 @@
 #include "Driver_Flash.h"
 
-#define ARM_FLASH_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(1, 00) /* driver version */
-
-#ifndef DRIVER_FLASH_NUM
-#define DRIVER_FLASH_NUM         0      /* Default driver number */
-#endif
+#define ARM_FLASH_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(1, 0) /* driver version */
 
 /* Sector Information */
 #ifdef FLASH_SECTORS
@@ -17,12 +13,12 @@ static ARM_FLASH_SECTOR FLASH_SECTOR_INFO[FLASH_SECTOR_COUNT] = {
 
 /* Flash Information */
 static ARM_FLASH_INFO FlashInfo = {
-    0, //FLASH_SECTOR_INFO,
-    0, //FLASH_SECTOR_COUNT,
-    0, //FLASH_SECTOR_SIZE,
-    0, //FLASH_PAGE_SIZE,
-    0, //FLASH_PROGRAM_UNIT,
-    0  //FLASH_ERASED_VALUE
+    0, /* FLASH_SECTOR_INFO  */
+    0, /* FLASH_SECTOR_COUNT */
+    0, /* FLASH_SECTOR_SIZE  */
+    0, /* FLASH_PAGE_SIZE    */
+    0, /* FLASH_PROGRAM_UNIT */
+    0  /* FLASH_ERASED_VALUE */
 };
 
 /* Flash Status */
@@ -36,9 +32,9 @@ static const ARM_DRIVER_VERSION DriverVersion = {
 
 /* Driver Capabilities */
 static const ARM_FLASH_CAPABILITIES DriverCapabilities = {
-    0,  /* event_ready */
-    0,  /* data_width = 0:8-bit, 1:16-bit, 2:32-bit */
-    0   /* erase_chip */
+    0, /* event_ready */
+    0, /* data_width = 0:8-bit, 1:16-bit, 2:32-bit */
+    0  /* erase_chip */
 };
 
 //
@@ -106,6 +102,3 @@ ARM_FLASH_INFO * ARM_Flash_GetInfo(void)
 void ARM_Flash_SignalEvent(uint32_t event)
 {
 }
-
-
-

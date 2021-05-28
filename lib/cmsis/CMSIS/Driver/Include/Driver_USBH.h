@@ -245,7 +245,7 @@ typedef uint32_t ARM_USBH_PIPE_HANDLE;
   \fn          uint32_t ARM_USBH_PipeTransferGetResult (ARM_USBH_PIPE_HANDLE pipe_hndl)
   \brief       Get result of USB Pipe transfer.
   \param[in]   pipe_hndl  Pipe Handle
-  \return      number of successfully transfered data bytes
+  \return      number of successfully transferred data bytes
 */
 /**
   \fn          int32_t ARM_USBH_PipeTransferAbort (ARM_USBH_PIPE_HANDLE pipe_hndl)

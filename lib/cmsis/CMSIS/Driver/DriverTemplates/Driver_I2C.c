@@ -1,9 +1,6 @@
-
 #include "Driver_I2C.h"
 
-#include "RTE_Components.h"
-
-#define ARM_I2C_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 00) /* driver version */
+#define ARM_I2C_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
 static const ARM_DRIVER_VERSION DriverVersion = {
@@ -13,7 +10,7 @@ static const ARM_DRIVER_VERSION DriverVersion = {
 
 /* Driver Capabilities */
 static const ARM_I2C_CAPABILITIES DriverCapabilities = {
-    0          /* supports 10-bit addressing */
+    0  /* supports 10-bit addressing */
 };
 
 //
@@ -130,4 +127,4 @@ ARM_DRIVER_I2C Driver_I2C = {
     ARM_I2C_GetDataCount,
     ARM_I2C_Control,
     ARM_I2C_GetStatus
-}; 
+};

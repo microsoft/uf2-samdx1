@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,171 +18,155 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        14. May 2014
- * $Revision:    V2.01
+ * $Date:        17. June 2015
+ * $Revision:    V2.3
  *
  * Driver:       Driver_USBH0_HCI
- * Configured:   via RTE_Device.h configuration file 
+ * Configured:   via RTE_Device.h configuration file
  * Project:      USB Host 0 HCI Controller (EHCI) Driver for NXP LPC18xx
- * -----------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
  * Use the following configuration settings in the middleware component
  * to connect to this driver.
  *
- *   Configuration Setting                Value
- *   ---------------------                -----
+ *   Configuration Setting                  Value
+ *   ---------------------                  -----
  *   Connect to hardware via Driver_USBH# = 0
  *   USB Host controller interface        = EHCI
  * -------------------------------------------------------------------------- */
 
 /* History:
- *  Version 2.01
- *    - Moved register initialization and uninitialization to PowerControl
- *      function and removed from Initialize/Uninitialize functions
- *    - Pin configuration moved to USB_LPC18xx_USB0.c
- *  Version 2.00
- *    - Initial release for USB Host EHCI Driver API v2.0
- *  Version 1.00
- *    - Initial release
+ *  Version 2.3
+ *    PowerControl for Power OFF and Uninitialize functions made unconditional
+ *  Version 2.2
+ *    Updated in accordance with USB Device Driver
+ *  Version 2.1
+ *    Moved register initialization and uninitialization to PowerControl
+ *    function and removed from Initialize/Uninitialize functions
+ *    Pin configuration moved to USB_LPC18xx_USB0.c
+ *  Version 2.0
+ *    Initial release for USB Host EHCI Driver API v2.0
+ *  Version 1.0
+ *    Initial release
  */
+
+
+#include "Driver_USBH.h"
 
 #include "LPC18xx.h"
 #include "USB_LPC18xx.h"
 
-#include "Driver_USBH.h"
-
 #include "RTE_Device.h"
 #include "RTE_Components.h"
 
-#if (RTE_USB_USB0 == 0)
-#error "USB0 is not enabled in the RTE_Device.h!"
+#if      (RTE_USB_USB0 == 0)
+#error   "USB0 is not enabled in the RTE_Device.h!"
 #endif
 
-/* External Variables */
-extern volatile uint32_t USB0_role;
+extern uint8_t USB0_role;
+extern uint8_t USB0_state;
 
-/* External Functions */
 extern void USB0_PinsConfigure   (void);
 extern void USB0_PinsUnconfigure (void);
 
-static uint32_t usbh_state = 0;
 
+// USBH EHCI Driver ************************************************************
 
-#define ARM_USBH_EHCI_DRIVER_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)
+#define ARM_USBH_EHCI_DRIVER_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3)
 
-/* Driver Version */
+// Driver Version
 static const ARM_DRIVER_VERSION usbh_ehci_driver_version = { ARM_USBH_API_VERSION, ARM_USBH_EHCI_DRIVER_VERSION };
 
-/* Driver Capabilities */
+// Driver Capabilities
 static const ARM_USBH_HCI_CAPABILITIES usbh_ehci_driver_capabilities = {
-  0x0001, /* Root HUB available Ports Mask   */
+  0x0001U       // Root HUB available Ports Mask
 };
 
-static ARM_USBH_HCI_Interrupt_t handle_interrupt;
+static ARM_USBH_HCI_Interrupt_t EHCI_IRQ;
 
+// USBH EHCI Driver functions
 
 /**
-  \fn          ARM_DRIVER_VERSION ARM_USBH_HCI_GetVersion (void)
+  \fn          ARM_DRIVER_VERSION USBH_HCI_GetVersion (void)
   \brief       Get USB Host HCI (OHCI/EHCI) driver version.
   \return      \ref ARM_DRIVER_VERSION
 */
-static ARM_DRIVER_VERSION ARM_USBH_HCI_GetVersion (void) { return usbh_ehci_driver_version; }
+static ARM_DRIVER_VERSION USBH_HCI_GetVersion (void) { return usbh_ehci_driver_version; }
 
 /**
-  \fn          ARM_USBH_HCI_CAPABILITIES ARM_USBH_HCI_GetCapabilities (void)
+  \fn          ARM_USBH_HCI_CAPABILITIES USBH_HCI_GetCapabilities (void)
   \brief       Get driver capabilities.
   \return      \ref ARM_USBH_HCI_CAPABILITIES
 */
-static ARM_USBH_HCI_CAPABILITIES ARM_USBH_HCI_GetCapabilities (void) { return usbh_ehci_driver_capabilities; }
+static ARM_USBH_HCI_CAPABILITIES USBH_HCI_GetCapabilities (void) { return usbh_ehci_driver_capabilities; }
 
 /**
-  \fn          int32_t ARM_USBH_HCI_Initialize (ARM_USBH_HCI_Interrupt_t *cb_interrupt)
+  \fn          int32_t USBH_HCI_Initialize (ARM_USBH_HCI_Interrupt_t *cb_interrupt)
   \brief       Initialize USB Host HCI (OHCI/EHCI) Interface.
   \param[in]   cb_interrupt Pointer to Interrupt Handler Routine
   \return      \ref execution_status
 */
-static int32_t ARM_USBH_HCI_Initialize (ARM_USBH_HCI_Interrupt_t cb_interrupt) {
+static int32_t USBH_HCI_Initialize (ARM_USBH_HCI_Interrupt_t cb_interrupt) {
 
-  if (usbh_state & USB_INITIALIZED) return ARM_DRIVER_OK;
-  if (usbh_state & USB_POWERED)     return ARM_DRIVER_ERROR;
+  if ((USB0_state & USBH_DRIVER_INITIALIZED) != 0U) { return ARM_DRIVER_OK; }
 
-  handle_interrupt = cb_interrupt;
+  EHCI_IRQ = cb_interrupt;
 
-  USB0_role = ARM_USB_ROLE_HOST;
-
-  // Set pin functions
+  USB0_role   =  ARM_USB_ROLE_HOST;
   USB0_PinsConfigure ();
 
-  usbh_state = USB_INITIALIZED;
+  USB0_state  =  USBH_DRIVER_INITIALIZED;
 
   return ARM_DRIVER_OK;
 }
 
 /**
-  \fn          int32_t ARM_USBH_HCI_Uninitialize (void)
+  \fn          int32_t USBH_HCI_Uninitialize (void)
   \brief       De-initialize USB Host HCI (OHCI/EHCI) Interface.
   \return      \ref execution_status
 */
-static int32_t ARM_USBH_HCI_Uninitialize (void) {
+static int32_t USBH_HCI_Uninitialize (void) {
 
-  if (!(usbh_state & USB_INITIALIZED)) return ARM_DRIVER_OK;
-  if (  usbh_state & USB_POWERED)      return ARM_DRIVER_ERROR;
-
-  USB0_role = ARM_USB_ROLE_NONE;
-
-  // Reset pin functions
   USB0_PinsUnconfigure ();
-
-  usbh_state = 0;
+  USB0_role   =  ARM_USB_ROLE_NONE;
+  USB0_state &= ~USBH_DRIVER_INITIALIZED;
 
   return ARM_DRIVER_OK;
 }
 
 /**
-  \fn          int32_t ARM_USBH_HCI_PowerControl (ARM_POWER_STATE state)
+  \fn          int32_t USBH_HCI_PowerControl (ARM_POWER_STATE state)
   \brief       Control USB Host HCI (OHCI/EHCI) Interface Power.
   \param[in]   state Power state
   \return      \ref execution_status
 */
-static int32_t ARM_USBH_HCI_PowerControl (ARM_POWER_STATE state) {
-
-  if (!(usbh_state & USB_INITIALIZED)) return ARM_DRIVER_ERROR;
+static int32_t USBH_HCI_PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
-      if (usbh_state & USB_POWERED) {
-        NVIC_DisableIRQ  (USB0_IRQn);     // Disable USB0 interrupt
-
-        usbh_state &= ~USB_POWERED;
-
-        LPC_CREG->CREG0 |=  (1 << 5);     // Disable USB0 PHY
-
-        // Disable USB0 base clock
-        LPC_CCU1->CLK_USB0_CFG &=~1;
-        while (LPC_CCU1->CLK_USB0_STAT & 1);        // Wait clock disable
-
-        // Disable USB0 register interface clock
-        LPC_CCU1->CLK_M3_USB1_CFG &=~1;
-        while (LPC_CCU1->CLK_M3_USB0_STAT & 1);     // Wait clock disable
-      }
+      NVIC_DisableIRQ      (USB0_IRQn);                 // Disable interrupt
+      NVIC_ClearPendingIRQ (USB0_IRQn);                 // Clear pending interrupt
+      USB0_state &= ~USBH_DRIVER_POWERED;               // Clear powered flag
+      LPC_CREG->CREG0 |=  (1U << 5);                    // Disable USB0 PHY
+      LPC_CCU1->CLK_USB0_CFG    &= ~1U;                 // Disable USB0 Base Clock
+      while (LPC_CCU1->CLK_USB0_STAT    & 1U);
+      LPC_CCU1->CLK_M3_USB0_CFG &= ~1U;                 // Disable USB0 Register Interface Clock
+      while (LPC_CCU1->CLK_M3_USB0_STAT & 1U);
+      LPC_CGU->BASE_USB0_CLK     =  0U;                 // Disable Base Clock
       break;
 
     case ARM_POWER_FULL:
-      if (!(usbh_state & USB_POWERED)) {
-        // Enable USB0 register interface clock
-        LPC_CCU1->CLK_M3_USB0_CFG |= 1;
-        while (!(LPC_CCU1->CLK_M3_USB0_STAT & 1));  // Wait clock enable
+      if ((USB0_state & USBH_DRIVER_POWERED) != 0U) { return ARM_DRIVER_OK; }
 
-        // Enable USB0 base clock
-        LPC_CCU1->CLK_USB0_CFG |= 1;
-        while (!(LPC_CCU1->CLK_USB0_STAT & 1));     // Wait clock enable
+      LPC_CGU->BASE_USB0_CLK     = (0x01U << 11) |      // Auto-block Enable
+                                   (0x0CU << 24) ;      // Clock source: IDIVA
+      LPC_CCU1->CLK_M3_USB0_CFG |=  1U;                 // Enable USB0 Register Interface Clock
+      while (!(LPC_CCU1->CLK_M3_USB0_STAT & 1U));
+      LPC_CCU1->CLK_USB0_CFG    |=  1U;                 // Enable USB0 Base Clock
+      while (!(LPC_CCU1->CLK_USB0_STAT    & 1U));
+      LPC_CREG->CREG0 &= ~(1U << 5);                    // Enable USB0 PHY
 
-        LPC_CREG->CREG0 &= ~(1 << 5);     // Enable USB0 PHY
-
-        usbh_state |=  USB_POWERED;
-
-        NVIC_ClearPendingIRQ (USB0_IRQn); // Clear pending USB0 interrupt
-        NVIC_EnableIRQ       (USB0_IRQn); // Enable USB0 interrupt
-      }
+      USB0_state |=  USBH_DRIVER_POWERED;               // Set powered flag
+      NVIC_EnableIRQ   (USB0_IRQn);                     // Enable interrupt
       break;
 
     default:
@@ -193,7 +177,7 @@ static int32_t ARM_USBH_HCI_PowerControl (ARM_POWER_STATE state) {
 }
 
 /**
-  \fn          int32_t ARM_USBH_HCI_PortVbusOnOff (uint8_t port, bool vbus)
+  \fn          int32_t USBH_HCI_PortVbusOnOff (uint8_t port, bool vbus)
   \brief       USB Host HCI (OHCI/EHCI) Root HUB Port VBUS on/off.
   \param[in]   port  Root HUB Port Number
   \param[in]   vbus
@@ -201,24 +185,26 @@ static int32_t ARM_USBH_HCI_PowerControl (ARM_POWER_STATE state) {
                 - \b true  VBUS on
   \return      \ref execution_status
 */
-static int32_t ARM_USBH_HCI_PortVbusOnOff (uint8_t port, bool power) {
-  /* No GPIO pins used for VBUS control it is controlled by EHCI Controller */
+static int32_t USBH_HCI_PortVbusOnOff (uint8_t port, bool power) {
+  // No GPIO pins used for VBUS control it is controlled by EHCI Controller
+
+  if (((1U << port) & usbh_ehci_driver_capabilities.port_mask) == 0U) { return ARM_DRIVER_ERROR; }
   return ARM_DRIVER_OK;
 }
 
 /**
   \fn          void USBH0_IRQ (void)
-  \brief       USB0 Interrupt handling routine.
+  \brief       USB0 Host Interrupt Routine (IRQ).
 */
 void USBH0_IRQ (void) {
-  handle_interrupt();
+  EHCI_IRQ();
 }
 
 ARM_DRIVER_USBH_HCI Driver_USBH0_HCI = {
-  ARM_USBH_HCI_GetVersion,
-  ARM_USBH_HCI_GetCapabilities,
-  ARM_USBH_HCI_Initialize,
-  ARM_USBH_HCI_Uninitialize,
-  ARM_USBH_HCI_PowerControl,
-  ARM_USBH_HCI_PortVbusOnOff
+  USBH_HCI_GetVersion,
+  USBH_HCI_GetCapabilities,
+  USBH_HCI_Initialize,
+  USBH_HCI_Uninitialize,
+  USBH_HCI_PowerControl,
+  USBH_HCI_PortVbusOnOff
 };

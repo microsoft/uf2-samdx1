@@ -1,14 +1,6 @@
 #include "Driver_ETH_PHY.h"
 
-#define ARM_ETH_PHY_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(5, 10) /* driver version */
-
-#ifndef ETH_PHY_NUM
-#define ETH_PHY_NUM                0 /* Default driver number */
-#endif
-
-#ifndef ETH_PHY_ADDR
-#define ETH_PHY_ADDR    0x01     /* Default device address */
-#endif
+#define ARM_ETH_PHY_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
 static const ARM_DRIVER_VERSION DriverVersion = {
@@ -55,7 +47,6 @@ int32_t ARM_ETH_PHY_SetInterface(uint32_t interface)
     switch (interface)
     {
     case ARM_ETH_INTERFACE_MII:
-
         break;
     case ARM_ETH_INTERFACE_RMII:
         break;
@@ -116,4 +107,3 @@ ARM_DRIVER_ETH_PHY ARM_Driver_ETH_PHY_(ETH_PHY_NUM) =
     ARM_ETH_PHY_GetLinkState,
     ARM_ETH_PHY_GetLinkInfo,
 };
-

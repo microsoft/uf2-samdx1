@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------    
 * Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
 *    
-* $Date:        31. July 2014 
-* $Revision: 	V1.4.4  
+* $Date:        19. March 2015 
+* $Revision: 	V.1.4.5  
 *    
 * Project: 	    CMSIS DSP Library    
 * Title:	    arm_rfft_init_q31.c    
@@ -53,7 +53,7 @@
 
 /**    
 * \par    
-* Generation floating point realCoefAQ31 array:    
+* Generation fixed-point realCoefAQ31 array in Q31 format:    
 * \par    
 * n = 4096    
 * <pre>for (i = 0; i < n; i++)    

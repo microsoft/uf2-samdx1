@@ -1292,7 +1292,7 @@
             <uThumb>1</uThumb>
             <VariousControls>
               <MiscControls>-fno-strict-aliasing -ffunction-sections -fdata-sections -mfpu=fpv4-sp-d16 -mfloat-abi=hard</MiscControls>
-              <Define>ARM_MATH_CM4, __FPU_PRESENT = 1</Define>
+              <Define>ARM_MATH_CM4, __FPU_PRESENT = 1, ARMCM4_FP</Define>
               <Undefine></Undefine>
               <IncludePath>..\..\..\..\Include</IncludePath>
             </VariousControls>

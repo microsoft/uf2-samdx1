@@ -1,8 +1,8 @@
 /* ----------------------------------------------------------------------    
 * Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
 *    
-* $Date:        31. July 2014 
-* $Revision: 	V1.4.4  
+* $Date:        19. March 2015 
+* $Revision: 	V.1.4.5  
 *    
 * Project: 	    CMSIS DSP Library    
 * Title:	    arm_cfft_init_f32.c   
@@ -58,13 +58,7 @@
 *   
 * \par Description:  
 * \par   
-* The parameter <code>ifftFlag</code> controls whether a forward or inverse transform is computed.   
-* Set(=1) ifftFlag for calculation of CIFFT otherwise  RFFT is calculated  
-* \par   
-* The parameter <code>bitReverseFlag</code> controls whether output is in normal order or bit reversed order.   
-* Set(=1) bitReverseFlag for output to be in normal order otherwise output is in bit reversed order.   
-* \par   
-* The parameter <code>fftLen</code>	Specifies length of RFFT/CIFFT process. Supported FFT Lengths are 16, 32, 64, 128, 256, 512, 1024, 2048, 4096.   
+* The parameter <code>fftLen</code>	Specifies length of RFFT/CIFFT process. Supported FFT Lengths are 32, 64, 128, 256, 512, 1024, 2048, 4096.   
 * \par   
 * This Function also initializes Twiddle factor table pointer and Bit reversal table pointer.   
 */

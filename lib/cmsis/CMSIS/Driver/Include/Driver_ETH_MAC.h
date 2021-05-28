@@ -67,11 +67,11 @@
 /****** Ethernet MAC Control Codes *****/
 
 #define ARM_ETH_MAC_CONFIGURE           (0x01)      ///< Configure MAC; arg = configuration
-#define ARM_ETH_MAC_CONTROL_TX          (0x02)      ///< Transmitter; arg: 0=disabled, 1=enabled
-#define ARM_ETH_MAC_CONTROL_RX          (0x03)      ///< Receiver; arg: 0=disabled, 1=enabled
+#define ARM_ETH_MAC_CONTROL_TX          (0x02)      ///< Transmitter; arg: 0=disabled (default), 1=enabled
+#define ARM_ETH_MAC_CONTROL_RX          (0x03)      ///< Receiver; arg: 0=disabled (default), 1=enabled
 #define ARM_ETH_MAC_FLUSH               (0x04)      ///< Flush buffer; arg = ARM_ETH_MAC_FLUSH_...
 #define ARM_ETH_MAC_SLEEP               (0x05)      ///< Sleep mode; arg: 1=enter and wait for Magic packet, 0=exit
-#define ARM_ETH_MAC_VLAN_FILTER         (0x06)      ///< VLAN Filter for received frames; arg15..0: VLAN Tag; arg16: optional ARM_ETH_MAC_VLAN_FILTER_ID_ONLY
+#define ARM_ETH_MAC_VLAN_FILTER         (0x06)      ///< VLAN Filter for received frames; arg15..0: VLAN Tag; arg16: optional ARM_ETH_MAC_VLAN_FILTER_ID_ONLY; 0=disabled (default)
 
 /*----- Ethernet MAC Configuration -----*/
 #define ARM_ETH_MAC_SPEED_Pos            0
@@ -267,7 +267,7 @@ typedef struct _ARM_ETH_MAC_CAPABILITIES {
   uint32_t checksum_offload_tx_tcp  : 1;        ///< 1 = TCP payload checksum generated on transmit
   uint32_t checksum_offload_tx_icmp : 1;        ///< 1 = ICMP payload checksum generated on transmit
   uint32_t media_interface          : 2;        ///< Ethernet Media Interface type
-  uint32_t mac_address              : 1;        ///< 1 = driver provides serialized MAC address
+  uint32_t mac_address              : 1;        ///< 1 = driver provides initial valid MAC address
   uint32_t event_rx_frame           : 1;        ///< 1 = callback event \ref ARM_ETH_MAC_EVENT_RX_FRAME generated
   uint32_t event_tx_frame           : 1;        ///< 1 = callback event \ref ARM_ETH_MAC_EVENT_TX_FRAME generated
   uint32_t event_wakeup             : 1;        ///< 1 = wakeup event \ref ARM_ETH_MAC_EVENT_WAKEUP generated

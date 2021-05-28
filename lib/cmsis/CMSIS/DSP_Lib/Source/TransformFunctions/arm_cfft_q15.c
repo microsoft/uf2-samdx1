@@ -1,13 +1,13 @@
 /* ----------------------------------------------------------------------    
 * Copyright (C) 2010-2014 ARM Limited. All rights reserved.    
 *    
-* $Date:        31. July 2014 
-* $Revision: 	V1.4.4  
+* $Date:        19. March 2015 
+* $Revision: 	V.1.4.5  
 *    
 * Project: 	    CMSIS DSP Library    
 * Title:	    arm_cfft_q15.c   
 *    
-* Description:	Combined Radix Decimation in Frequency CFFT Floating point processing function
+* Description:	Combined Radix Decimation in Q15 Frequency CFFT processing function
 *    
 * Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
 *  
@@ -78,8 +78,8 @@ void arm_cfft_radix4by2_inverse_q15(
 
 /**   
 * @details   
-* @brief       Processing function for the floating-point complex FFT.
-* @param[in]      *S    points to an instance of the floating-point CFFT structure.  
+* @brief       Processing function for the Q15 complex FFT.
+* @param[in]      *S    points to an instance of the Q15 CFFT structure.  
 * @param[in, out] *p1   points to the complex data buffer of size <code>2*fftLen</code>. Processing occurs in-place.  
 * @param[in]     ifftFlag       flag that selects forward (ifftFlag=0) or inverse (ifftFlag=1) transform.  
 * @param[in]     bitReverseFlag flag that enables (bitReverseFlag=1) or disables (bitReverseFlag=0) bit reversal of output.  

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -17,8 +17,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        27. March 2014
- * $Revision:    V2.00
+ * $Date:        5. March 2015
+ * $Revision:    V2.1.1
  *
  * Project:      RTE Device Configuration for NXP LPC18xx
  * -------------------------------------------------------------------------- */
@@ -160,16 +160,6 @@
 //     <o.0> High-speed
 //     <i> Enable high-speed functionality
 #define   RTE_USB_USB0_HS_EN            1
-
-//     <h> Endpoints
-//     <i> Reduce memory requirements of Driver by disabling unused endpoints
-//       <o0.1> Endpoint 1
-//       <o0.2> Endpoint 2
-//       <o0.3> Endpoint 3
-//       <o0.4> Endpoint 4
-//       <o0.3> Endpoint 5
-//     </h> Endpoints
-#define   RTE_USB_USB0_DEV_EP           0x0000001F
 //   </h> Device [Driver_USBD0]
 // </e> USB0 Controller [Driver_USBD0 and Driver_USBH0]
 
@@ -234,7 +224,7 @@
 //     <i> USB1 port indicator LED control output 1
 #define   RTE_USB1_IND1_ID              2
 #if      (RTE_USB1_IND1_ID == 0)
-  #define RTE_USB1_IND0_PIN_EN          0
+  #define RTE_USB1_IND1_PIN_EN          0
 #elif    (RTE_USB1_IND1_ID == 1)
   #define RTE_USB1_IND1_PORT            3
   #define RTE_USB1_IND1_BIT             1
@@ -451,16 +441,6 @@
 #endif
 //     </e> External high-speed ULPI PHY (UTMI+ Low Pin Interface)
 //   </h> Pin Configuration
-
-//   <h> Device [Driver_USBD1]
-//     <h> Endpoints
-//       <i> Reduce memory requirements of Driver by disabling unused endpoints
-//       <o0.1> Endpoint 1
-//       <o0.2> Endpoint 2
-//       <o0.3> Endpoint 3
-//     </h> Endpoints
-#define   RTE_USB_USB1_DEV_EP           0x0000003F
-//   </h> Device [Driver_USBD1]
 // </e> USB1 Controller [Driver_USBD1 and Driver_USBH1]
 
 // <e> ENET (Ethernet Interface) [Driver_ETH_MAC0]
@@ -1863,5 +1843,416 @@
 #endif
 //   </h> DMA
 // </e> SSP1 (Synchronous Serial Port 1) [Driver_SPI1]
+
+// <e> I2S0 (Integrated Interchip Sound 0) [Driver_SAI0]
+// <i> Configuration settings for Driver_SAI0 in component ::Drivers:SAI
+#define   RTE_I2S0                      0
+
+//   <h> Pin Configuration
+//     <o> I2S0_RX_SCK <0=>Not used <1=>P3_0 <2=>P6_0 <3=>PF_4
+//     <i> Receive clock for I2S0
+#define   RTE_I2S0_RX_SCK_PIN_SEL       2
+#if      (RTE_I2S0_RX_SCK_PIN_SEL == 0)
+#define   RTE_I2S0_RX_SCK_PIN_EN        0
+#elif    (RTE_I2S0_RX_SCK_PIN_SEL == 1)
+  #define RTE_I2S0_RX_SCK_PORT          3
+  #define RTE_I2S0_RX_SCK_BIT           0
+  #define RTE_I2S0_RX_SCK_FUNC          0
+#elif    (RTE_I2S0_RX_SCK_PIN_SEL == 2)
+  #define RTE_I2S0_RX_SCK_PORT          6
+  #define RTE_I2S0_RX_SCK_BIT           0
+  #define RTE_I2S0_RX_SCK_FUNC          4
+#elif    (RTE_I2S0_RX_SCK_PIN_SEL == 3)
+  #define RTE_I2S0_RX_SCK_PORT          0xF
+  #define RTE_I2S0_RX_SCK_BIT           4
+  #define RTE_I2S0_RX_SCK_FUNC          7
+#else
+  #error "Invalid I2S0 I2S0_RX_SCK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_RX_SCK_PIN_EN
+#define   RTE_I2S0_RX_SCK_PIN_EN        1
+#endif
+//     <o> I2S0_RX_WS <0=>Not used <1=>P3_1 <2=>P6_1
+//     <i> Receive word select for I2S0
+#define   RTE_I2S0_RX_WS_PIN_SEL        2
+#if      (RTE_I2S0_RX_WS_PIN_SEL == 0)
+#define   RTE_I2S0_RX_WS_PIN_EN         0
+#elif    (RTE_I2S0_RX_WS_PIN_SEL == 1)
+  #define RTE_I2S0_RX_WS_PORT           3
+  #define RTE_I2S0_RX_WS_BIT            1
+  #define RTE_I2S0_RX_WS_FUNC           1
+#elif    (RTE_I2S0_RX_WS_PIN_SEL == 2)
+  #define RTE_I2S0_RX_WS_PORT           6
+  #define RTE_I2S0_RX_WS_BIT            1
+  #define RTE_I2S0_RX_WS_FUNC           3
+#else
+  #error "Invalid I2S0 I2S0_RX_WS Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_RX_WS_PIN_EN
+#define   RTE_I2S0_RX_WS_PIN_EN         1
+#endif
+//     <o> I2S0_RX_SDA <0=>Not used <1=>P3_2 <2=>P6_2
+//     <i> Receive master clock for I2S0
+#define   RTE_I2S0_RX_SDA_PIN_SEL       2
+#if      (RTE_I2S0_RX_SDA_PIN_SEL == 0)
+#define   RTE_I2S0_RX_SDA_PIN_EN        0
+#elif    (RTE_I2S0_RX_SDA_PIN_SEL == 1)
+  #define RTE_I2S0_RX_SDA_PORT          3
+  #define RTE_I2S0_RX_SDA_BIT           2
+  #define RTE_I2S0_RX_SDA_FUNC          1
+#elif    (RTE_I2S0_RX_SDA_PIN_SEL == 2)
+  #define RTE_I2S0_RX_SDA_PORT          6
+  #define RTE_I2S0_RX_SDA_BIT           2
+  #define RTE_I2S0_RX_SDA_FUNC          3
+#else
+  #error "Invalid I2S0 I2S0_RX_SDA Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_RX_SDA_PIN_EN
+#define   RTE_I2S0_RX_SDA_PIN_EN       1
+#endif
+//     <o> I2S0_RX_MCLK <0=>Not used <1=>P1_19 <2=>P3_0 <3=>P6_0
+//     <i> Receive master clock for I2S0
+#define   RTE_I2S0_RX_MCLK_PIN_SEL      0
+#if      (RTE_I2S0_RX_MCLK_PIN_SEL == 0)
+#define   RTE_I2S0_RX_MCLK_PIN_EN       0
+#elif    (RTE_I2S0_RX_MCLK_PIN_SEL == 1)
+  #define RTE_I2S0_RX_MCLK_PORT         1
+  #define RTE_I2S0_RX_MCLK_BIT          19
+  #define RTE_I2S0_RX_MCLK_FUNC         6
+#elif    (RTE_I2S0_RX_MCLK_PIN_SEL == 2)
+  #define RTE_I2S0_RX_MCLK_PORT         3
+  #define RTE_I2S0_RX_MCLK_BIT          0
+  #define RTE_I2S0_RX_MCLK_FUNC         1
+#elif    (RTE_I2S0_RX_MCLK_PIN_SEL == 3)
+  #define RTE_I2S0_RX_MCLK_PORT         6
+  #define RTE_I2S0_RX_MCLK_BIT          0
+  #define RTE_I2S0_RX_MCLK_FUNC         1
+#else
+  #error "Invalid I2S0 I2S0_RX_MCLK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_RX_MCLK_PIN_EN
+#define   RTE_I2S0_RX_MCLK_PIN_EN       1
+#endif
+//     <o> I2S0_TX_SCK <0=>Not used <1=>P3_0 <2=>P4_7
+//     <i> Transmit clock for I2S0
+#define   RTE_I2S0_TX_SCK_PIN_SEL       1
+#if      (RTE_I2S0_TX_SCK_PIN_SEL == 0)
+#define   RTE_I2S0_TX_SCK_PIN_EN        0
+#elif    (RTE_I2S0_TX_SCK_PIN_SEL == 1)
+  #define RTE_I2S0_TX_SCK_PORT          3
+  #define RTE_I2S0_TX_SCK_BIT           0
+  #define RTE_I2S0_TX_SCK_FUNC          2
+#elif    (RTE_I2S0_TX_SCK_PIN_SEL == 2)
+  #define RTE_I2S0_TX_SCK_PORT          4
+  #define RTE_I2S0_TX_SCK_BIT           7
+  #define RTE_I2S0_TX_SCK_FUNC          7
+#else
+  #error "Invalid I2S0 I2S0_TX_SCK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_TX_SCK_PIN_EN
+#define   RTE_I2S0_TX_SCK_PIN_EN        1
+#endif
+//     <o> I2S0_TX_WS <0=>Not used <1=>P0_0 <2=>P3_1 <3=>P3_4 <4=>P7_1 <5=>P9_1 <6=>PC_13
+//     <i> Transmit word select for I2S0
+#define   RTE_I2S0_TX_WS_PIN_SEL        4
+#if      (RTE_I2S0_TX_WS_PIN_SEL == 0)
+#define   RTE_I2S0_TX_WS_PIN_EN         0
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 1)
+  #define RTE_I2S0_TX_WS_PORT           0
+  #define RTE_I2S0_TX_WS_BIT            0
+  #define RTE_I2S0_TX_WS_FUNC           6
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 2)
+  #define RTE_I2S0_TX_WS_PORT           3
+  #define RTE_I2S0_TX_WS_BIT            1
+  #define RTE_I2S0_TX_WS_FUNC           0
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 3)
+  #define RTE_I2S0_TX_WS_PORT           3
+  #define RTE_I2S0_TX_WS_BIT            4
+  #define RTE_I2S0_TX_WS_FUNC           5
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 4)
+  #define RTE_I2S0_TX_WS_PORT           7
+  #define RTE_I2S0_TX_WS_BIT            1
+  #define RTE_I2S0_TX_WS_FUNC           2
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 5)
+  #define RTE_I2S0_TX_WS_PORT           9
+  #define RTE_I2S0_TX_WS_BIT            1
+  #define RTE_I2S0_TX_WS_FUNC           4
+#elif    (RTE_I2S0_TX_WS_PIN_SEL == 6)
+  #define RTE_I2S0_TX_WS_PORT           0xC
+  #define RTE_I2S0_TX_WS_BIT            13
+  #define RTE_I2S0_TX_WS_FUNC           6
+#else
+  #error "Invalid I2S0 I2S0_TX_WS Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_TX_WS_PIN_EN
+#define   RTE_I2S0_TX_WS_PIN_EN         1
+#endif
+//     <o> I2S0_TX_SDA <0=>Not used <1=>P3_2 <2=>P3_5 <3=>P7_2 <4=>P9_2  <5=>PC_12
+//     <i> Transmit data for I2S0
+#define   RTE_I2S0_TX_SDA_PIN_SEL       3
+#if      (RTE_I2S0_TX_SDA_PIN_SEL == 0)
+#define   RTE_I2S0_TX_SDA_PIN_EN        0
+#elif    (RTE_I2S0_TX_SDA_PIN_SEL == 1)
+  #define RTE_I2S0_TX_SDA_PORT          3
+  #define RTE_I2S0_TX_SDA_BIT           2
+  #define RTE_I2S0_TX_SDA_FUNC          0
+#elif    (RTE_I2S0_TX_SDA_PIN_SEL == 2)
+  #define RTE_I2S0_TX_SDA_PORT          3
+  #define RTE_I2S0_TX_SDA_BIT           5
+  #define RTE_I2S0_TX_SDA_FUNC          5
+#elif    (RTE_I2S0_TX_SDA_PIN_SEL == 3)
+  #define RTE_I2S0_TX_SDA_PORT          7
+  #define RTE_I2S0_TX_SDA_BIT           2
+  #define RTE_I2S0_TX_SDA_FUNC          2
+#elif    (RTE_I2S0_TX_SDA_PIN_SEL == 4)
+  #define RTE_I2S0_TX_SDA_PORT          9
+  #define RTE_I2S0_TX_SDA_BIT           2
+  #define RTE_I2S0_TX_SDA_FUNC          4
+#elif    (RTE_I2S0_TX_SDA_PIN_SEL == 5)
+  #define RTE_I2S0_TX_SDA_PORT          0xC
+  #define RTE_I2S0_TX_SDA_BIT           12
+  #define RTE_I2S0_TX_SDA_FUNC          6
+#else
+  #error "Invalid I2S0 I2S0_TX_SDA Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_TX_SDA_PIN_EN
+#define   RTE_I2S0_TX_SDA_PIN_EN        1
+#endif
+//     <o> I2S0_TX_MCLK <0=>Not used <1=>P3_0 <2=>P3_3 <3=>PF_4 <4=>CLK2
+//     <i> Transmit master clock for I2S0
+#define   RTE_I2S0_TX_MCLK_PIN_SEL      2
+#if      (RTE_I2S0_TX_MCLK_PIN_SEL == 0)
+#define   RTE_I2S0_TX_MCLK_PIN_EN       0
+#elif    (RTE_I2S0_TX_MCLK_PIN_SEL == 1)
+  #define RTE_I2S0_TX_MCLK_PORT         3
+  #define RTE_I2S0_TX_MCLK_BIT          0
+  #define RTE_I2S0_TX_MCLK_FUNC         3
+#elif    (RTE_I2S0_TX_MCLK_PIN_SEL == 2)
+  #define RTE_I2S0_TX_MCLK_PORT         3
+  #define RTE_I2S0_TX_MCLK_BIT          3
+  #define RTE_I2S0_TX_MCLK_FUNC         6
+#elif    (RTE_I2S0_TX_MCLK_PIN_SEL == 3)
+  #define RTE_I2S0_TX_MCLK_PORT         0xf
+  #define RTE_I2S0_TX_MCLK_BIT          4
+  #define RTE_I2S0_TX_MCLK_FUNC         6
+#elif    (RTE_I2S0_TX_MCLK_PIN_SEL == 4)
+  #define RTE_I2S0_TX_MCLK_PORT         0x10
+  #define RTE_I2S0_TX_MCLK_BIT          2
+  #define RTE_I2S0_TX_MCLK_FUNC         6
+#else
+  #error "Invalid I2S0 I2S0_TX_MCLK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S0_TX_MCLK_PIN_EN
+#define   RTE_I2S0_TX_MCLK_PIN_EN       1
+#endif
+//   </h> Pin Configuration
+
+//   <h> DMA
+//     <e> Tx
+//       <o1> Channel     <0=>0 <1=>1 <2=>2 <3=>3 <4=>4 <5=>5 <6=>6 <7=>7
+//       <o2> Peripheral  <0=>9 (DMAMUXPER9)
+//     </e>
+#define   RTE_I2S0_DMA_TX_EN            0
+#define   RTE_I2S0_DMA_TX_CH            0
+#define   RTE_I2S0_DMA_TX_PERI_ID       0
+#if      (RTE_I2S0_DMA_TX_PERI_ID == 0)
+  #define RTE_I2S0_DMA_TX_PERI          9
+  #define RTE_I2S0_DMA_TX_PERI_SEL      1
+#endif
+//     <e> Rx
+//       <o1> Channel     <0=>0 <1=>1 <2=>2 <3=>3 <4=>4 <5=>5 <6=>6 <7=>7
+//       <o2> Peripheral  <0=>10 (DMAMUXPER10)
+//     </e>
+#define   RTE_I2S0_DMA_RX_EN            0
+#define   RTE_I2S0_DMA_RX_CH            1
+#define   RTE_I2S0_DMA_RX_PERI_ID       0
+#if      (RTE_I2S0_DMA_RX_PERI_ID == 0)
+  #define RTE_I2S0_DMA_RX_PERI          10
+  #define RTE_I2S0_DMA_RX_PERI_SEL      1
+#endif
+//   </h> DMA
+// </e> I2S0 (Integrated Interchip Sound 0) [Driver_SAI0]
+
+// <e> I2S1 (Integrated Interchip Sound 1) [Driver_SAI1]
+// <i> Configuration settings for Driver_I2S1 in component ::Drivers:SAI
+#define   RTE_I2S1                      0
+
+//   <h> Pin Configuration
+//     <o> I2S1_RX_SCK <0=>Not used <1=>CLK2 <2=>CLK3
+//     <i> Receive clock for I2S1
+#define   RTE_I2S1_RX_SCK_PIN_SEL       0
+#if      (RTE_I2S1_RX_SCK_PIN_SEL == 0)
+#define   RTE_I2S1_RX_SCK_PIN_EN        0
+#elif    (RTE_I2S1_RX_SCK_PIN_SEL == 1)
+  #define RTE_I2S1_RX_SCK_PORT          0x10
+  #define RTE_I2S1_RX_SCK_BIT           2
+  #define RTE_I2S1_RX_SCK_FUNC          7
+#elif    (RTE_I2S1_RX_SCK_PIN_SEL == 2)
+  #define RTE_I2S1_RX_SCK_PORT          0x10
+  #define RTE_I2S1_RX_SCK_BIT           3
+  #define RTE_I2S1_RX_SCK_FUNC          7
+#else
+  #error "Invalid I2S1 I2S1_RX_SCK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_RX_SCK_PIN_EN
+#define   RTE_I2S1_RX_SCK_PIN_EN        1
+#endif
+//     <o> I2S1_RX_WS <0=>Not used <1=>P3_5
+//     <i> Receive word select for I2S1
+#define   RTE_I2S1_RX_WS_PIN_SEL        0
+#if      (RTE_I2S1_RX_WS_PIN_SEL == 0)
+#define   RTE_I2S1_RX_WS_PIN_EN         0
+#elif    (RTE_I2S1_RX_WS_PIN_SEL == 1)
+  #define RTE_I2S1_RX_WS_PORT           3
+  #define RTE_I2S1_RX_WS_BIT            5
+  #define RTE_I2S1_RX_WS_FUNC           6
+#else
+  #error "Invalid I2S1 I2S1_RX_WS Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_RX_WS_PIN_EN
+#define   RTE_I2S1_RX_WS_PIN_EN         1
+#endif
+//     <o> I2S1_RX_SDA <0=>Not used <1=>P3_4
+//     <i> Receive master clock for I2S1
+#define   RTE_I2S1_RX_SDA_PIN_SEL       0
+#if      (RTE_I2S1_RX_SDA_PIN_SEL == 0)
+#define   RTE_I2S1_RX_SDA_PIN_EN        0
+#elif    (RTE_I2S1_RX_SDA_PIN_SEL == 1)
+  #define RTE_I2S1_RX_SDA_PORT          3
+  #define RTE_I2S1_RX_SDA_BIT           4
+  #define RTE_I2S1_RX_SDA_FUNC          6
+#else
+  #error "Invalid I2S1 I2S1_RX_SDA Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_RX_SDA_PIN_EN
+#define   RTE_I2S1_RX_SDA_PIN_EN       1
+#endif
+//     <o> I2S1_RX_MCLK <0=>Not used <1=>PA_0
+//     <i> Receive master clock for I2S1
+#define   RTE_I2S1_RX_MCLK_PIN_SEL      0
+#if      (RTE_I2S1_RX_MCLK_PIN_SEL == 0)
+#define   RTE_I2S1_RX_MCLK_PIN_EN       0
+#elif    (RTE_I2S1_RX_MCLK_PIN_SEL == 1)
+  #define RTE_I2S1_RX_MCLK_PORT         0x0A
+  #define RTE_I2S1_RX_MCLK_BIT          0
+  #define RTE_I2S1_RX_MCLK_FUNC         5
+#else
+  #error "Invalid I2S1 I2S1_RX_MCLK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_RX_MCLK_PIN_EN
+#define   RTE_I2S1_RX_MCLK_PIN_EN       1
+#endif
+//     <o> I2S1_TX_SCK <0=>Not used <1=>P1_19 <2=>P3_3 <3=>P4_7
+//     <i> Transmit clock for I2S1
+#define   RTE_I2S1_TX_SCK_PIN_SEL       0
+#if      (RTE_I2S1_TX_SCK_PIN_SEL == 0)
+#define   RTE_I2S1_TX_SCK_PIN_EN        0
+#elif    (RTE_I2S1_TX_SCK_PIN_SEL == 1)
+  #define RTE_I2S1_TX_SCK_PORT          1
+  #define RTE_I2S1_TX_SCK_BIT           19
+  #define RTE_I2S1_TX_SCK_FUNC          7
+#elif    (RTE_I2S1_TX_SCK_PIN_SEL == 2)
+  #define RTE_I2S1_TX_SCK_PORT          3
+  #define RTE_I2S1_TX_SCK_BIT           3
+  #define RTE_I2S1_TX_SCK_FUNC          7
+#elif    (RTE_I2S1_TX_SCK_PIN_SEL == 3)
+  #define RTE_I2S1_TX_SCK_PORT          4
+  #define RTE_I2S1_TX_SCK_BIT           7
+  #define RTE_I2S1_TX_SCK_FUNC          6
+#else
+  #error "Invalid I2S1 I2S1_TX_SCK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_TX_SCK_PIN_EN
+#define   RTE_I2S1_TX_SCK_PIN_EN        1
+#endif
+//     <o> I2S1_TX_WS <0=>Not used <1=>P0_0 <2=>PF_7
+//     <i> Transmit word select for I2S1
+#define   RTE_I2S1_TX_WS_PIN_SEL        0
+#if      (RTE_I2S1_TX_WS_PIN_SEL == 0)
+#define   RTE_I2S1_TX_WS_PIN_EN         0
+#elif    (RTE_I2S1_TX_WS_PIN_SEL == 1)
+  #define RTE_I2S1_TX_WS_PORT           0
+  #define RTE_I2S1_TX_WS_BIT            0
+  #define RTE_I2S1_TX_WS_FUNC           7
+#elif    (RTE_I2S1_TX_WS_PIN_SEL == 2)
+  #define RTE_I2S1_TX_WS_PORT           0x0F
+  #define RTE_I2S1_TX_WS_BIT            7
+  #define RTE_I2S1_TX_WS_FUNC           7
+#else
+  #error "Invalid I2S1 I2S1_TX_WS Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_TX_WS_PIN_EN
+#define   RTE_I2S1_TX_WS_PIN_EN         1
+#endif
+//     <o> I2S1_TX_SDA <0=>Not used <1=>P0_1 <2=>PF_6
+//     <i> Transmit data for I2S
+#define   RTE_I2S1_TX_SDA_PIN_SEL       0
+#if      (RTE_I2S1_TX_SDA_PIN_SEL == 0)
+#define   RTE_I2S1_TX_SDA_PIN_EN        0
+#elif    (RTE_I2S1_TX_SDA_PIN_SEL == 1)
+  #define RTE_I2S1_TX_SDA_PORT          0
+  #define RTE_I2S1_TX_SDA_BIT           1
+  #define RTE_I2S1_TX_SDA_FUNC          7
+#elif    (RTE_I2S1_TX_SDA_PIN_SEL == 2)
+  #define RTE_I2S1_TX_SDA_PORT          0x0F
+  #define RTE_I2S1_TX_SDA_BIT           6
+  #define RTE_I2S1_TX_SDA_FUNC          7
+#else
+  #error "Invalid I2S1 I2S1_TX_SDA Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_TX_SDA_PIN_EN
+#define   RTE_I2S1_TX_SDA_PIN_EN        1
+#endif
+//     <o> I2S1_TX_MCLK <0=>Not used <1=>P8_8 <2=>PF_0 <3=>CLK1
+//     <i> Transmit master clock for I2S1
+#define   RTE_I2S1_TX_MCLK_PIN_SEL      0
+#if      (RTE_I2S1_TX_MCLK_PIN_SEL == 0)
+#define   RTE_I2S1_TX_MCLK_PIN_EN       0
+#elif    (RTE_I2S1_TX_MCLK_PIN_SEL == 1)
+  #define RTE_I2S1_TX_MCLK_PORT         8
+  #define RTE_I2S1_TX_MCLK_BIT          8
+  #define RTE_I2S1_TX_MCLK_FUNC         7
+#elif    (RTE_I2S1_TX_MCLK_PIN_SEL == 2)
+  #define RTE_I2S1_TX_MCLK_PORT         0x0F
+  #define RTE_I2S1_TX_MCLK_BIT          0
+  #define RTE_I2S1_TX_MCLK_FUNC         7
+#elif    (RTE_I2S1_TX_MCLK_PIN_SEL == 3)
+  #define RTE_I2S1_TX_MCLK_PORT         0x10
+  #define RTE_I2S1_TX_MCLK_BIT          1
+  #define RTE_I2S1_TX_MCLK_FUNC         7
+#else
+  #error "Invalid I2S1 I2S1_TX_MCLK Pin Configuration!"
+#endif
+#ifndef   RTE_I2S1_TX_MCLK_PIN_EN
+#define   RTE_I2S1_TX_MCLK_PIN_EN       1
+#endif
+//   </h> Pin Configuration
+
+//   <h> DMA
+//     <e> Tx
+//       <o1> Channel     <0=>0 <1=>1 <2=>2 <3=>3 <4=>4 <5=>5 <6=>6 <7=>7
+//       <o2> Peripheral  <0=>3 (DMAMUXPER3)
+//     </e>
+#define   RTE_I2S1_DMA_TX_EN            0
+#define   RTE_I2S1_DMA_TX_CH            0
+#define   RTE_I2S1_DMA_TX_PERI_ID       0
+#if      (RTE_I2S1_DMA_TX_PERI_ID == 0)
+  #define RTE_I2S1_DMA_TX_PERI          3
+  #define RTE_I2S1_DMA_TX_PERI_SEL      2
+#endif
+//     <e> Rx
+//       <o1> Channel     <0=>0 <1=>1 <2=>2 <3=>3 <4=>4 <5=>5 <6=>6 <7=>7
+//       <o2> Peripheral  <0=>4 (DMAMUXPER4)
+//     </e>
+#define   RTE_I2S1_DMA_RX_EN            0
+#define   RTE_I2S1_DMA_RX_CH            1
+#define   RTE_I2S1_DMA_RX_PERI_ID       0
+#if      (RTE_I2S1_DMA_RX_PERI_ID == 0)
+  #define RTE_I2S1_DMA_RX_PERI          4
+  #define RTE_I2S1_DMA_RX_PERI_SEL      2
+#endif
+//   </h> DMA
+// </e> I2S1 (Integrated Interchip Sound 1) [Driver_SAI1]
+
 
 #endif  /* __RTE_DEVICE_H */

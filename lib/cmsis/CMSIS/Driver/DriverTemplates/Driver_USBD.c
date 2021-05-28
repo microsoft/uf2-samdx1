@@ -1,19 +1,18 @@
 #include "Driver_USBD.h"
 
-#include "RTE_Components.h"
-
-/* USBD Driver ****************************************************************/
-
-#define ARM_USBD_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* USBD driver version */
+#define ARM_USBD_DRV_VERSION    ARM_DRIVER_VERSION_MAJOR_MINOR(2, 0) /* driver version */
 
 /* Driver Version */
-static const ARM_DRIVER_VERSION usbd_driver_version = { ARM_USBD_API_VERSION, ARM_USBD_DRV_VERSION };
+static const ARM_DRIVER_VERSION usbd_driver_version = { 
+    ARM_USBD_API_VERSION,
+    ARM_USBD_DRV_VERSION
+};
 
 /* Driver Capabilities */
 static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
-    0, // vbus_detection
-    0, // event_vbus_on
-    0, // event_vbus_off
+    0, /* vbus_detection */
+    0, /* event_vbus_on */
+    0  /* event_vbus_off */
 };
 
 //
@@ -121,7 +120,7 @@ void ARM_USBD_SignalEndpointEvent(uint8_t ep_addr, uint32_t ep_event)
 
 // End USBD Interface
 
-ARM_DRIVER_USBD Driver_USBD0 =
+ARM_DRIVER_USBD Driver_USBD =
 {
     ARM_USBD_GetVersion,
     ARM_USBD_GetCapabilities,
@@ -141,4 +140,3 @@ ARM_DRIVER_USBD Driver_USBD0 =
     ARM_USBD_EndpointTransferAbort,
     ARM_USBD_GetFrameNumber
 };
-

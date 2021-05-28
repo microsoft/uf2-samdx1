@@ -185,7 +185,7 @@ typedef struct _ARM_USBD_STATE {
   \param[in]   ep_addr  Endpoint Address
                 - ep_addr.0..3: Address
                 - ep_addr.7:    Direction
-  \return      number of successfully transfered data bytes
+  \return      number of successfully transferred data bytes
 */
 /**
   \fn          int32_t ARM_USBD_EndpointTransferAbort (uint8_t ep_addr)
