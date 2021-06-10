@@ -13,7 +13,7 @@ const UF2_MAGIC_END = 0x0AB16F30   // Ditto
 let numBlocks = (buf.length + 255) >> 8
 let outp = []
 for (let pos = 0; pos < buf.length; pos += 256) {
-    let bl = new Buffer(512)
+    let bl = Buffer.alloc(512)
     for (let i = 0; i < 512; ++i)
         bl[i] = 0 // just in case
     bl.writeUInt32LE(UF2_MAGIC_START0, 0)

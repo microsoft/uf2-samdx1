@@ -3,7 +3,7 @@ let fs = require("fs")
 let buildPath = process.argv[2]
 let binName = buildPath + "/" + process.argv[3]
 let buf = fs.readFileSync(binName)
-let tail = new Buffer(8192 - buf.length)
+let tail = Buffer.alloc(8192 - buf.length)
 if (buf.length > 8192) {
   console.error("Bootloader too big!")
   process.exit(1)
