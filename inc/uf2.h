@@ -165,8 +165,15 @@ From CPU config:
 
 // These two need to be defined as plain decimal numbers, as we're using # on them
 #define FLASH_ROW_SIZE 256
+
+#if defined(__SAMD21E17A__) || defined(__SAMD21E17D__)
+#ifndef FLASH_NUM_ROWS
+#define FLASH_NUM_ROWS 512
+#endif
+#else
 #ifndef FLASH_NUM_ROWS
 #define FLASH_NUM_ROWS 1024
+#endif
 #endif
 
 #define NOOP                                                                                       \
