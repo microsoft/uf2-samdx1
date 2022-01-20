@@ -721,7 +721,7 @@ uint32_t USB_WriteCore(const void *pData, uint32_t length, uint8_t ep_num, bool 
 //* \brief Send zero length packet through the control endpoint
 //*----------------------------------------------------------------------------
 void AT91F_USB_SendZlp(void) {
-    uint8_t c;
+    uint8_t c = 0;
     USB_Write(&c, 0, 0);
 }
 
