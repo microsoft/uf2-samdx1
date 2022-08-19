@@ -145,7 +145,7 @@ The default board is `zero`. You can build a different one using:
 make BOARD=metro_m0
 ```
 
-If you're working on different board, it's best to create `Makefile.local`
+If you're working on different board, it's best to create `Makefile.user`
 with say `BOARD=metro` to change the default.
 The names `zero` and `metro` refer to subdirectories of `boards/`.
 
