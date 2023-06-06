@@ -1,8 +1,8 @@
 #include "uf2.h"
 
 void system_init(void) {
-    /* Set 1 Flash Wait State for 48MHz */
-    NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_RWS(0);
+    /* Set 2 Flash Wait State for 48MHz , refer to TAB 56.6 in datasheet*/
+    NVMCTRL->CTRLA.reg |= NVMCTRL_CTRLA_RWS(2);
 
     // Output GCLK0 to Metro M4 D5. This way we can see if/when we mess it up.
     //PORT->Group[1].PINCFG[14].bit.PMUXEN = true;
