@@ -56,10 +56,14 @@ INCLUDES += -Ilib/samd21/samd21a/include/
 endif
 
 ifeq ($(CHIP_FAMILY), samd51)
+ifeq ($(findstring SAME51,$(CHIP_VARIANT)),SAME51)
+INCLUDES += -Ilib/same51/include/
+else
 ifeq ($(findstring SAME54,$(CHIP_VARIANT)),SAME54)
 INCLUDES += -Ilib/same54/include/
 else
 INCLUDES += -Ilib/samd51/include/
+endif
 endif
 endif
 
@@ -138,7 +142,7 @@ qc \n\
 " > $(BUILD_PATH)/flash.jlink
 
 jlink-flash: $(BUILD_PATH)/$(NAME).bin $(BUILD_PATH)/flash.jlink
-	jlinkexe -if swd -device AT$(CHIP_VARIANT) -speed 4000 -CommanderScript $(BUILD_PATH)/flash.jlink
+	JLinkExe -if swd -device AT$(CHIP_VARIANT) -speed 4000 -CommanderScript $(BUILD_PATH)/flash.jlink
 
 wait:
 	sleep 5
@@ -163,14 +167,14 @@ $(EXECUTABLE): $(OBJECTS)
 	@echo
 
 $(BUILD_PATH)/uf2_version.h: Makefile
-	echo "#define UF2_VERSION_BASE \"$(UF2_VERSION_BASE)\""> $@
+	echo #define UF2_VERSION_BASE "$(UF2_VERSION_BASE)"> $@
 
 $(SELF_EXECUTABLE): $(SELF_OBJECTS)
 	$(CC) -L$(BUILD_PATH) $(LDFLAGS) \
 		 -T$(SELF_LINKER_SCRIPT) \
 		 -Wl,-Map,$(BUILD_PATH)/update-$(NAME).map -o $(BUILD_PATH)/update-$(NAME).elf $(SELF_OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/update-$(NAME).elf $(BUILD_PATH)/update-$(NAME).bin
-	python2 lib/uf2/utils/uf2conv.py -b $(BOOTLOADER_SIZE) -c -o $@ $(BUILD_PATH)/update-$(NAME).bin
+	python lib/uf2/utils/uf2conv.py -b $(BOOTLOADER_SIZE) -c -o $@ $(BUILD_PATH)/update-$(NAME).bin
 
 $(BUILD_PATH)/%.o: src/%.c $(wildcard inc/*.h boards/*/*.h) $(BUILD_PATH)/uf2_version.h
 	echo "$<"
@@ -180,7 +184,7 @@ $(BUILD_PATH)/%.o: $(BUILD_PATH)/%.c
 	$(CC) $(CFLAGS) $(BLD_EXTA_FLAGS) $(INCLUDES) $< -o $@
 
 $(BUILD_PATH)/selfdata.c: $(EXECUTABLE) scripts/gendata.py src/sketch.cpp
-	python2 scripts/gendata.py $(BOOTLOADER_SIZE) $(EXECUTABLE)
+	python scripts/gendata.py $(BOOTLOADER_SIZE) $(EXECUTABLE)
 
 clean:
 	rm -rf build
@@ -207,8 +211,11 @@ drop-board: all
 	mkdir -p build/drop/$(BOARD)
 	cp $(SELF_EXECUTABLE) build/drop/$(BOARD)/
 	cp $(EXECUTABLE) build/drop/$(BOARD)/
+# .ino works only for SAMD21 right now; suppress for SAMD51
+ifeq ($(CHIP_FAMILY),samd21)
 	cp $(SELF_EXECUTABLE_INO) build/drop/$(BOARD)/
 	cp boards/$(BOARD)/board_config.h build/drop/$(BOARD)/
+endif
 
 drop-pkg:
 	mv build/drop build/uf2-samd21-$(UF2_VERSION_BASE)
@@ -217,9 +224,10 @@ drop-pkg:
 	rm -rf build/uf2-samd21-$(UF2_VERSION_BASE)
 
 all-boards:
-	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board || break; done
+	for f in `cd boards; ls` ; do "$(MAKE)" BOARD=$$f drop-board || break -1; done
 
 drop: all-boards drop-pkg
 
 $(SUBMODULES):
 	git submodule update --init --recursive
+
