@@ -1,4 +1,4 @@
-BOARD=zero
+BOARD=driver_v5
 -include Makefile.user
 include boards/$(BOARD)/board.mk
 CC=arm-none-eabi-gcc
