@@ -158,6 +158,7 @@ $(EXECUTABLE): $(OBJECTS)
 		 -T$(LINKER_SCRIPT) \
 		 -Wl,-Map,$(BUILD_PATH)/$(NAME).map -o $(BUILD_PATH)/$(NAME).elf $(OBJECTS)
 	arm-none-eabi-objcopy -O binary $(BUILD_PATH)/$(NAME).elf $@
+	arm-none-eabi-objcopy -O ihex $(BUILD_PATH)/$(NAME).elf $(BUILD_PATH)/$(NAME).hex
 	@echo
 	-@arm-none-eabi-size $(BUILD_PATH)/$(NAME).elf | awk '{ s=$$1+$$2; print } END { print ""; print "Space left: " ($(BOOTLOADER_SIZE)-s) }'
 	@echo
