@@ -374,15 +374,32 @@ void draw_screen() {
     SET_CS(0);
 
     uint8_t *p = fb;
-    for (int i = 0; i < DISPLAY_WIDTH; ++i) {
-        uint8_t cc[DISPLAY_HEIGHT * 2];
-        uint32_t dst = 0;
-        for (int j = 0; j < DISPLAY_HEIGHT; ++j) {
-            uint16_t color = palette[*p++ & 0xf];
-            cc[dst++] = color >> 8;
-            cc[dst++] = color & 0xff;
+	
+	if (lookupCfg(CFG_DISPLAY_TYPE, 7735) == 7735) {
+        for (int i = 0; i < DISPLAY_WIDTH; ++i) {
+            for (int j = 0; j < DISPLAY_HEIGHT; ++j) {
+                uint16_t color = palette[*p++ & 0xf];
+                uint8_t cc[] = {color >> 8, color & 0xff};
+                transfer(cc, 2);
+            }
         }
-        transfer(cc, sizeof(cc));
+    } else {
+        // ILI9341/st7789(320*240*p8b) DISPLAY
+        for (int i = 0; i < DISPLAY_WIDTH; ++i) {
+            for (int j = 0; j < DISPLAY_HEIGHT - 8; j++) {
+                uint16_t color = palette[*(p + j) & 0xf];
+                uint8_t cc[] = {color >> 8, color & 0xff};
+                transfer(cc, 2);
+                transfer(cc, 2);
+            }
+            for (int j = 0; j < DISPLAY_HEIGHT - 8; j++) {
+                uint16_t color = palette[*(p + j) & 0xf];
+                uint8_t cc[] = {color >> 8, color & 0xff};
+                transfer(cc, 2);
+                transfer(cc, 2);
+            }
+            p += DISPLAY_HEIGHT;
+        }
     }
 
     SET_CS(1);
@@ -459,12 +476,12 @@ void screen_init() {
     uint32_t offY = (cfg0 >> 16) & 0xff;
     //uint32_t freq = (cfg2 & 0xff);
 
-    offX += (CFG(DISPLAY_WIDTH) - DISPLAY_WIDTH) / 2;
-    offY += (CFG(DISPLAY_HEIGHT) - DISPLAY_HEIGHT) / 2;
+    //offX = (CFG(DISPLAY_WIDTH) - DISPLAY_WIDTH) / 2; //commented out, breaks ILI9341 compatibility
+    //offY = (CFG(DISPLAY_HEIGHT) - DISPLAY_HEIGHT) / 2;
 
     // DMESG("configure screen: FRMCTR1=%p MADCTL=%p SPI at %dMHz", frmctr1, madctl, freq);
     configure(madctl, frmctr1);
-    setAddrWindow(offX, offY, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+	setAddrWindow(offX, offY, CFG(DISPLAY_WIDTH), CFG(DISPLAY_HEIGHT));
 
     memset(fb, 0, sizeof(fb));
 }
