@@ -112,6 +112,10 @@ static void check_start_application(void) {
   #endif
     PINCFG(HOLD_PIN) = pincfg.reg;
 
+  #if defined(HOLD_PIN_PULLDOWN) || defined(HOLD_PIN_PULLUP)
+    delay(2); // delay for 2ms to get pin on potential
+  #endif
+  
     if (PINIP(HOLD_PIN) == HOLD_STATE) {
         /* Stay in bootloader */
         return;
